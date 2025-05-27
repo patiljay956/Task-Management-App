@@ -64,9 +64,58 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, username, password, role } = req.body;
+    const { email, username, password } = req.body;
 
-    //validation
+    // check user is logged in
+    const user = await User.findOne({
+        $or: [{ username }, { email }],
+    });
+
+    if (!user) throw new ApiError(401, "User does not exists please login");
+
+    // check password is valid
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) throw new ApiError(401, "Password is incorrect");
+
+    // check if user is verified
+    if (!user.isEmailVerified) throw new ApiError(400, "Email not verified");
+
+    // generate access token
+    const accessToken = user.generateAccessToken();
+
+    // generate refresh token
+    const refreshToken = user.generateRefreshToken();
+
+    // store refresh token in db
+    user.refreshToken = refreshToken;
+
+    // update user in db
+    await user.save({ validateBeforeSave: false });
+    // cookies
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    user.password = undefined;
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: user,
+                    accessToken,
+                    refreshToken,
+                },
+                "User Logged In Successfully",
+            ),
+        );
+
+    // success status to user, save accessToken and refreshToken into cookies
 });
 
 const logoutUser = asyncHandler(async (req, res) => {

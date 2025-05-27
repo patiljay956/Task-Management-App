@@ -15,4 +15,25 @@ import usersRouters from "./routes/auth.routes.js";
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/user", usersRouters);
 
+import { ApiError } from "./utils/apiErrors.js";
+
+app.use((err, req, res, next) => {
+    console.error("Global Error Handler:", err);
+
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            status: err.statusCode,
+            message: err.message,
+            errors: err.errors || [],
+            success: false,
+        });
+    }
+
+    return res.status(500).json({
+        status: 500,
+        message: err.message || "Internal Server Error",
+        success: false,
+    });
+});
+
 export default app;
