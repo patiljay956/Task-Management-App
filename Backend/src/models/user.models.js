@@ -98,7 +98,7 @@ userSchema.methods.generateRefreshToken = function () {
     );
 };
 
-userSchema.methods.generateTemporaryToken = function () {
+userSchema.methods.generateTemporaryToken = function (requestFor) {
     const unHashedToken = crypto.randomBytes(20).toString("hex");
 
     const hashedToken = crypto
@@ -107,8 +107,14 @@ userSchema.methods.generateTemporaryToken = function () {
         .digest("hex");
 
     const tokenExpiry = Date.now() + 20 * 60 * 1000;
-    this.emailVerificationToken = hashedToken;
-    this.emailVerificationExpiry = tokenExpiry;
+
+    if (requestFor == "email") {
+        this.emailVerificationExpiry = tokenExpiry;
+        this.emailVerificationToken = hashedToken;
+    } else if (requestFor == "password") {
+        this.forgotPasswordToken = hashedToken;
+        this.emailVerificationExpiry = tokenExpiry;
+    }
 
     return {
         unHashedToken,

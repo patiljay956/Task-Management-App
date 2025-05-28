@@ -15,6 +15,14 @@ export const sendMail = async (options) => {
     var emailHTML = mailGenerator.generate(options.mailGenContent);
     var emailText = mailGenerator.generatePlaintext(options.mailGenContent);
 
+    const mail = {
+        from: '"Task Manager" <taskmanager@example.email>',
+        to: options.email,
+        subject: options.subject,
+        text: emailText,
+        html: emailHTML,
+    };
+
     const transporter = nodemailer.createTransport({
         host: process.env.MAILTRAP_HOST,
         port: process.env.MAILTRAP_PORT,
@@ -24,14 +32,6 @@ export const sendMail = async (options) => {
             pass: process.env.MAILTRAP_PASSWORD,
         },
     });
-
-    const mail = {
-        from: '"Task Manager" <taskmanager@example.email>',
-        to: options.email,
-        subject: options.subject,
-        text: emailText,
-        html: emailHTML,
-    };
 
     try {
         await transporter.sendMail(mail);
@@ -44,17 +44,17 @@ export const emailVerificationMailGenerator = (username, verificationUrl) => {
     return {
         body: {
             name: username,
-            intro: "Welcome to Task Manager! We're excited to have you on board. ",
+            intro: "Welcome to Task Manager! We're thrilled to have you join our community.",
             action: {
                 instructions:
-                    "To get started with Task Manager, please click here:",
+                    "To activate your account and start managing your tasks, please verify your email address by clicking the button below:",
                 button: {
                     color: "#22BC66",
-                    text: "Confirm your account, verify your email",
+                    text: "Verify Email Address",
                     link: verificationUrl,
                 },
             },
-            outro: "Need help, or have questions? Just reply to this email, we'd love to help.",
+            outro: "If you have any questions or need assistance, simply reply to this email. We're here to help!",
         },
     };
 };
@@ -63,16 +63,17 @@ export const forgotPasswordMailGenContent = (username, passwordResetUrl) => {
     return {
         body: {
             name: username,
-            intro: "we got a request to reset your password. ",
+            intro: "We received a request to reset your password for your Task Manager account.",
             action: {
-                instructions: "To change your password click the button:",
+                instructions:
+                    "Click the button below to reset your password. If you did not request a password reset, you can safely ignore this email.",
                 button: {
                     color: "#22BC66",
                     text: "Reset Password",
                     link: passwordResetUrl,
                 },
             },
-            outro: "Need help, or have questions? Just reply to this email, we'd love to help.",
+            outro: "If you need help or have any questions, just reply to this email. We're here to help!",
         },
     };
 };

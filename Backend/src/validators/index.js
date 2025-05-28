@@ -43,4 +43,33 @@ const userLoginValidator = () => {
     ];
 };
 
-export { userRegistrationValidator, userLoginValidator };
+const emailValidator = () => {
+    return [body("email").isEmail().withMessage("Email is not valid")];
+};
+
+const passwordValidator = () => {
+    return [
+        body("password")
+            .notEmpty()
+            .withMessage("Password is required")
+            .isStrongPassword({
+                minLength: 8,
+                minLowercase: 1,
+                minUppercase: 1,
+                minNumbers: 1,
+                minSymbols: 1,
+            })
+            .withMessage(
+                "Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character",
+            ),
+    ];
+};
+
+
+
+export {
+    userRegistrationValidator,
+    userLoginValidator,
+    emailValidator,
+    passwordValidator,
+};
