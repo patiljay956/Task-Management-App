@@ -134,7 +134,6 @@ const logoutUser = asyncHandler(async (req, res) => {
             new: true,
         },
     );
-    console.log(existingUser);
     if (!existingUser) {
         throw new ApiError(500, "Unable to clear the token");
     }

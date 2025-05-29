@@ -65,11 +65,29 @@ const passwordValidator = () => {
     ];
 };
 
-
+const productValidator = () => {
+    return [
+        body("name")
+            .trim()
+            .notEmpty()
+            .withMessage("Product name is required")
+            .isLength({ max: 100 })
+            .withMessage("Product name should not exceed 100 characters"),
+        body("description")
+            .trim()
+            .notEmpty()
+            .withMessage("Product description is required")
+            .isLength({ max: 1000 })
+            .withMessage(
+                "Product description should not exceed 1000 characters",
+            ),
+    ];
+};
 
 export {
     userRegistrationValidator,
     userLoginValidator,
     emailValidator,
     passwordValidator,
+    productValidator,
 };
