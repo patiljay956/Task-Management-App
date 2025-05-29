@@ -14,7 +14,7 @@ const projectMemberSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: [AvailableUserRoles],
+            enum: AvailableUserRoles,
             default: UserRolesEnum.MEMBER,
         },
     },

@@ -1,4 +1,5 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
+import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 
 const userRegistrationValidator = () => {
     return [
@@ -65,7 +66,7 @@ const passwordValidator = () => {
     ];
 };
 
-const productValidator = () => {
+const projectValidator = () => {
     return [
         body("name")
             .trim()
@@ -84,10 +85,34 @@ const productValidator = () => {
     ];
 };
 
+const projectIdValidator = () => {
+    return [
+        param("projectId")
+            .trim()
+            .isMongoId()
+            .withMessage("project id is invalid"),
+    ];
+};
+
+const roleValidator = () => {
+    return [
+        body("role")
+            .trim()
+            .notEmpty()
+            .withMessage("Role is required")
+            .isIn(AvailableUserRoles)
+            .withMessage(
+                `Role must be one of: ${AvailableUserRoles.join(", ")}`,
+            ),
+    ];
+};
+
 export {
     userRegistrationValidator,
     userLoginValidator,
     emailValidator,
     passwordValidator,
-    productValidator,
+    projectValidator,
+    projectIdValidator,
+    roleValidator,
 };

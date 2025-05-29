@@ -9,7 +9,9 @@ import { Task } from "../models/task.models.js";
 import { SubTask } from "../models/subtasks.models.js";
 
 const getProjects = asyncHandler(async (req, res) => {
-    const allProjects = await Project.find({}).lean();
+    const allProjects = await Project.find({})
+        .populate("createdBy", "name email")
+        .lean();
 
     if (allProjects.length === 0) {
         return res
