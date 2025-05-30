@@ -1,5 +1,9 @@
 import { body, param } from "express-validator";
-import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+import {
+    AvailableUserRoles,
+    AvailableTaskPriority,
+    AvailableTaskStatuses,
+} from "../utils/constants.js";
 
 const userRegistrationValidator = () => {
     return [
@@ -107,6 +111,61 @@ const roleValidator = () => {
     ];
 };
 
+const taskIdValidator = () => {
+    return [
+        param("taskId").trim().isMongoId().withMessage("Task id is invalid"),
+    ];
+};
+
+const taskStatusAndPriorityValidator = () => {
+    return [
+        body("status")
+            .trim()
+            .notEmpty()
+            .withMessage("Status is required")
+            .isIn(AvailableTaskStatuses)
+            .withMessage(
+                `Status must be one of: ${AvailableTaskStatuses.join(", ")}`,
+            ),
+        body("priority")
+            .trim()
+            .notEmpty()
+            .withMessage("Priority is required")
+            .isIn(AvailableTaskPriority)
+            .withMessage(
+                `Priority must be one of: ${AvailableTaskPriority.join(", ")}`,
+            ),
+    ];
+};
+
+const taskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty()
+            .withMessage("Title is required")
+            .isLength({ max: 100 })
+            .withMessage("Title should not exceed 100 characters"),
+        body("description")
+            .trim()
+            .notEmpty()
+            .withMessage("Description is required")
+            .isLength({ max: 1000 })
+            .withMessage("Description should not exceed 1000 characters"),
+        body("assignedTo")
+            .optional()
+            .isMongoId()
+            .withMessage("Assigned user id is invalid"),
+        body("attachments")
+            .optional()
+            .isArray()
+            .withMessage("Attachments must be an array"),
+        body("assignedTo")
+            .isMongoId()
+            .withMessage("Assigned user id is invalid"),
+        taskStatusAndPriorityValidator(),
+    ];
+};
 export {
     userRegistrationValidator,
     userLoginValidator,
@@ -114,5 +173,8 @@ export {
     passwordValidator,
     projectValidator,
     projectIdValidator,
+    taskIdValidator,
+    taskStatusAndPriorityValidator,
     roleValidator,
+    taskValidator,
 };
