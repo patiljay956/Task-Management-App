@@ -166,6 +166,24 @@ const taskValidator = () => {
         taskStatusAndPriorityValidator(),
     ];
 };
+
+const noteValidator = () => {
+    return [
+        body("content")
+            .trim()
+            .notEmpty()
+            .withMessage("Content is required")
+            .isLength({ max: 5000 })
+            .withMessage("Content should not exceed 5000 characters"),
+    ];
+};
+
+const noteIdValidator = () => {
+    return [
+        param("noteId").trim().isMongoId().withMessage("Note id is invalid"),
+    ];
+};
+
 export {
     userRegistrationValidator,
     userLoginValidator,
@@ -175,6 +193,8 @@ export {
     projectIdValidator,
     taskIdValidator,
     taskStatusAndPriorityValidator,
+    noteValidator,
     roleValidator,
     taskValidator,
+    noteIdValidator,
 };

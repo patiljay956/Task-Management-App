@@ -11,11 +11,13 @@ app.use(cookieParser());
 import healthCheckRouter from "./routes/chealthcheck.routes.js";
 import usersRouters from "./routes/auth.routes.js";
 import projectsRouters from "./routes/project.routes.js";
+import notesRoutes from "./routes/note.routes.js";
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/user", usersRouters);
 app.use("/api/v1/project", projectsRouters);
+app.use("/api/v1/note", notesRoutes);
 
 import { ApiError } from "./utils/apiErrors.js";
 
