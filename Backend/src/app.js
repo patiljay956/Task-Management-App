@@ -12,12 +12,14 @@ import healthCheckRouter from "./routes/chealthcheck.routes.js";
 import usersRouters from "./routes/auth.routes.js";
 import projectsRouters from "./routes/project.routes.js";
 import notesRoutes from "./routes/note.routes.js";
+import subtasksRoutes from "./routes/task.routes.js";
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/user", usersRouters);
 app.use("/api/v1/project", projectsRouters);
 app.use("/api/v1/note", notesRoutes);
+app.use("/api/v1/subtask", subtasksRoutes);
 
 import { ApiError } from "./utils/apiErrors.js";
 

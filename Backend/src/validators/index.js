@@ -166,7 +166,7 @@ const taskValidator = () => {
         taskStatusAndPriorityValidator(),
     ];
 };
-
+// notes
 const noteValidator = () => {
     return [
         body("content")
@@ -184,6 +184,33 @@ const noteIdValidator = () => {
     ];
 };
 
+// subtasks
+
+const subtaskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty()
+            .withMessage("Title is required")
+            .isLength({ max: 100 })
+            .withMessage("Title should not exceed 100 characters"),
+
+        body("isCompleted")
+            .optional()
+            .isBoolean()
+            .withMessage("isCompleted must be a boolean value"),
+    ];
+};
+
+const subtaskIdValidator = () => {
+    return [
+        param("subtaskId")
+            .trim()
+            .isMongoId()
+            .withMessage("Subtask id is invalid"),
+    ];
+};
+
 export {
     userRegistrationValidator,
     userLoginValidator,
@@ -197,4 +224,6 @@ export {
     roleValidator,
     taskValidator,
     noteIdValidator,
+    subtaskValidator,
+    subtaskIdValidator,
 };
