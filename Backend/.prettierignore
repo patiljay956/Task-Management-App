@@ -7,3 +7,9 @@ coverage
 *.tmp
 .DS_Store
 .env
+.vscode
+.idea
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.md
