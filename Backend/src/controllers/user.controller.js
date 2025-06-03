@@ -33,9 +33,13 @@ const updateUserDetails = asyncHandler(async (req, res) => {
 
     const { name, username } = req.body;
 
-    // Validate the input
-    if (!name || !username) {
-        throw new ApiError(400, "Name and username are required");
+    // check if the username is already taken by another user
+    const existingUser = await User.findOne({
+        username,
+    });
+
+    if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        throw new ApiError(400, "Username is already taken");
     }
 
     // Update the user details

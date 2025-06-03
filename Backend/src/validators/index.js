@@ -52,6 +52,26 @@ const emailValidator = () => {
     return [body("email").isEmail().withMessage("Email is not valid")];
 };
 
+const nameAndUsernameValidator = () => {
+    return [
+        body("name").trim().notEmpty().withMessage("Name is required"),
+        body("username")
+            .trim()
+            .notEmpty()
+            .withMessage("Username is required")
+            .isLength({ min: 3 })
+            .withMessage("Username must be at least 3 characters long")
+            .isLength({ max: 50 })
+            .withMessage("Username must not exceed 50 characters"),
+    ];
+};
+
+const userIdValidator = () => {
+    return [
+        param("userId").trim().isMongoId().withMessage("User id is invalid"),
+    ];
+};
+
 const passwordValidator = () => {
     return [
         body("password")
@@ -226,4 +246,6 @@ export {
     noteIdValidator,
     subtaskValidator,
     subtaskIdValidator,
+    userIdValidator,
+    nameAndUsernameValidator,
 };

@@ -50,4 +50,8 @@ router
     .route("/change-password")
     .patch(verifyToken, passwordValidator(), validate, changeCurrentPassword);
 
+import userDetailsRoutes from "./user.routes.js";
+
+router.use("/user-details", userDetailsRoutes);
+
 export default router;
