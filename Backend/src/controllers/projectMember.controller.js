@@ -5,6 +5,7 @@ import { ProjectMember } from "../models/projectmember.models.js";
 import { User } from "../models/user.models.js";
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 import { Project } from "../models/project.models.js";
+import { projectInvitationMailGenContent } from "../utils/mail.js";
 
 const getProjectMembers = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
@@ -151,7 +152,6 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     if (!updateMemberRole)
         throw new ApiError(500, "Unable to update user role");
 
-
     return res
         .status(200)
         .json(
@@ -163,9 +163,68 @@ const updateMemberRole = asyncHandler(async (req, res) => {
         );
 });
 
+const addMemberByEmail = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+    const { email, role } = req.body; //validation handled in middleware
+
+    // check if project is exists
+    const existingProject = await Project.findById(projectId);
+    if (!existingProject) throw new ApiError(404, "Project not found ");
+
+    // check if user is exists before add
+    const existingUser = await User.findOne({ email }).lean();
+    if (!existingUser) throw new ApiError(404, "User not found");
+
+    // check if user is already a member of the project
+    const existingMember = await ProjectMember.findOne({
+        user: existingUser._id,
+        project: projectId,
+    });
+
+    if (existingMember)
+        throw new ApiError(409, "User is already a member of the project");
+
+    // add new member to the project
+    const newProjectMember = await ProjectMember.create({
+        user: existingUser._id,
+        project: projectId,
+        role,
+    });
+
+    if (!newProjectMember)
+        throw new ApiError(500, "Unable to add member to project");
+
+    // send email invitation to the user
+    const emailContent = projectInvitationMailGenContent(
+        existingUser.name,
+        existingProject.name,
+        existingProject.description,
+        `${process.env.FRONTEND_URL}/projects/${projectId}`,
+    );
+    const emailSent = await existingUser.sendEmail(
+        "Project Invitation",
+        emailContent,
+    );
+
+    if (!emailSent) {
+        throw new ApiError(500, "Failed to send project invitation email");
+    }
+
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(
+                201,
+                newProjectMember,
+                "Member added to project successfully",
+            ),
+        );
+});
+
 export {
     getProjectMembers,
     addMemberToProject,
     removeMemberFromProject,
     updateMemberRole,
+    addMemberByEmail,
 };

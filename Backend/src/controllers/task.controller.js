@@ -16,7 +16,7 @@ const getTasksOfProject = asyncHandler(async (req, res) => {
     // get all tasks without aggregation pipeline
     const matchStage =
         req.user.role === UserRolesEnum.ADMIN ||
-        req.user.role === UserRolesEnum.PROJECT_ADMIN
+        req.user.role === UserRolesEnum.PROJECT_MANAGER
             ? { project: projectId }
             : {
                   project: projectId,

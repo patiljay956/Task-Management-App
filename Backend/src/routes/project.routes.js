@@ -22,6 +22,7 @@ import {
 } from "../validators/index.js";
 import { UserRolesEnum, AvailableUserRoles } from "../utils/constants.js";
 import {
+    addMemberByEmail,
     addMemberToProject,
     getProjectMembers,
     removeMemberFromProject,
@@ -50,7 +51,7 @@ router
         projectValidator(),
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         updateProject,
     )
     .delete(verifyToken, hasProjectRole([UserRolesEnum.ADMIN]), deleteProject);
@@ -67,7 +68,7 @@ router
         verifyToken,
         hasProjectRole([
             UserRolesEnum.ADMIN,
-            UserRolesEnum.PROJECT_ADMIN,
+            UserRolesEnum.PROJECT_MANAGER,
             UserRolesEnum.MEMBER,
         ]),
         getProjectMembers,
@@ -76,7 +77,7 @@ router
         [projectIdValidator(), roleValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]), // only allow admin/manager to add
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]), // only allow admin/manager to add
         addMemberToProject, // controller function
     )
     .delete(
@@ -94,6 +95,17 @@ router
         updateMemberRole,
     );
 
+// add member by email
+router
+    .route("/:projectId/member/email")
+    .post(
+        [projectIdValidator(), roleValidator()],
+        validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        addMemberByEmail,
+    );
+
 // task routes
 
 router
@@ -104,7 +116,7 @@ router
         verifyToken,
         hasProjectRole([
             UserRolesEnum.ADMIN,
-            UserRolesEnum.PROJECT_ADMIN,
+            UserRolesEnum.PROJECT_MANAGER,
             UserRolesEnum.MEMBER,
         ]),
         getTasksOfProject,
@@ -114,7 +126,7 @@ router
         [projectIdValidator(), taskValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         createTask,
     );
 
@@ -126,7 +138,7 @@ router
         verifyToken,
         hasProjectRole([
             UserRolesEnum.ADMIN,
-            UserRolesEnum.PROJECT_ADMIN,
+            UserRolesEnum.PROJECT_MANAGER,
             UserRolesEnum.MEMBER,
         ]),
         getTaskById,
@@ -140,14 +152,14 @@ router
         ],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         updateTask,
     )
     .delete(
         [projectIdValidator(), taskIdValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         deleteTask,
     );
 
@@ -156,7 +168,7 @@ router.patch(
     [projectIdValidator(), taskIdValidator(), taskStatusAndPriorityValidator()],
     validate,
     verifyToken,
-    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
     updateTaskStatusOrPriority,
 );
 
@@ -166,7 +178,7 @@ router.patch(
     [projectIdValidator(), taskIdValidator()],
     validate,
     verifyToken,
-    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
     updateTaskAttachments,
 );
 

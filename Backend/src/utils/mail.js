@@ -77,3 +77,71 @@ export const forgotPasswordMailGenContent = (username, passwordResetUrl) => {
         },
     };
 };
+
+// project invitation mail generator with project details
+export const projectInvitationMailGenContent = (
+    username,
+    projectName,
+    projectDescription,
+    projectUrl,
+) => {
+    return {
+        body: {
+            name: username,
+            intro: `You have been invited to join the project "${projectName}".`,
+            table: {
+                data: [
+                    {
+                        Project: projectName,
+                        Description: projectDescription,
+                    },
+                ],
+            },
+            action: {
+                instructions:
+                    "To accept the invitation and join the project, please click the button below:",
+                button: {
+                    color: "#22BC66",
+                    text: "Join Project",
+                    link: projectUrl,
+                },
+            },
+            outro: "If you have any questions or need assistance, simply reply to this email. We're here to help!",
+        },
+    };
+};
+
+// task assignment mail generator with task details and priority
+export const taskAssignmentMailGenContent = (
+    username,
+    taskName,
+    taskDescription,
+    taskPriority,
+    taskUrl,
+) => {
+    return {
+        body: {
+            name: username,
+            intro: `You have been assigned a new task: "${taskName}".`,
+            table: {
+                data: [
+                    {
+                        Task: taskName,
+                        Description: taskDescription,
+                        Priority: taskPriority,
+                    },
+                ],
+            },
+            action: {
+                instructions:
+                    "To view the task details and start working on it, please click the button below:",
+                button: {
+                    color: "#22BC66",
+                    text: "View Task",
+                    link: taskUrl,
+                },
+            },
+            outro: "If you have any questions or need assistance, simply reply to this email. We're here to help!",
+        },
+    };
+};
