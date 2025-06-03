@@ -74,7 +74,7 @@ const userIdValidator = () => {
 
 const passwordValidator = () => {
     return [
-        body("password")
+        body(["password", "newPassword"])
             .notEmpty()
             .withMessage("Password is required")
             .isStrongPassword({
@@ -172,6 +172,7 @@ const taskValidator = () => {
             .withMessage("Description is required")
             .isLength({ max: 1000 })
             .withMessage("Description should not exceed 1000 characters"),
+
         body("assignedTo")
             .optional()
             .isMongoId()
@@ -180,9 +181,6 @@ const taskValidator = () => {
             .optional()
             .isArray()
             .withMessage("Attachments must be an array"),
-        body("assignedTo")
-            .isMongoId()
-            .withMessage("Assigned user id is invalid"),
         taskStatusAndPriorityValidator(),
     ];
 };

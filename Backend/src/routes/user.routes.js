@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-const router = Router();
 import {
     getUserById,
+    updateUserAvatar,
     updateUserDetails,
 } from "../controllers/user.controller.js";
 
@@ -13,6 +13,13 @@ import {
     userIdValidator,
     nameAndUsernameValidator,
 } from "../validators/index.js";
+import { upload } from "../middlewares/multer.middleware.js";
+
+const router = Router();
+
+router
+    .route("/update-avatar")
+    .patch(verifyToken, upload.single("avatar"), updateUserAvatar);
 
 //get user by id
 router

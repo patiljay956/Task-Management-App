@@ -7,6 +7,8 @@ import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 import { Project } from "../models/project.models.js";
 import { projectInvitationMailGenContent } from "../utils/mail.js";
 
+import { sendMail } from "../utils/mail.js";
+
 const getProjectMembers = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
 
@@ -201,14 +203,12 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
         existingProject.description,
         `${process.env.FRONTEND_URL}/projects/${projectId}`,
     );
-    const emailSent = await existingUser.sendEmail(
-        "Project Invitation",
-        emailContent,
-    );
 
-    if (!emailSent) {
-        throw new ApiError(500, "Failed to send project invitation email");
-    }
+    await sendMail({
+        email: existingUser.email,
+        subject: `Invitation to join project: ${existingProject.name}`,
+        mailGenContent: emailContent,
+    });
 
     return res
         .status(201)

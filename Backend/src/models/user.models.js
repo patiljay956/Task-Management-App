@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema(
         avatar: {
             type: {
                 url: String,
-                localPath: String,
+                mimeType: String,
+                size: Number,
+                public_id: String,
             },
             default: {
                 url: "https://placehold.co/600x400",

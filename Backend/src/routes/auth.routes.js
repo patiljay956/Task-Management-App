@@ -21,6 +21,9 @@ import {
 import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+import userDetailsRoutes from "./user.routes.js";
+
+router.use("/user-details", userDetailsRoutes);
 
 router
     .route("/register")
@@ -48,10 +51,6 @@ router.route("/current-user").get(verifyToken, getCurrentUser);
 
 router
     .route("/change-password")
-    .patch(verifyToken, passwordValidator(), validate, changeCurrentPassword);
-
-import userDetailsRoutes from "./user.routes.js";
-
-router.use("/user-details", userDetailsRoutes);
+    .patch(passwordValidator(), validate, verifyToken, changeCurrentPassword);
 
 export default router;
