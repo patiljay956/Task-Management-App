@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { Switch } from "../ui/switch";
-import { useTheme } from "../theme/theme-provider";
+import { useTheme } from "@/hooks/use-theme";
 
 export function NavUser({
     user,
@@ -106,13 +106,14 @@ export function NavUser({
                                     Dark mode
                                     <Switch
                                         className="ml-auto"
-                                        defaultChecked
+                                        defaultChecked={theme === "dark"}
                                         onClick={(event) => {
                                             event.stopPropagation();
                                             setTheme(
-                                                theme === "light"
-                                                    ? "dark"
-                                                    : "light",
+                                                event.currentTarget.dataset
+                                                    ?.state === "checked"
+                                                    ? "light"
+                                                    : "dark",
                                             );
                                         }}
                                     />

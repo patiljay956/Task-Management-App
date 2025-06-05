@@ -20,11 +20,16 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "@/hooks/use-auth";
 
 type Props = {};
 
 function LoginForm({}: Props) {
+    const { setLocalTokens, setLocalUser } = useAuth();
+
+    const navigate = useNavigate();
+
     const form = useForm<LoginFormInputs>({
         resolver: zodResolver(loginFormSchema),
         defaultValues: {
@@ -37,6 +42,20 @@ function LoginForm({}: Props) {
     function onSubmit(values: LoginFormInputs) {
         //todo
         console.log(values);
+        setLocalTokens({
+            accessToken: "token",
+            refreshToken: "token",
+        });
+
+        setLocalUser({
+            username: "username",
+            email: "email",
+            name: "name",
+            avatar: "avatar",
+            isAuthenticated: true,
+        });
+
+        navigate("/app");
     }
 
     return (
