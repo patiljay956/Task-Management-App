@@ -22,11 +22,17 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { API_USER_ENDPOINTS } from "@/api/endpoints";
+import { toast } from "sonner";
+import { type LoginResponse } from "@/types/auth";
+import axios from "axios";
 
 type Props = {};
 
 function LoginForm({}: Props) {
     const { setLocalTokens, setLocalUser } = useAuth();
+    const [isLoginDisabled, setIsLoginDisabled] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -39,23 +45,45 @@ function LoginForm({}: Props) {
     });
 
     //submit handler
-    function onSubmit(values: LoginFormInputs) {
-        //todo
-        console.log(values);
-        setLocalTokens({
-            accessToken: "token",
-            refreshToken: "token",
-        });
+    async function onSubmit(values: LoginFormInputs) {
+        setIsLoginDisabled(true);
 
-        setLocalUser({
-            username: "username",
-            email: "email",
-            name: "name",
-            avatar: "avatar",
-            isAuthenticated: true,
-        });
+        let response = undefined;
 
-        navigate("/app");
+        try {
+            response = await API_USER_ENDPOINTS.login({
+                userNameOrEmail: values.identifier,
+                password: values.password,
+            });
+
+            let data: LoginResponse = response?.data.data;
+
+            setLocalTokens({
+                accessToken: data.accessToken,
+                refreshToken: data.refreshToken,
+            });
+            setLocalUser({
+                _id: data.user._id,
+                name: data.user.name,
+                email: data.user.email,
+                username: data.user.username,
+                avatar: data.user.avatar,
+                role: data.user.role,
+                isAuthenticated: true,
+            });
+
+            toast.success("Login Successful");
+
+            navigate("/app", { replace: false });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.error(error?.response?.data?.message);
+            } else {
+                toast.error("Something went wrong");
+            }
+        } finally {
+            setIsLoginDisabled(false);
+        }
     }
 
     return (
@@ -112,7 +140,10 @@ function LoginForm({}: Props) {
                             />
                             <Button
                                 type="submit"
-                                disabled={form.formState.isSubmitting}
+                                disabled={
+                                    form.formState.isSubmitting ||
+                                    isLoginDisabled
+                                }
                                 className="w-full"
                             >
                                 Login

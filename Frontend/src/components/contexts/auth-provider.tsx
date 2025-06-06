@@ -1,23 +1,19 @@
 import { createContext, useEffect, useState } from "react";
 import {
-    TOKEN_KEY,
-    REFRESH_TOKEN_KEY,
-    USER_KEY,
-    setToken,
-    setRefreshToken,
-    setUser as loadUser,
+    getAccessTokenFromLS,
+    getRefreshTokenFromLS,
+    getUserFromLS,
+    setAccessTokenToLS,
+    setRefreshTokenToLS,
+    setUserToLS,
+    clearUserFromLS,
+    clearTokensFromLS,
 } from "@/api/auth";
+
+import { type User } from "@/types/auth";
 
 type Props = {
     children: React.ReactNode;
-};
-
-type User = {
-    name: string;
-    email: string;
-    username: string;
-    avatar?: string;
-    isAuthenticated: boolean;
 };
 
 type Tokens = {
@@ -26,11 +22,19 @@ type Tokens = {
 };
 
 const initialUser: User = {
+    _id: "",
     name: "",
     email: "",
     username: "",
-    avatar: "",
+    avatar: {
+        url: "",
+        _id: "",
+        mimeType: "",
+        size: 0,
+        public_id: "",
+    },
     isAuthenticated: false,
+    role: "user",
 };
 
 const initialTokens: Tokens = {
@@ -43,6 +47,8 @@ type AuthContextProps = {
     tokens: Tokens;
     setLocalTokens: (tokens: Tokens) => void;
     setLocalUser: (user: User) => void;
+    isLoading: boolean;
+    resetAuthData: () => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -50,44 +56,47 @@ export const AuthContext = createContext<AuthContextProps>({
     tokens: initialTokens,
     setLocalTokens: () => {},
     setLocalUser: () => {},
+    isLoading: true,
+    resetAuthData: () => {},
 });
 
 export default function AuthProvider({ children }: Props) {
     const [user, setUser] = useState<User>(initialUser);
     const [tokens, setTokens] = useState<Tokens>(initialTokens);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     //useEffect to load access token and refresh token from local storage
     useEffect(() => {
-        const accessToken = localStorage.getItem(TOKEN_KEY);
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-        const user = localStorage.getItem(USER_KEY);
+        const accessToken = getAccessTokenFromLS();
+        const refreshToken = getRefreshTokenFromLS();
+        const user = getUserFromLS();
 
-        if (accessToken && refreshToken) {
-            setUser((prev) => {
-                return {
-                    ...prev,
-                    accessToken,
-                    refreshToken,
-                };
-            });
+        if (accessToken && refreshToken && user) {
+            setUser(user);
+            setTokens({ accessToken, refreshToken });
         }
 
-        if (user) {
-            setUser(JSON.parse(user));
-        }
+        setIsLoading(false);
     }, []);
 
     //set access token and refresh token in local storage
     function setLocalUser(user: User) {
-        loadUser<User>(user);
+        setUserToLS<User>(user);
         setUser(user);
     }
 
     //set access token and refresh token in local storage
     function setLocalTokens(tokens: Tokens) {
-        setToken(tokens.accessToken);
-        setRefreshToken(tokens.refreshToken);
+        setAccessTokenToLS(tokens.accessToken);
+        setRefreshTokenToLS(tokens.refreshToken);
         setTokens(tokens);
+    }
+
+    function resetAuthData() {
+        setUser(initialUser);
+        setTokens(initialTokens);
+        clearUserFromLS();
+        clearTokensFromLS();
     }
 
     const value = {
@@ -95,6 +104,8 @@ export default function AuthProvider({ children }: Props) {
         tokens,
         setLocalTokens,
         setLocalUser,
+        isLoading,
+        resetAuthData,
     };
 
     return (

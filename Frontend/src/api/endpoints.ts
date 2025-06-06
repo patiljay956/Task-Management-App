@@ -1,6 +1,12 @@
 import { type AxiosResponse } from "axios";
 import api from "./axios";
 import { z } from "zod";
+declare module "axios" {
+    interface AxiosRequestConfig {
+        skipAuth?: boolean;
+        skipRefresh?: boolean;
+    }
+}
 
 export const API_USER_ENDPOINTS = {
     register: async function (params: {
@@ -16,10 +22,16 @@ export const API_USER_ENDPOINTS = {
         password: string;
     }) {
         if (z.string().email().safeParse(params.userNameOrEmail).success) {
-            return await api.post("/user/login", {
-                email: z.string().email().parse(params.userNameOrEmail),
-                password: z.string().parse(params.password),
-            });
+            return await api.post(
+                "/user/login",
+                {
+                    email: z.string().email().parse(params.userNameOrEmail),
+                    password: z.string().parse(params.password),
+                },
+                {
+                    skipRefresh: true,
+                },
+            );
         } else if (z.string().safeParse(params.userNameOrEmail).success) {
             return await api.post("/user/login", {
                 username: z.string().parse(params.userNameOrEmail),

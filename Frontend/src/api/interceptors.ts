@@ -1,5 +1,5 @@
 import { type AxiosInstance } from "axios";
-import { clearToken, getToken } from "./auth";
+import { clearTokensFromLS, getAccessTokenFromLS } from "./auth";
 import { refreshAccessToken } from "./refresh";
 
 let isRefreshing = false;
@@ -20,7 +20,7 @@ function processQueue(error: any, token: string | null = null) {
 export function attachAuthTokenInterceptor(api: AxiosInstance) {
     api.interceptors.request.use(
         (config) => {
-            const token = getToken();
+            const token = getAccessTokenFromLS();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -34,9 +34,14 @@ export function attachAuthTokenInterceptor(api: AxiosInstance) {
         async (error) => {
             const originalRequest = error.config;
 
+            // 👇 If the request opts out of refresh, just reject
+            if (originalRequest?.skipRefresh) {
+                return Promise.reject(error);
+            }
+
             if (error.response?.status === 401 && !originalRequest._retry) {
                 if (isRefreshing) {
-                    return new Promise(function (resolve, reject) {
+                    return new Promise((resolve, reject) => {
                         failedQueue.push({ resolve, reject });
                     })
                         .then((token) => {
@@ -56,13 +61,14 @@ export function attachAuthTokenInterceptor(api: AxiosInstance) {
                     return api(originalRequest);
                 } catch (err) {
                     processQueue(err, null);
-                    clearToken();
-                    window.location.href = "/login"; // or show toast and redirect
+                    clearTokensFromLS();
                     return Promise.reject(err);
                 } finally {
                     isRefreshing = false;
                 }
             }
+
+            return Promise.reject(error);
         },
     );
 }

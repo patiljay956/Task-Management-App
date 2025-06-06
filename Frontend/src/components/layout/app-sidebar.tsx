@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { NavUser } from "./app-profile-menu";
+import { useAuth } from "@/hooks/use-auth";
 ("./app-profile-menu");
 
 type Props = {};
@@ -50,6 +51,8 @@ const sidebarMenu = [
 ];
 
 export default function AppSidebar({}: Props) {
+    const { user } = useAuth();
+
     return (
         <>
             <Sidebar>
@@ -100,13 +103,7 @@ export default function AppSidebar({}: Props) {
                 <SidebarFooter>
                     <SidebarMenu>
                         <SidebarMenuItem>
-                            <NavUser
-                                user={{
-                                    name: "John Doe",
-                                    email: "jdoe",
-                                    avatar: "https://github.com/shadcn.png",
-                                }}
-                            />
+                            <NavUser user={user} />
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarFooter>

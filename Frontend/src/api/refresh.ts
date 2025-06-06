@@ -1,8 +1,12 @@
-import { getRefreshToken, setToken, setRefreshToken } from "./auth";
+import {
+    getRefreshTokenFromLS,
+    setRefreshTokenToLS,
+    setAccessTokenToLS,
+} from "./auth";
 import { API_USER_ENDPOINTS } from "./endpoints";
 
 export async function refreshAccessToken(): Promise<string> {
-    const refreshToken = getRefreshToken();
+    const refreshToken = getRefreshTokenFromLS();
     if (!refreshToken) throw new Error("No refresh token available");
 
     const response = await API_USER_ENDPOINTS.refreshAccessToken();
@@ -10,8 +14,8 @@ export async function refreshAccessToken(): Promise<string> {
     const { accessToken, refreshToken: newRefreshToken } = response.data;
 
     // Save new tokens
-    setToken(accessToken);
-    setRefreshToken(newRefreshToken);
+    setAccessTokenToLS(accessToken);
+    setRefreshTokenToLS(newRefreshToken);
 
     return accessToken;
 }
