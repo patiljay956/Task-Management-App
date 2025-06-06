@@ -6,9 +6,7 @@ type Props = {};
 export default function MainApp({}: Props) {
     return (
         <SidebarProvider>
-            <AppLayout>
-                
-            </AppLayout>
+            <AppLayout></AppLayout>
         </SidebarProvider>
     );
 }
