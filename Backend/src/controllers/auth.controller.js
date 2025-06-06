@@ -16,7 +16,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const existingUser = await User.findOne({
         $or: [{ username }, { email }],
-    });
+    }).lean();
 
     if (existingUser)
         throw new ApiError(
@@ -56,11 +56,19 @@ const registerUser = asyncHandler(async (req, res) => {
         mailGenContent: emailContent,
     });
 
-    // 5. send response
+    // clear sensitive data before sending response
     savedUser.password = undefined;
+    savedUser.refreshToken = undefined;
+    savedUser.isEmailVerified = undefined;
+    savedUser.emailVerificationToken = undefined;
+    savedUser.emailVerificationExpiry = undefined;
+    savedUser.forgotPasswordToken = undefined;
+    savedUser.forgotPasswordExpiry = undefined;
+    savedUser.__v = undefined;
+
     return res.status(201).json(
         new ApiResponse(201, {
-            savedUser,
+            user: savedUser,
             unHashedToken,
             verificationUrl,
         }),
@@ -103,6 +111,14 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // success status to user, save accessToken and refreshToken into cookies
     user.password = undefined;
+    user.refreshToken = undefined;
+    user.isEmailVerified = undefined;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpiry = undefined;
+    user.forgotPasswordToken = undefined;
+    user.forgotPasswordExpiry = undefined;
+    user.__v = undefined;
+
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
@@ -134,6 +150,7 @@ const logoutUser = asyncHandler(async (req, res) => {
             new: true,
         },
     );
+
     if (!existingUser) {
         throw new ApiError(500, "Unable to clear the token");
     }
@@ -188,7 +205,9 @@ const verifyEmail = asyncHandler(async (req, res) => {
 const resendEmailVerification = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
-    const existingUser = await User.findOne({ email }).select("-password");
+    const existingUser = await User.findOne({ email }).select(
+        "-password -refreshToken ",
+    );
 
     if (!existingUser)
         throw new ApiError(400, "Email is not valid please register ");
@@ -256,8 +275,6 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         subject: " Forgot your password - Project Management Tool",
         mailGenContent: emailContent,
     });
-
-    existingUser.password = undefined;
 
     return res
         .status(200)

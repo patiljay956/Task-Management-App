@@ -13,6 +13,7 @@ import {
 import { hasProjectRole, verifyToken } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import {
+    emailValidator,
     projectIdValidator,
     projectValidator,
     roleValidator,
@@ -99,7 +100,7 @@ router
 router
     .route("/:projectId/member/email")
     .post(
-        [projectIdValidator(), roleValidator()],
+        [projectIdValidator(), roleValidator(), emailValidator()],
         validate,
         verifyToken,
         hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),

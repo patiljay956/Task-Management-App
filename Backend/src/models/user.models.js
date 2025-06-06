@@ -13,7 +13,9 @@ const userSchema = new mongoose.Schema(
         avatar: {
             type: {
                 url: String,
-                localPath: String,
+                mimeType: String,
+                size: Number,
+                public_id: String,
             },
             default: {
                 url: "https://placehold.co/600x400",
@@ -54,6 +56,11 @@ const userSchema = new mongoose.Schema(
         },
         refreshToken: {
             type: String,
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user",
         },
     },
     { timestamps: true },

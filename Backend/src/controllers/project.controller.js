@@ -10,7 +10,11 @@ import { SubTask } from "../models/subtasks.models.js";
 
 const getProjects = asyncHandler(async (req, res) => {
     const allProjects = await Project.find({})
-        .populate("createdBy", "name email")
+        .populate({
+            path: "createdBy",
+            select: "name email",
+        })
+        .select("-__v")
         .lean();
 
     if (allProjects.length === 0) {
@@ -54,7 +58,7 @@ const createProject = asyncHandler(async (req, res) => {
 
     const existingProject = await Project.findOne({
         name: name.trim(),
-    });
+    }).lean();
 
     if (existingProject)
         throw new ApiError(409, "Project with this name already exists");

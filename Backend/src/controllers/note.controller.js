@@ -2,23 +2,21 @@ import { ApiError } from "../utils/apiErrors.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ProjectNote } from "../models/notes.models.js";
+import { Project } from "../models/project.models.js";
 
 const createNote = asyncHandler(async (req, res) => {
     const { content } = req.body;
     const { projectId } = req.params;
 
-    // check user already created note for this project
+    // check if project is exists and user is part of the project
+    if (!projectId) {
+        throw new ApiError(400, "Project ID is required");
+    }
 
-    const existingNote = await ProjectNote.findOne({
-        project: projectId,
-        createdBy: req.user?._id,
-    });
+    const existingProject = await Project.findById(projectId).lean();
 
-    if (existingNote) {
-        throw new ApiError(
-            400,
-            "You have already created a note for this project",
-        );
+    if (!existingProject) {
+        throw new ApiError(404, "Project not found");
     }
 
     const newNote = await ProjectNote.create({
@@ -35,11 +33,23 @@ const createNote = asyncHandler(async (req, res) => {
 const getNotes = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
 
+    // check if project is exists and user is part of the project
+    if (!projectId) {
+        throw new ApiError(400, "Project ID is required");
+    }
+
+    const existingProject = await Project.findById(projectId).lean();
+
+    if (!existingProject) {
+        throw new ApiError(404, "Project not found");
+    }
+
     const notes = await ProjectNote.find({
         project: projectId,
     })
         .select("-__v")
         .populate("project", "name")
+        .populate("createdBy", "name email")
         .lean();
 
     if (!notes || notes.length === 0) {
@@ -53,7 +63,7 @@ const getNotes = asyncHandler(async (req, res) => {
 
 const getNoteById = asyncHandler(async (req, res) => {
     const { noteId } = req.params;
-    
+
     if (!noteId) {
         throw new ApiError(400, "Note ID is required");
     }
@@ -64,6 +74,7 @@ const getNoteById = asyncHandler(async (req, res) => {
     })
         .select("-__v")
         .populate("project", "name")
+        .populate("createdBy", "name email")
         .lean();
 
     if (!note) {
@@ -90,6 +101,7 @@ const updateNote = asyncHandler(async (req, res) => {
     )
         .select("-__v")
         .populate("project", "name")
+        .populate("createdBy", "name email")
         .lean();
 
     if (!updatedNote) {
