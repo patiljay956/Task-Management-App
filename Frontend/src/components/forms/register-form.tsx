@@ -27,7 +27,7 @@ import type { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Info } from "lucide-react";
+import { Info, LoaderCircle } from "lucide-react";
 import axios from "axios";
 
 type Props = {};
@@ -281,6 +281,9 @@ function SignupForm({}: Props) {
                                 disabled={form.formState.isSubmitting}
                                 className="w-full"
                             >
+                                {form.formState.isSubmitting && (
+                                    <LoaderCircle className="animate-spin" />
+                                )}
                                 Register
                             </Button>
                         </form>

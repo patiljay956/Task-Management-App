@@ -27,6 +27,7 @@ import { API_USER_ENDPOINTS } from "@/api/endpoints";
 import { toast } from "sonner";
 import { type LoginResponse } from "@/types/auth";
 import axios from "axios";
+import { LoaderCircle } from "lucide-react";
 
 type Props = {};
 
@@ -70,6 +71,8 @@ function LoginForm({}: Props) {
                 avatar: data.user.avatar,
                 role: data.user.role,
                 isAuthenticated: true,
+                createdAt: data.user.createdAt,
+                updatedAt: data.user.updatedAt,
             });
 
             toast.success("Login Successful, Welcome " + data.user.name + "!");
@@ -146,6 +149,9 @@ function LoginForm({}: Props) {
                                 }
                                 className="w-full"
                             >
+                                {form.formState.isSubmitting && (
+                                    <LoaderCircle className="animate-spin" />
+                                )}
                                 Login
                             </Button>
                         </form>

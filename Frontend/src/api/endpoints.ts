@@ -103,4 +103,13 @@ export const API_USER_ENDPOINTS = {
             password: params.password,
         });
     },
+    updateAvatar: async function (file: File): Promise<AxiosResponse> {
+        const formData = new FormData();
+        formData.append("file", file);
+        return await api.patch("user/user-details/update-avatar", formData, {
+            headers: {
+                "Content-Type": undefined, // automatically set by the browser for multipart/form-data
+            },
+        });
+    },
 };

@@ -37,7 +37,7 @@ function App() {
                                 element={<TokenAction action="resetPassword" />}
                             ></Route>
                             <Route
-                                path="/app"
+                                path="/app/*"
                                 element={
                                     <RequireAuth>
                                         <MainApp />

@@ -1,27 +1,24 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { type User } from "@/types/auth";
 
 type Props = {
-    user: {
-        name: string;
-        image: string;
-        email: string;
-    };
+    user: User;
 };
 
 export default function UserAvatar({ user }: Props) {
     return (
         <>
-            <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage
-                    src={user.image}
-                    alt="https://github.com/shadcn.png"
-                />
+            <Avatar className="h-12 w-12 rounded-lg">
+                <AvatarImage src={user.avatar.url} alt={user.avatar.url} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
                     {user.email}
+                </span>
+                <span className="text-muted-foreground truncate text-xs">
+                    @{user.username}
                 </span>
             </div>
         </>
