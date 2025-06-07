@@ -3,7 +3,10 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiErrors.js";
 import { UserRolesEnum } from "../utils/constants.js";
-import { uploadOnCloudinary } from "../utils/fileUpload.cloudinary.js";
+import {
+    deleteFromCloudinary,
+    uploadOnCloudinary,
+} from "../utils/fileUpload.cloudinary.js";
 
 const getUserById = asyncHandler(async (req, res) => {
     const { userId } = req.params;
@@ -75,7 +78,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     if (!user) throw new ApiError(401, "User not authenticated");
 
     // check if request has a file
-    if (!req.file ) {
+    if (!req.file) {
         throw new ApiError(400, "No file uploaded");
     }
     // check if already has an avatar
