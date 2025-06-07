@@ -17,6 +17,7 @@ import {
     emailValidator,
     userLoginValidator,
     userRegistrationValidator,
+    changePasswordValidator,
 } from "../validators/index.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 
@@ -51,6 +52,11 @@ router.route("/current-user").get(verifyToken, getCurrentUser);
 
 router
     .route("/change-password")
-    .patch(passwordValidator(), validate, verifyToken, changeCurrentPassword);
+    .patch(
+        changePasswordValidator(),
+        validate,
+        verifyToken,
+        changeCurrentPassword,
+    );
 
 export default router;
