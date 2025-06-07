@@ -7,15 +7,55 @@ import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 
 import { Task } from "../models/task.models.js";
 import { SubTask } from "../models/subtasks.models.js";
+import mongoose from "mongoose";
 
 const getProjects = asyncHandler(async (req, res) => {
-    const allProjects = await Project.find({})
-        .populate({
-            path: "createdBy",
-            select: "name email",
-        })
-        .select("-__v")
+    const userId = req.user?._id;
+    if (!userId) throw new ApiError(401, "Unauthorized access, please login");
+
+    // Find all project IDs where the user is a member
+    const memberProjects = await ProjectMember.find({ user: userId })
+        .select("project")
         .lean();
+    const projectIds = memberProjects.map((pm) => pm.project);
+
+    // Fetch only those projects
+    const allProjects = await Project.aggregate([
+        { $match: { _id: { $in: projectIds } } },
+        {
+            $lookup: {
+                localField: "createdBy",
+                from: "users",
+                foreignField: "_id",
+                as: "createdByUser",
+            },
+        },
+        {
+            $unwind: {
+                path: "$createdByUser",
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                createdByUser: {
+                    _id: 1,
+                    email: 1,
+                    name: 1,
+                    avatar: {
+                        _id: 1,
+                        url: 1,
+                        publicId: 1,
+                    },
+                },
+            },
+        },
+    ]);
 
     if (allProjects.length === 0) {
         return res
@@ -28,7 +68,7 @@ const getProjects = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 allProjects,
-                "all projects fetched successfully",
+                "All projects fetched successfully",
             ),
         );
 });
@@ -37,13 +77,63 @@ const getProjectById = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
     if (!projectId) throw new ApiError(400, "project id not provided ");
 
-    const project = await Project.findById(projectId);
+    const project = await Project.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(projectId) } },
+        {
+            $lookup: {
+                localField: "createdBy",
+                from: "users",
+                foreignField: "_id",
+                as: "createdByUser",
+            },
+        },
+        {
+            $unwind: {
+                path: "$createdByUser",
+                preserveNullAndEmptyArrays: true,
+            },
+        },
+
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                createdByUser: {
+                    _id: 1,
+                    email: 1,
+                    name: 1,
+                    avatar: {
+                        _id: 1,
+                        url: 1,
+                        publicId: 1,
+                    },
+                },
+            },
+        },
+    ]);
 
     if (!project)
         throw new ApiError(
             400,
             "project id is invalid or project is not available",
         );
+
+    // Check if the user is a member of the project
+    const userId = req.user?._id;
+
+    if (!userId) throw new ApiError(401, "Unauthorized access, please login");
+
+    const isMember = await ProjectMember.exists({
+        user: userId,
+        project: projectId,
+    });
+
+    if (!isMember) {
+        throw new ApiError(403, "You are not a member of this project");
+    }
 
     return res
         .status(200)
@@ -118,7 +208,10 @@ const updateProject = asyncHandler(async (req, res) => {
     }
 
     // Find the project to update
-    const existingProject = await Project.findById(projectId);
+    const existingProject = await Project.findById(projectId).populate({
+        path: "createdBy",
+        select: "name email avatar",
+    });
     if (!existingProject) {
         throw new ApiError(404, "Project not found");
     }
@@ -151,7 +244,10 @@ const deleteProject = asyncHandler(async (req, res) => {
     if (!projectId) throw new ApiError(400, "Project ID is required");
 
     // Check if the project exists
-    const existingProject = await Project.findById(projectId);
+    const existingProject = await Project.findById(projectId).populate({
+        path: "createdBy",
+        select: "name email avatar",
+    });
 
     if (!existingProject) {
         throw new ApiError(404, "Project not found");
