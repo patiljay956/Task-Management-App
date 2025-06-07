@@ -9,6 +9,7 @@ import RequireAuth from "./components/auth/require-auth";
 import AuthProvider from "./components/contexts/auth-provider";
 import { ErrorBoundary } from "./components/error/error-boundary";
 import { Toaster } from "./components/ui/sonner";
+import TokenAction from "./views/token-action.view";
 
 function App() {
     return (
@@ -26,6 +27,14 @@ function App() {
                             <Route
                                 path="/forgot-password"
                                 Component={ForgotPassword}
+                            ></Route>
+                            <Route
+                                path="/verify-email/:token"
+                                element={<TokenAction action="verifyEmail" />}
+                            />
+                            <Route
+                                path="/reset-password/:token"
+                                element={<TokenAction action="resetPassword" />}
                             ></Route>
                             <Route
                                 path="/app"

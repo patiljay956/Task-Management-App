@@ -72,14 +72,14 @@ function LoginForm({}: Props) {
                 isAuthenticated: true,
             });
 
-            toast.success("Login Successful");
+            toast.success("Login Successful, Welcome " + data.user.name + "!");
 
             navigate("/app", { replace: false });
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                toast.error(error?.response?.data?.message);
+                toast.error(error.response?.data?.message);
             } else {
-                toast.error("Something went wrong");
+                toast.error("Something went wrong, Please try again later.");
             }
         } finally {
             setIsLoginDisabled(false);

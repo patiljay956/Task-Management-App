@@ -15,28 +15,42 @@ export const API_USER_ENDPOINTS = {
         email: string;
         password: string;
     }): Promise<AxiosResponse> {
-        return await api.post("/user/register", params);
+        return await api.post("/user/register", params, {
+            skipAuth: true,
+            skipRefresh: true,
+        });
     },
     login: async function (params: {
         userNameOrEmail: string;
         password: string;
     }) {
         if (z.string().email().safeParse(params.userNameOrEmail).success) {
+            console.log("email");
             return await api.post(
                 "/user/login",
                 {
-                    email: z.string().email().parse(params.userNameOrEmail),
+                    email: z
+                        .string()
+                        .trim()
+                        .email()
+                        .parse(params.userNameOrEmail),
                     password: z.string().parse(params.password),
                 },
                 {
                     skipRefresh: true,
                 },
             );
-        } else if (z.string().safeParse(params.userNameOrEmail).success) {
-            return await api.post("/user/login", {
-                username: z.string().parse(params.userNameOrEmail),
-                password: z.string().parse(params.password),
-            });
+        } else {
+            return await api.post(
+                "/user/login",
+                {
+                    username: z.string().trim().parse(params.userNameOrEmail),
+                    password: z.string().trim().parse(params.password),
+                },
+                {
+                    skipRefresh: true,
+                },
+            );
         }
     },
     logout: async function (): Promise<AxiosResponse> {
@@ -46,6 +60,7 @@ export const API_USER_ENDPOINTS = {
         return await api.get("/user/verify-email", {
             params: {
                 token,
+                skipRefresh: true,
             },
         });
     },
@@ -62,7 +77,7 @@ export const API_USER_ENDPOINTS = {
         password: string;
     }) {
         return await api.post(
-            "/user/forgot-password-reset",
+            "/user/reset-password",
             {
                 password: params.password,
             },

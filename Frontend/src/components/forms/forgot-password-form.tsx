@@ -24,6 +24,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Link } from "react-router";
 import { useRef, useState } from "react";
+import type { AxiosResponse } from "axios";
+import { API_USER_ENDPOINTS } from "@/api/endpoints";
+import axios from "axios";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -55,14 +59,27 @@ export default function ForgotPasswordForm({}: Props) {
     });
 
     //handle submit
-    function onSubmit(values: ForgotPasswordFormInputs) {
-        //todo
-        console.log(values);
-        setIsSent(true);
-        setMessage(
-            "A reset link has been sent to your email. Please check your inbox.",
-        );
-        startTimer();
+    async function onSubmit(values: ForgotPasswordFormInputs) {
+        try {
+            let response: AxiosResponse | undefined =
+                await API_USER_ENDPOINTS.forgotPasswordRequest({
+                    email: values.email,
+                });
+
+            if (response.data.statusCode === 200) {
+                setIsSent(true);
+                setMessage(
+                    "A reset link has been sent to your email. Please check your inbox.",
+                );
+                startTimer();
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message);
+                setIsSent(false);
+                setMessage(error.response?.data?.message);
+            } else toast.error("Something went wrong. Please try again later.");
+        }
     }
 
     //function to start the interval
@@ -117,11 +134,14 @@ export default function ForgotPasswordForm({}: Props) {
                             />
                             <Button
                                 type="submit"
-                                disabled={isResendDisabled}
+                                disabled={
+                                    isResendDisabled ||
+                                    form.formState.isSubmitting
+                                }
                                 className="w-full"
                             >
                                 {isSent ? "Resend" : "Send"} Reset Link{" "}
-                                {timeLeft > 0 && `(${timeLeft}s)`}
+                                {isResendDisabled && `(${timeLeft}s)`}
                             </Button>
                         </form>
                     </Form>

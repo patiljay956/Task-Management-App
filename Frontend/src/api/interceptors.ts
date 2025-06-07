@@ -20,6 +20,10 @@ function processQueue(error: any, token: string | null = null) {
 export function attachAuthTokenInterceptor(api: AxiosInstance) {
     api.interceptors.request.use(
         (config) => {
+            if (config.skipAuth) {
+                return config;
+            }
+
             const token = getAccessTokenFromLS();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
