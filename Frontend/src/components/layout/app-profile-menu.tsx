@@ -71,12 +71,13 @@ export function NavUser({ user }: { user: User }) {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg grayscale">
-                                <AvatarImage
-                                    src={user.avatar.url}
-                                    alt={user.name}
-                                />
+                                <AvatarImage src={user.avatar.url} />
                                 <AvatarFallback className="rounded-lg">
-                                    CN
+                                    {user.name
+                                        .split(" ")
+                                        .map((name) => name.charAt(0))
+                                        .join("")
+                                        .toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">

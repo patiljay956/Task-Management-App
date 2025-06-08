@@ -29,22 +29,22 @@ const sidebarMenu = [
             {
                 label: "Dashboard",
                 icon: LayoutDashboard,
-                to: "/dashboard",
+                to: "dashboard",
             },
             {
                 label: "Project",
                 icon: FolderKanban,
-                to: "/project",
+                to: "projects",
             },
             {
                 label: "Tasks",
                 icon: ListTodo,
-                to: "/tasks",
+                to: "tasks",
             },
             {
                 label: "Notes",
                 icon: NotebookTabs,
-                to: "/notes",
+                to: "notes",
             },
         ],
     },

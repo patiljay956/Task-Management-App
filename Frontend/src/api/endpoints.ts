@@ -113,3 +113,18 @@ export const API_USER_ENDPOINTS = {
         });
     },
 };
+
+export const API_PROJECT_ENDPOINTS = {
+    getProjects: async function (): Promise<AxiosResponse> {
+        return await api.get("/project");
+    },
+    getProjectById: async function (projectId: string): Promise<AxiosResponse> {
+        return await api.get(`/project/${projectId}`);
+    },
+    addProject: async function (params: {
+        name: string;
+        description: string;
+    }): Promise<AxiosResponse> {
+        return await api.post("/project", params);
+    },
+};

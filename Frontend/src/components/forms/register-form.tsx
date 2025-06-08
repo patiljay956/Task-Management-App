@@ -9,8 +9,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { registerFormSchema } from "@/schemas/RegisterForm.schema";
-import type { RegisterFormInputs } from "@/schemas/RegisterForm.schema";
+import { registerFormSchema } from "@/schemas/register-form.schema";
+import type { RegisterFormInputs } from "@/schemas/register-form.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

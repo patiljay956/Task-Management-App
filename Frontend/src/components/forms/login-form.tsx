@@ -1,5 +1,5 @@
-import type { LoginFormInputs } from "@/schemas/LoginForm.schema";
-import { loginFormSchema } from "@/schemas/LoginForm.schema";
+import type { LoginFormInputs } from "@/schemas/login-form.schema";
+import { loginFormSchema } from "@/schemas/login-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {

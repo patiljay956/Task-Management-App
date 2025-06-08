@@ -1,7 +1,7 @@
 import {
     forgotPasswordFormSchema,
     type ForgotPasswordFormInputs,
-} from "@/schemas/ForgotPasswordForm.schema";
+} from "@/schemas/forgot-password-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {

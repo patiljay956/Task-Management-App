@@ -10,44 +10,51 @@ import AuthProvider from "./components/contexts/auth-provider";
 import { ErrorBoundary } from "./components/error/error-boundary";
 import { Toaster } from "./components/ui/sonner";
 import TokenAction from "./views/token-action.view";
+import { StoreProvider } from "./components/contexts/store-provider";
 
 function App() {
     return (
         <>
             <ErrorBoundary>
-                <ThemeProvider defaultTheme="system" storageKey="ui-theme">
-                    <AuthProvider>
-                        <Routes>
-                            <Route
-                                path="/"
-                                element={<Navigate to="/app" replace />}
-                            ></Route>
-                            <Route path="/login" Component={Login} />
-                            <Route path="/register" Component={Register} />
-                            <Route
-                                path="/forgot-password"
-                                Component={ForgotPassword}
-                            ></Route>
-                            <Route
-                                path="/verify-email/:token"
-                                element={<TokenAction action="verifyEmail" />}
-                            />
-                            <Route
-                                path="/reset-password/:token"
-                                element={<TokenAction action="resetPassword" />}
-                            ></Route>
-                            <Route
-                                path="/app/*"
-                                element={
-                                    <RequireAuth>
-                                        <MainApp />
-                                    </RequireAuth>
-                                }
-                            />
-                        </Routes>
-                        <Toaster></Toaster>
-                    </AuthProvider>
-                </ThemeProvider>
+                <StoreProvider>
+                    <ThemeProvider defaultTheme="system" storageKey="ui-theme">
+                        <AuthProvider>
+                            <Routes>
+                                <Route
+                                    path="/"
+                                    element={<Navigate to="/app" replace />}
+                                />
+                                <Route path="/login" Component={Login} />
+                                <Route path="/register" Component={Register} />
+                                <Route
+                                    path="/forgot-password"
+                                    Component={ForgotPassword}
+                                />
+                                <Route
+                                    path="/verify-email/:token"
+                                    element={
+                                        <TokenAction action="verifyEmail" />
+                                    }
+                                />
+                                <Route
+                                    path="/reset-password/:token"
+                                    element={
+                                        <TokenAction action="resetPassword" />
+                                    }
+                                />
+                                <Route
+                                    path="/app/*"
+                                    element={
+                                        <RequireAuth>
+                                            <MainApp />
+                                        </RequireAuth>
+                                    }
+                                />
+                            </Routes>
+                            <Toaster></Toaster>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </StoreProvider>
             </ErrorBoundary>
         </>
     );
