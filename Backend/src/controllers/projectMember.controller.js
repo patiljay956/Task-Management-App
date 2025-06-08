@@ -17,8 +17,11 @@ const getProjectMembers = asyncHandler(async (req, res) => {
     }
 
     const members = await ProjectMember.find({ project: projectId })
-        .populate({ path: "user", select: "name" })
-        .populate({ path: "project", select: "name" })
+        .populate({
+            path: "user",
+            select: "-password -__v -refreshToken -role -createdAt -updatedAt -isEmailVerified -emailVerificationToken -emailVerificationExpires -resetPasswordToken -resetPasswordExpires ",
+        })
+        .populate({ path: "project", select: "name description" })
         .lean();
 
     if (members.length === 0) {
@@ -54,7 +57,7 @@ const addMemberToProject = asyncHandler(async (req, res) => {
     const existingMember = await ProjectMember.findOne({
         user: memberId,
         project: projectId,
-    });
+    }).lean();
 
     if (existingMember)
         throw new ApiError(409, "User is already a member of the project");
@@ -143,7 +146,7 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     const existingMember = await ProjectMember.findOne({
         user: memberId,
         project: projectId,
-    });
+    }).lean();
 
     if (!existingMember)
         throw new ApiError(409, "User is not a member of the project");
