@@ -7,35 +7,25 @@ import { UserRolesEnum } from "../utils/constants.js";
 import { uploadOnCloudinary } from "../utils/fileUpload.cloudinary.js";
 
 const getTasksOfProject = asyncHandler(async (req, res) => {
-    const { projectId } = req.params; // TODO:add validation middleware
+    const { projectId } = req.params;
     if (!projectId) throw new ApiError(400, "Project id is required");
 
-    // check if project is available
+    // Check if project exists
     const existingProject = await Project.findById(projectId).lean();
-    if (!existingProject) throw new ApiError(401, "project not found");
-    // get all tasks without aggregation pipeline
-    const matchStage =
-        req.user.role === UserRolesEnum.ADMIN ||
-        req.user.role === UserRolesEnum.PROJECT_MANAGER
-            ? { project: projectId }
-            : {
-                  project: projectId,
-                  $or: [
-                      { assignedTo: req.user.id },
-                      { assignedBy: req.user.id },
-                  ],
-              };
-
-    const allTasksOfProject = await Task.find(matchStage)
-        .select("-__v")
+    if (!existingProject) throw new ApiError(404, "Project not found");
+    // Fetch all tasks of the project and populate necessary fields
+    const allTasksOfProject = await Task.find({ project: projectId })
+        .select("-__v") // Exclude __v field
+        .populate("attachments") // Populate attachments if needed
         .populate("project", "_id name")
         .populate("assignedTo", "_id username email")
-        .populate("assignedBy", "_id username email")
-        .lean();
+        .populate("assignedBy", "_id username email");
 
-    if (!allTasksOfProject)
-        throw new ApiError(404, "No tasks found for this project");
-
+    if (!allTasksOfProject || allTasksOfProject.length === 0) {
+        return res
+            .status(404)
+            .json(new ApiResponse(404, [], "No tasks found for this project"));
+    }
     return res
         .status(200)
         .json(

@@ -33,11 +33,11 @@ const getSubtasksByTaskId = asyncHandler(async (req, res) => {
     const existingTask = await Task.findById(taskId).lean();
     if (!existingTask) throw new ApiError(404, "Task not found");
 
-    // Fetch subtasks for the task
+    // Fetch subtasks for the task and get data of task
     const subtasks = await SubTask.find({ task: taskId })
-        .populate("task", "title")
+        .populate("createdBy", "_id username email")
+        .populate("task", "_id title description status priority")
         .lean();
-
     if (!subtasks || subtasks.length === 0) {
         throw new ApiError(404, "No subtasks found for this task");
     }
@@ -52,7 +52,11 @@ const updateSubtask = asyncHandler(async (req, res) => {
     if (!subtaskId) throw new ApiError(400, "Subtask ID is required");
 
     // Check if subtask exists
-    const existingSubtask = await SubTask.findById(subtaskId).lean();
+    const existingSubtask = await SubTask.findById(subtaskId)
+        .populate("task", "_id title description status priority")
+        .populate("createdBy", "_id username email")
+        .lean();
+
     if (!existingSubtask) throw new ApiError(404, "Subtask not found");
 
     // Update subtask

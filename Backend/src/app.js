@@ -21,7 +21,7 @@ import healthCheckRouter from "./routes/chealthcheck.routes.js";
 import usersRouters from "./routes/auth.routes.js";
 import projectsRouters from "./routes/project.routes.js";
 import notesRoutes from "./routes/note.routes.js";
-import subtasksRoutes from "./routes/task.routes.js";
+import subtasksRoutes from "./routes/subtask.routes.js";
 
 // routes declaration
 app.use("/api/v1/healthcheck", healthCheckRouter);

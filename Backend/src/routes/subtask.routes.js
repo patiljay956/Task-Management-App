@@ -12,38 +12,42 @@ import {
     subtaskIdValidator,
     subtaskValidator,
 } from "../validators/index.js";
-import { UserRolesEnum } from "../utils/constants.js";
+import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 
 const router = Router();
 // router.use(); // Apply token verification middleware to all routes
 
-// INFO: Routes for subtasks
-
 router
-    .route("/:taskId")
+    .route("/p/:projectId/t/:taskId")
     .get(
         taskIdValidator(),
         validate,
         verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
         getSubtasksByTaskId, // Fetch all subtasks for a task
     )
     .post(
         [taskIdValidator(), subtaskValidator()],
         validate,
         verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
         createSubtask, // Create a new subtask for a task
     );
 
 router
-    .route("/:taskId/:subtaskId")
+    .route("/p/:projectId/t/:taskId/st/:subtaskId")
     .patch(
         [taskIdValidator(), subtaskIdValidator()],
         validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
         updateSubtask, // Update a specific subtask by ID
     )
     .delete(
         [taskIdValidator(), subtaskIdValidator()],
         validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
         deleteSubtask, // Delete a specific subtask by ID
     );
 
