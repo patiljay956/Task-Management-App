@@ -2,9 +2,9 @@ import type { ProjectMember } from "@/types/project";
 import { DataTable } from "../table/data-table";
 import { columns } from "./columns";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { AddProjectDialog } from "../dialogs/add-project-dialog";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
+import AddMemberDialog from "../dialogs/add-member-dialog";
 
 interface Props {
     data: ProjectMember[];
@@ -16,12 +16,12 @@ export default function ProjectMembersTable({ data, onAddMember }: Props) {
         <Card className="w-full">
             <CardHeader className="flex items-center justify-between">
                 <CardTitle className="text-xl">Members</CardTitle>
-                <AddProjectDialog>
+                <AddMemberDialog>
                     <Button onClick={onAddMember} className="gap-2">
                         <Plus className="w-4 h-4" />
-                        Add Member
+                        Invite Member
                     </Button>
-                </AddProjectDialog>
+                </AddMemberDialog>
             </CardHeader>
             <CardContent>
                 <DataTable columns={columns} data={data} />

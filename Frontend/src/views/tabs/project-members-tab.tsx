@@ -35,7 +35,7 @@ export default function ProjectMembersTab({ projectId }: Props) {
                                 projectId,
                             );
 
-                        if (response.status === 200) {
+                        if (response?.status === 200) {
                             const data = response.data.data as ProjectMember[];
                             setStore((prev) => ({
                                 ...prev,

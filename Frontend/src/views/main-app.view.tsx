@@ -11,9 +11,9 @@ export default function MainApp({}: Props) {
         <SidebarProvider>
             <AppLayout>
                 <Routes>
-                    <Route path="/projects" element={<UserProjects />} />
+                    <Route path={"projects"} element={<UserProjects />} />
                     <Route
-                        path="/project/:projectId"
+                        path={"project/:projectId"}
                         element={<ProjectView />}
                     />
                 </Routes>

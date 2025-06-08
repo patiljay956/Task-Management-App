@@ -20,6 +20,7 @@ import { Separator } from "../ui/separator";
 import { NavUser } from "./app-profile-menu";
 import { useAuth } from "@/hooks/use-auth";
 ("./app-profile-menu");
+import { NOTES, PROJECTS, TASKS } from "@/constants/app-routes";
 
 type Props = {};
 
@@ -34,17 +35,17 @@ const sidebarMenu = [
             {
                 label: "Project",
                 icon: FolderKanban,
-                to: "projects",
+                to: PROJECTS,
             },
             {
                 label: "Tasks",
                 icon: ListTodo,
-                to: "tasks",
+                to: TASKS,
             },
             {
                 label: "Notes",
                 icon: NotebookTabs,
-                to: "notes",
+                to: NOTES,
             },
         ],
     },
