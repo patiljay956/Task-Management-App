@@ -25,6 +25,7 @@ import { useParams } from "react-router";
 import { toast } from "sonner";
 import axios, { type AxiosResponse } from "axios";
 import { LoaderCircle } from "lucide-react";
+import { useStore } from "../contexts/store-provider";
 
 type InviteMemberValues = z.infer<typeof InviteMemberSchema>;
 
@@ -34,7 +35,7 @@ type Props = {
 
 export default function InviteMemberForm({ onSuccess }: Props) {
     const { projectId } = useParams<{ projectId: string }>();
-    // const { store, setStore } = useStore();
+    const { setStore } = useStore();
 
     const form = useForm<InviteMemberValues>({
         resolver: zodResolver(InviteMemberSchema),
@@ -53,8 +54,22 @@ export default function InviteMemberForm({ onSuccess }: Props) {
                     role: values.role,
                 });
 
-            if (response.data.statusCode === 200) {
+            console.log(response);
+
+            if (response.data.statusCode === 201) {
                 console.log(response.data);
+
+                setStore((prev) => ({
+                    ...prev,
+                    projectMembers: {
+                        ...prev.projectMembers,
+                        [projectId!]: [
+                            ...prev.projectMembers[projectId!],
+                            response.data.data,
+                        ],
+                    },
+                }));
+
                 form.reset();
                 toast.success("Member invited successfully!");
                 onSuccess();

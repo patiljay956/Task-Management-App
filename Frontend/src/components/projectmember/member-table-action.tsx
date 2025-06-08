@@ -3,7 +3,7 @@ import { useStore } from "../contexts/store-provider";
 import { useState } from "react";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import type { Row } from "@tanstack/react-table";
-import type { ProjectMember, ProjectRole } from "@/types/project";
+import type { ProjectRole } from "@/types/project";
 import { toast } from "sonner";
 import axios, { type AxiosResponse } from "axios";
 import {
@@ -24,9 +24,15 @@ import {
     SelectValue,
 } from "../ui/select";
 import ConfirmDialog from "../dialogs/confirm-dialog";
+import type { User } from "@/types/auth";
+
+type ProjectMemberRow = {
+    user: User;
+    role: ProjectRole;
+};
 
 type Props = {
-    row: Row<ProjectMember>;
+    row: Row<ProjectMemberRow>;
 };
 
 export default function MemberTableAction({ row }: Props) {
@@ -45,9 +51,13 @@ export default function MemberTableAction({ row }: Props) {
                 toast.success("Member removed successfully!");
                 setStore((prev) => ({
                     ...prev,
-                    projectMembers: prev.projectMembers.filter(
-                        (member) => member._id !== row.original._id,
-                    ),
+                    projectMembers: {
+                        ...prev.projectMembers,
+                        [projectId!]: prev.projectMembers[projectId!].filter(
+                            (member) =>
+                                member.user._id !== row.original.user._id,
+                        ),
+                    },
                 }));
             }
         } catch (error) {
@@ -70,15 +80,20 @@ export default function MemberTableAction({ row }: Props) {
                 toast.success("Role updated successfully!");
                 setStore((prev) => ({
                     ...prev,
-                    projectMembers: prev.projectMembers.map((member) => {
-                        if (member._id === row.original._id) {
-                            return {
-                                ...member,
-                                role: role,
-                            };
-                        }
-                        return member;
-                    }),
+                    projectMembers: {
+                        ...prev.projectMembers,
+                        [projectId!]: prev.projectMembers[projectId!].map(
+                            (member) => {
+                                if (member.user._id === row.original.user._id) {
+                                    return {
+                                        ...member,
+                                        role: role,
+                                    };
+                                }
+                                return member;
+                            },
+                        ),
+                    },
                 }));
                 setIsSubmitting(false);
             }

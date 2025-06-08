@@ -1,14 +1,20 @@
-import type { ProjectMember } from "@/types/project";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { ArrowUpDown } from "lucide-react";
 import MemberTableAction from "./member-table-action";
+import type { User } from "@/types/auth";
+import type { ProjectRole } from "@/types/project";
 
-export const columns: ColumnDef<ProjectMember>[] = [
+type ProjectMemberRow = {
+    user: User;
+    role: ProjectRole;
+};
+
+export const columns: ColumnDef<ProjectMemberRow>[] = [
     {
         accessorKey: "user.name",
         header: ({ column }) => (
-            <>
+            <div className="flex items-center gap-2">
                 Name
                 <Button
                     variant="ghost"
@@ -16,9 +22,9 @@ export const columns: ColumnDef<ProjectMember>[] = [
                     className="size-8"
                     onClick={() => column.toggleSorting()}
                 >
-                    <ArrowUpDown />
+                    <ArrowUpDown className="size-4" />
                 </Button>
-            </>
+            </div>
         ),
         cell: ({ row }) => row.original.user.name,
     },
@@ -28,20 +34,17 @@ export const columns: ColumnDef<ProjectMember>[] = [
         cell: ({ row }) => row.original.user.email,
     },
     {
-        accessorKey: "project.name",
-        header: "Project",
-        cell: ({ row }) => row.original.project.name,
-    },
-    {
         accessorKey: "role",
         header: "Role",
-        cell: ({ row }) => row.original.role,
+        cell: ({ row }) => (
+            <span className="capitalize">{row.original.role}</span>
+        ),
     },
     {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-            return <MemberTableAction row={row}></MemberTableAction>;
+            return <MemberTableAction row={row} />;
         },
     },
 ];

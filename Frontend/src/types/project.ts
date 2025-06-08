@@ -8,12 +8,11 @@ export type Project = {
     createdAt: Date;
     updatedAt: Date;
 };
-
-export type ProjectMember = {
-    _id: string;
-    user: User;
-    project: Project;
-    role: ProjectRole;
+export type ProjectMembers = {
+    [projectId: string]: {
+        user: User;
+        role: ProjectRole;
+    }[];
 };
 
 export type ProjectRole = "project_admin" | "project_manager" | "member";

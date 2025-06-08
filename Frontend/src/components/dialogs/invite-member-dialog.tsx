@@ -5,7 +5,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import AddMemberForm from "../forms/invite-member-form";
+import InviteMemberForm from "../forms/invite-member-form";
 import { useState } from "react";
 
 type Props = {
@@ -22,7 +22,9 @@ export default function InviteMemberDialog({ children }: Props) {
                 <DialogHeader>
                     <DialogTitle>Invite Project Member</DialogTitle>
                 </DialogHeader>
-                <AddMemberForm onSuccess={() => setOpen(false)}></AddMemberForm>
+                <InviteMemberForm
+                    onSuccess={() => setOpen(false)}
+                ></InviteMemberForm>
             </DialogContent>
         </Dialog>
     );
