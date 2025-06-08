@@ -4,6 +4,7 @@ import { ArrowUpDown } from "lucide-react";
 import MemberTableAction from "./member-table-action";
 import type { User } from "@/types/auth";
 import type { ProjectRole } from "@/types/project";
+import UserHover from "../projects/user-hover";
 
 type ProjectMemberRow = {
     user: User;
@@ -26,7 +27,10 @@ export const columns: ColumnDef<ProjectMemberRow>[] = [
                 </Button>
             </div>
         ),
-        cell: ({ row }) => row.original.user.name,
+        cell: ({ row }) => {
+            const user = row.original.user;
+            return <UserHover user={user}></UserHover>;
+        },
     },
     {
         accessorKey: "user.email",

@@ -28,6 +28,7 @@ import type { AxiosResponse } from "axios";
 import { API_USER_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
+import { LoaderCircle } from "lucide-react";
 
 type Props = {};
 
@@ -140,6 +141,9 @@ export default function ForgotPasswordForm({}: Props) {
                                 }
                                 className="w-full"
                             >
+                                {form.formState.isSubmitting && (
+                                    <LoaderCircle className="animate-spin" />
+                                )}
                                 {isSent ? "Resend" : "Send"} Reset Link{" "}
                                 {isResendDisabled && `(${timeLeft}s)`}
                             </Button>

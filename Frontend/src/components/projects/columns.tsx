@@ -3,6 +3,7 @@ import { type Project } from "@/types/project"; // or wherever your interface is
 import { Link } from "react-router";
 import DescriptionHover from "./description-hover";
 import UserHover from "./user-hover";
+import type { User } from "@/types/auth";
 
 export const columns: ColumnDef<Project>[] = [
     {
@@ -24,7 +25,8 @@ export const columns: ColumnDef<Project>[] = [
         accessorKey: "createdBy",
         header: "Owner",
         cell: ({ row }) => {
-            return <UserHover row={row}></UserHover>;
+            const user = row.original.createdByUser as User;
+            return <UserHover user={user}></UserHover>;
         },
     },
     {
