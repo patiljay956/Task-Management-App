@@ -143,10 +143,10 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     if (!existingUser) throw new ApiError(404, "User not found");
 
     // check if user is already a member of the project
-    const existingMember = await ProjectMember.findOne({
+    const existingMember = await ProjectMember.findOneAndUpdate({
         user: memberId,
         project: projectId,
-    }).lean();
+    });
 
     if (!existingMember)
         throw new ApiError(409, "User is not a member of the project");
