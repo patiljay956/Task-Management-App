@@ -7,11 +7,16 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "../ui/hover-card";
+import { Link } from "react-router";
 
 export const columns: ColumnDef<Project>[] = [
     {
         accessorKey: "name",
         header: "Name",
+        cell: ({ row }) => {
+            const name = row.original.name;
+            return <Link to={`/app/project/${row.original._id}`}>{name}</Link>;
+        },
     },
     {
         accessorKey: "description",

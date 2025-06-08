@@ -1,25 +1,25 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { columns } from "./columns";
+import type { ProjectMember } from "@/types/project";
 import { DataTable } from "../table/data-table";
-import { type Project } from "@/types/project"; // Adjust import
+import { columns } from "./columns";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { AddProjectDialog } from "../dialogs/add-project-dialog";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
 
 interface Props {
-    data: Project[];
-    onAddProject: () => void;
+    data: ProjectMember[];
+    onAddMember: () => void;
 }
 
-export default function ProjectTable({ data, onAddProject }: Props) {
+export default function ProjectMembersTable({ data, onAddMember }: Props) {
     return (
         <Card className="w-full">
             <CardHeader className="flex items-center justify-between">
-                <CardTitle className="text-xl">Projects</CardTitle>
+                <CardTitle className="text-xl">Members</CardTitle>
                 <AddProjectDialog>
-                    <Button onClick={onAddProject} className="gap-2">
+                    <Button onClick={onAddMember} className="gap-2">
                         <Plus className="w-4 h-4" />
-                        Add Project
+                        Add Member
                     </Button>
                 </AddProjectDialog>
             </CardHeader>

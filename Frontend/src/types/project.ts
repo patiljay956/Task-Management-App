@@ -7,5 +7,11 @@ export type Project = {
     createdBy: User;
     createdAt: Date;
     updatedAt: Date;
-    __v: number;
+};
+
+export type ProjectMember = {
+    _id: string;
+    user: User;
+    project: Project;
+    role: "project_admin" | "project_manager" | "member";
 };
