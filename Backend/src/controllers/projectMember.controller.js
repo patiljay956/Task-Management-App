@@ -143,10 +143,10 @@ const updateMemberRole = asyncHandler(async (req, res) => {
     if (!existingUser) throw new ApiError(404, "User not found");
 
     // check if user is already a member of the project
-    const existingMember = await ProjectMember.findOne({
+    const existingMember = await ProjectMember.findOneAndUpdate({
         user: memberId,
         project: projectId,
-    }).lean();
+    });
 
     if (!existingMember)
         throw new ApiError(409, "User is not a member of the project");
@@ -177,7 +177,11 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
     if (!existingProject) throw new ApiError(404, "Project not found ");
 
     // check if user is exists before add
-    const existingUser = await User.findOne({ email }).lean();
+    const existingUser = await User.findOne({ email })
+        .select(
+            "-password  -__v -refreshToken -role -createdAt -updatedAt -isEmailVerified -emailVerificationToken -emailVerificationExpires -resetPasswordToken -resetPasswordExpires",
+        )
+        .lean();
     if (!existingUser) throw new ApiError(404, "User not found");
 
     // check if user is already a member of the project
@@ -218,7 +222,7 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
         .json(
             new ApiResponse(
                 201,
-                newProjectMember,
+                existingUser,
                 "Member added to project successfully",
             ),
         );
