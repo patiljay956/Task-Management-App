@@ -13,8 +13,8 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import type { Task, ProjectMember, KanbanColumnKey } from "@/types/project";
+import { useEffect, useMemo } from "react";
+import type { Task, KanbanColumnKey } from "@/types/project";
 import {
     Select,
     SelectContent,
@@ -33,28 +33,31 @@ import { useStore } from "../contexts/store-provider";
 type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
 type Props = {
-    members: ProjectMember[];
     initialData?: Task | null;
     onSuccess?: () => void;
     status?: KanbanColumnKey;
 };
 
 export default function AddOrUpdateTaskForm({
-    members,
     initialData,
     onSuccess,
     status,
 }: Props) {
     const { projectId } = useParams<{ projectId: string }>();
-    const { setStore } = useStore();
+    const { store, setStore } = useStore();
+
+    const members = useMemo(
+        () => store.projectMembers[projectId!],
+        [store.projectMembers, projectId],
+    );
 
     const form = useForm<TaskFormSchema>({
         resolver: zodResolver(taskFormSchema),
         defaultValues: {
             title: "",
             description: "",
-            status: status || "todo",
-            priority: "low",
+            status: initialData?.status || status || "todo",
+            priority: initialData?.priority || "low",
             assignedTo: "",
             files: [],
         },
@@ -77,7 +80,64 @@ export default function AddOrUpdateTaskForm({
     const onSubmit = async (values: TaskFormSchema) => {
         try {
             if (initialData) {
-                //
+                const response = await API_PROJECT_ENDPOINTS.updateTask({
+                    projectId: projectId!,
+                    taskId: initialData._id,
+                    title: values.title,
+                    description: values.description,
+                    assignedTo: values.assignedTo,
+                    status: values.status,
+                    priority: values.priority,
+                    files: values.files,
+                });
+
+                if (response.data.statusCode === 200) {
+                    toast.success("Task updated successfully!");
+                    form.reset();
+                    onSuccess?.();
+
+                    const updatedTask = response.data.data;
+
+                    setStore((prev) => {
+                        const prevStatus = initialData.status; // status before update
+                        const newStatus = values.status;
+
+                        const prevTasks =
+                            prev.projectTasks[projectId!][prevStatus] || [];
+                        const newTasks =
+                            prev.projectTasks[projectId!][newStatus] || [];
+
+                        // Remove from old status
+                        const cleanedPrevTasks = prevTasks.filter(
+                            (task) => task._id !== initialData._id,
+                        );
+
+                        // Update or add to new status
+                        const taskIndex = newTasks.findIndex(
+                            (task) => task._id === initialData._id,
+                        );
+                        const updatedNewTasks =
+                            taskIndex !== -1
+                                ? newTasks.map((task) =>
+                                      task._id === initialData._id
+                                          ? updatedTask
+                                          : task,
+                                  )
+                                : [...newTasks, updatedTask];
+
+                        return {
+                            ...prev,
+                            projectTasks: {
+                                ...prev.projectTasks,
+                                [projectId!]: {
+                                    ...prev.projectTasks[projectId!],
+                                    [prevStatus]: cleanedPrevTasks,
+                                    [newStatus]: updatedNewTasks,
+                                },
+                            },
+                        };
+                    });
+                }
             } else {
                 const response = await API_PROJECT_ENDPOINTS.addTask({
                     projectId: projectId!,

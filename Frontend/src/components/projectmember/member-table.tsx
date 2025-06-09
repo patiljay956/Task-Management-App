@@ -1,5 +1,5 @@
 import type { User } from "@/types/auth";
-import type { ProjectRole } from "@/types/project";
+import type { ProjectMember, ProjectRole } from "@/types/project";
 import { DataTable } from "../table/data-table";
 import { columns } from "./columns";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -7,13 +7,8 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import AddMemberDialog from "../dialogs/invite-member-dialog";
 
-type ProjectMemberRow = {
-    user: User;
-    role: ProjectRole;
-};
-
 interface Props {
-    data: ProjectMemberRow[];
+    data: ProjectMember[];
     onAddMember: () => void;
 }
 

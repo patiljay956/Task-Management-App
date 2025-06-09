@@ -3,6 +3,7 @@ import type { Task } from "@/types/project";
 import { PriorityCell } from "./cell/priority.cell";
 import { AssignedToCell } from "./cell/assigned-to.cell";
 import { TitleCell } from "./cell/title.cell";
+import Action from "./cell/action.cell";
 
 export const columns: ColumnDef<Task>[] = [
     {
@@ -31,5 +32,10 @@ export const columns: ColumnDef<Task>[] = [
         cell: ({ row }) => (
             <span className="capitalize">{row.original.status}</span>
         ),
+    },
+    {
+        accessorKey: "actions",
+        header: "Actions",
+        cell: ({ row }) => <Action row={row} />,
     },
 ];

@@ -2,16 +2,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { ArrowUpDown } from "lucide-react";
 import MemberTableAction from "./member-table-action";
-import type { User } from "@/types/auth";
-import type { ProjectRole } from "@/types/project";
+import type { ProjectMember } from "@/types/project";
 import UserHover from "../projects/user-hover";
 
-type ProjectMemberRow = {
-    user: User;
-    role: ProjectRole;
-};
-
-export const columns: ColumnDef<ProjectMemberRow>[] = [
+export const columns: ColumnDef<ProjectMember>[] = [
     {
         accessorKey: "user.name",
         header: ({ column }) => (

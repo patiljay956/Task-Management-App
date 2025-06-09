@@ -111,11 +111,7 @@ export default function MemberTableAction({ row }: Props) {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator></DropdownMenuSeparator>
-                <DropdownMenuItem
-                    onClick={() => alert(`Viewing ${row.original.user.name}`)}
-                >
-                    Edit Role
-                </DropdownMenuItem>
+                <DropdownMenuLabel>Edit Role</DropdownMenuLabel>
                 <DropdownMenuItem>
                     <Select
                         onValueChange={(value) => {

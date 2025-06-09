@@ -11,14 +11,12 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Props = {
-    members: ProjectMember[];
     initialData?: Task | null;
     children?: React.ReactNode;
     status?: KanbanColumnKey;
 };
 
 export default function AddOrUpdateTaskDialog({
-    members,
     initialData,
     children,
     status,
@@ -28,7 +26,7 @@ export default function AddOrUpdateTaskDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
                 <DialogHeader>
                     <DialogTitle>
                         {initialData ? "Edit Task" : "Create Task"}
@@ -37,7 +35,6 @@ export default function AddOrUpdateTaskDialog({
                 <ScrollArea className="max-h-[70vh] overflow-auto">
                     <AddOrUpdateTaskForm
                         status={status}
-                        members={members}
                         onSuccess={() => setOpen(false)}
                         initialData={initialData}
                     ></AddOrUpdateTaskForm>
