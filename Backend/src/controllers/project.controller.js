@@ -237,46 +237,52 @@ const updateProject = asyncHandler(async (req, res) => {
         );
 });
 
-// TODO: pending for project member, task, and subtask deletion
 const deleteProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user?._id;
+
     if (!projectId) throw new ApiError(400, "Project ID is required");
+    if (!userId) throw new ApiError(401, "Unauthorized access, please login");
 
     // Check if the project exists
-    const existingProject = await Project.findById(projectId).populate({
-        path: "createdBy",
-        select: "name email avatar",
+    const existingProject = await Project.findById(projectId);
+    if (!existingProject) throw new ApiError(404, "Project not found");
+
+    // Check if the user is a member of the project
+    const isMember = await ProjectMember.exists({
+        user: userId,
+        project: projectId,
     });
 
-    if (!existingProject) {
-        throw new ApiError(404, "Project not found");
+    if (!isMember) {
+        throw new ApiError(403, "You are not a member of this project");
     }
-    // Check if the user is the creator of the project done in middleware
-
-    // delete the project
+    // Delete the project
     const deletedProject = await Project.findByIdAndDelete(projectId);
-    if (!deletedProject) {
-        throw new ApiError(500, "Failed to delete project");
-    }
-    // delete all project members associated with this Project
-    await ProjectMember.deleteMany({ project: projectId });
 
-    // delete all tasks associated with this project
+    // Delete all tasks and subtasks associated with the project
+    const deletedTasks = await Task.deleteMany({ project: projectId });
+    const deletedSubtasks = await SubTask.deleteMany({ project: projectId });
 
-    await Task.deleteMany({ project: projectId });
+    // Delete all project members
+    const deletedMembers = await ProjectMember.deleteMany({
+        project: projectId,
+    });
 
-    // delete  subtasks associated with this project
-    await SubTask.deleteMany({ project: projectId });
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
+    // Optionally, you can send an acknowledgement or log the deletions here if needed
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
                 deletedProject,
-                "Project deleted successfully",
-            ),
-        );
+                deletedTasks: deletedTasks.deletedCount,
+                deletedSubtasks: deletedSubtasks.deletedCount,
+                deletedMembers: deletedMembers.deletedCount,
+            },
+            "Project deleted successfully",
+        ),
+    );
 });
 
 export {
