@@ -36,6 +36,18 @@ const registerUser = asyncHandler(async (req, res) => {
     // 2. Generate token (this also sets it inside user object)
     const { unHashedToken } = user.generateTemporaryToken("email");
 
+    // generate user default avatar
+    // url https://placehold.co/150x150/FFA500/000000?text=EA
+    // random color and text is name initials
+    const initials = user.name
+        .split(" ")
+        .map((name) => name.charAt(0).toUpperCase())
+        .join("");
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    user.avatar = {
+        url: `https://placehold.co/150x150/${randomColor}/000000?text=${initials}`,
+    };
+
     // 3. Save user
     const savedUser = await user.save();
 

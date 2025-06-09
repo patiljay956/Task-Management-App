@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
                 public_id: String,
             },
             default: {
-                url: "https://placehold.co/600x400",
+                url: "https://placehold.co/150x150/000000/FFFFFF?text=User",
                 localPath: "",
             },
         },
