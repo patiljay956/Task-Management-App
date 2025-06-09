@@ -1,15 +1,21 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { type Project, type ProjectMembers } from "@/types/project";
+import {
+    type Project,
+    type ProjectMembers,
+    type ProjectTasks,
+} from "@/types/project";
 
 export type StoreState = {
     projects: Project[];
     projectMembers: ProjectMembers;
+    projectTasks: Record<string, ProjectTasks>;
 };
 
 //initial state
 export const initialState: StoreState = {
     projects: [],
     projectMembers: {},
+    projectTasks: {},
 };
 
 type StoreContextState = {

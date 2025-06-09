@@ -11,7 +11,14 @@ type Props = {
     tasks: Record<KanbanColumnKey, Task[]>;
 };
 
-export default function KanbanColumnView({ column, tasks }: Props) {
+export default function KanbanColumnView({
+    column,
+    tasks = {
+        todo: [],
+        in_progress: [],
+        done: [],
+    },
+}: Props) {
     const { setNodeRef } = useDroppable({
         id: column.key,
     });

@@ -146,7 +146,9 @@ export const API_PROJECT_ENDPOINTS = {
         projectId: string;
         memberId: string;
     }): Promise<AxiosResponse> {
-        return await api.delete(`/project/${params.projectId}/member/${params.memberId}`);
+        return await api.delete(
+            `/project/${params.projectId}/member/${params.memberId}`,
+        );
     },
     updateMemberRole: async function (params: {
         projectId: string;
@@ -157,5 +159,24 @@ export const API_PROJECT_ENDPOINTS = {
             memberId: params.memberId,
             role: params.role,
         });
+    },
+    getProjectTasks: async function (
+        projectId: string,
+    ): Promise<AxiosResponse> {
+        return await api.get(`/project/${projectId}/tasks`);
+    },
+    updateTaskStatusOrPriority: async function (params: {
+        projectId: string;
+        taskId: string;
+        status: string;
+        priority: string;
+    }): Promise<AxiosResponse> {
+        return await api.patch(
+            `/project/${params.projectId}/tasks/${params.taskId}/status-or-priority`,
+            {
+                status: params.status,
+                priority: params.priority,
+            },
+        );
     },
 };

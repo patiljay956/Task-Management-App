@@ -18,7 +18,9 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "assignedTo",
         header: "Assigned To",
-        cell: ({ row }) => <AssignedToCell user={row.original.assignedTo} />,
+        cell: ({ row }) => (
+            <AssignedToCell user={row.original.assignedTo.user} />
+        ),
     },
     {
         accessorKey: "status",

@@ -19,15 +19,16 @@ export type ProjectMember = {
 export type ProjectMembers = Record<string, ProjectMember[]>;
 
 export type ProjectRole = "project_admin" | "project_manager" | "member";
+export type ProjectTasks = Record<KanbanColumnKey, Task[]>;
 
 export type KanbanColumn = {
     title: string;
     key: KanbanColumnKey;
 };
 
-export type TaskStatusEnum = "todo" | "inprogress" | "done";
+export type TaskStatusEnum = "todo" | "in_progress" | "done";
 export type TaskPriorityEnum = "high" | "medium" | "low";
-export type KanbanColumnKey = "todo" | "inprogress" | "done";
+export type KanbanColumnKey = "todo" | "in_progress" | "done";
 
 export type Task = {
     _id: string;
@@ -35,8 +36,8 @@ export type Task = {
     description: string;
     status: TaskStatusEnum;
     priority: TaskPriorityEnum;
-    assignedTo: User;
-    assignedBy: User;
+    assignedTo: ProjectMember;
+    assignedBy: ProjectMember;
     createdAt: Date;
     updatedAt: Date;
 };
