@@ -216,15 +216,17 @@ const deleteTask = asyncHandler(async (req, res) => {
         );
     }
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                deletedTask,
-                "Task and associated subtasks deleted successfully",
-            ),
-        );
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                task: deletedTask,
+                subtasks: deletedSubtasks.deletedCount,
+                attachments: existingTask.attachments.length,
+            },
+            "Task and associated subtasks deleted successfully",
+        ),
+    );
 });
 
 const updateTaskStatusOrPriority = asyncHandler(async (req, res) => {
