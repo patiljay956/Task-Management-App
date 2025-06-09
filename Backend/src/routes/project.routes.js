@@ -81,19 +81,22 @@ router
         hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]), // only allow admin/manager to add
         addMemberToProject, // controller function
     )
-    .delete(
-        projectIdValidator(),
-        validate,
-        verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN]),
-        removeMemberFromProject,
-    )
     .patch(
         [projectIdValidator(), roleValidator()],
         validate,
         verifyToken,
         hasProjectRole([UserRolesEnum.ADMIN]),
         updateMemberRole,
+    );
+
+router
+    .route("/:projectId/member/:memberId")
+    .delete(
+        [projectIdValidator()],
+        validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN]),
+        removeMemberFromProject,
     );
 
 // add member by email

@@ -4,28 +4,53 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Project } from "../models/project.models.js";
 import { Task } from "../models/task.models.js";
 import { UserRolesEnum } from "../utils/constants.js";
-import { uploadOnCloudinary } from "../utils/fileUpload.cloudinary.js";
+import {
+    deleteFromCloudinary,
+    uploadOnCloudinary,
+} from "../utils/fileUpload.cloudinary.js";
+import { ProjectMember } from "../models/projectmember.models.js";
 
 const getTasksOfProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    if (!projectId) throw new ApiError(400, "Project id is required");
 
-    // Check if project exists
+    // 1. Validate project ID
+    if (!projectId) {
+        throw new ApiError(400, "Project ID is required");
+    }
+
+    // 2. Check if the project exists
     const existingProject = await Project.findById(projectId).lean();
-    if (!existingProject) throw new ApiError(404, "Project not found");
-    // Fetch all tasks of the project and populate necessary fields
-    const allTasksOfProject = await Task.find({ project: projectId })
-        .select("-__v") // Exclude __v field
-        .populate("attachments") // Populate attachments if needed
-        .populate("project", "_id name")
-        .populate("assignedTo", "_id username email")
-        .populate("assignedBy", "_id username email");
+    if (!existingProject) {
+        throw new ApiError(404, "Project not found");
+    }
 
+    // 3. Fetch all tasks for the project
+    const allTasksOfProject = await Task.find({ project: projectId })
+        .select("-__v")
+        .populate("project", "_id name") // Populate project basic info
+        .populate({
+            path: "assignedTo", // ProjectMember reference
+            populate: {
+                path: "user", // Actual User inside ProjectMember
+                select: "_id name email username avatar",
+            },
+        })
+        .populate({
+            path: "assignedBy", // ProjectMember reference
+            populate: {
+                path: "user", // Actual User inside ProjectMember
+                select: "_id name email username avatar",
+            },
+        });
+
+    // 4. Handle no tasks
     if (!allTasksOfProject || allTasksOfProject.length === 0) {
         return res
             .status(404)
             .json(new ApiResponse(404, [], "No tasks found for this project"));
     }
+
+    // 5. Success response
     return res
         .status(200)
         .json(
@@ -46,6 +71,16 @@ const createTask = asyncHandler(async (req, res) => {
     const existingProject = await Project.findById(projectId).lean();
     if (!existingProject) throw new ApiError(404, "Project not found");
 
+    // check if user is a project member
+    const existingProjectMember = await ProjectMember.findOne({
+        user: req.user.id,
+        project: projectId,
+    });
+
+    if (!existingProjectMember) {
+        throw new ApiError(403, "User is not a project member");
+    }
+
     const { title, description, assignedTo, status, priority } = req.body;
 
     // check if title is already exists in the project
@@ -62,9 +97,9 @@ const createTask = asyncHandler(async (req, res) => {
         description,
         project: projectId,
         assignedTo,
-        assignedBy: req.user.id,
-        status,
-        priority,
+        assignedBy: existingProjectMember._id, // Use ProjectMember ID
+        status: status || "TODO", // Default to TODO if not provided
+        priority: priority || "LOW", // Default to LOW if not provided
         attachments: [], // Empty by default
     });
 
@@ -79,15 +114,27 @@ const getTaskById = asyncHandler(async (req, res) => {
     const { taskId } = req.params; // TODO:add validation middleware
     if (!taskId) throw new ApiError(400, "Task id is required");
 
-    // check if task is available and populate necessary fields
+    // Check if task exists
     const existingTask = await Task.findById(taskId)
-        .select("-__v") // Exclude __v field
-        .populate("attachments") // Populate attachments if needed
+        .select("-__v")
         .populate("project", "_id name")
-        .populate("assignedTo", "_id username email")
-        .populate("assignedBy", "_id username email");
+        .populate({
+            path: "assignedTo",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
+        .populate({
+            path: "assignedBy",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        });
 
     if (!existingTask) throw new ApiError(404, "Task not found");
+
     return res
         .status(200)
         .json(new ApiResponse(200, existingTask, "Task fetched successfully"));
@@ -115,9 +162,22 @@ const updateTask = asyncHandler(async (req, res) => {
         },
         { new: true },
     )
+        .select("-__v")
         .populate("project", "_id name")
-        .populate("assignedTo", "_id username email")
-        .populate("assignedBy", "_id username email");
+        .populate({
+            path: "assignedTo",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
+        .populate({
+            path: "assignedBy",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        });
 
     if (!updatedTask) throw new ApiError(500, "Failed to update task");
 
@@ -130,23 +190,41 @@ const deleteTask = asyncHandler(async (req, res) => {
     const { taskId } = req.params;
     if (!taskId) throw new ApiError(400, "Task id is required");
 
-    // check if task is available
+    // Check if task exists
     const existingTask = await Task.findById(taskId).lean();
     if (!existingTask) throw new ApiError(404, "Task not found");
 
-    // delete attachments from cloudinary if any
+    // Delete task
+    const deletedTask = await Task.findByIdAndDelete(taskId);
+    if (!deletedTask) throw new ApiError(500, "Failed to delete task");
+
+    // delete all attachments from cloudinary use deleteFromCloudinary()
+
     if (existingTask.attachments && existingTask.attachments.length > 0) {
         for (const attachment of existingTask.attachments) {
-            await cloudinary.uploader.destroy(attachment.public_id);
+            await deleteFromCloudinary(attachment.public_id, "tasks", "delete");
         }
     }
 
-    // delete task
-    const deletedTask = await Task.findByIdAndDelete(taskId);
-    if (!deletedTask) throw new ApiError(500, "Failed to delete task");
+    // delete all subtasks associated with this task
+
+    const deletedSubtasks = await SubTask.deleteMany({ task: taskId });
+    if (!deletedSubtasks) {
+        throw new ApiError(
+            500,
+            "Failed to delete subtasks associated with this task",
+        );
+    }
+
     return res
         .status(200)
-        .json(new ApiResponse(200, deletedTask, "Task deleted successfully"));
+        .json(
+            new ApiResponse(
+                200,
+                deletedTask,
+                "Task and associated subtasks deleted successfully",
+            ),
+        );
 });
 
 const updateTaskStatusOrPriority = asyncHandler(async (req, res) => {
@@ -236,6 +314,9 @@ const updateTaskAttachments = asyncHandler(async (req, res) => {
         );
 });
 
+const assignTaskToProjectMember = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+});
 export {
     getTasksOfProject,
     createTask,
