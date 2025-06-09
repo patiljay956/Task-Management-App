@@ -1,0 +1,30 @@
+import type { Task } from "@/types/project";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import { DataTable } from "../table/data-table";
+import { columns } from "./columns";
+
+type Props = {
+    data: Task[];
+    onAddTask: () => void;
+};
+
+export default function TaskTable({ data, onAddTask = () => {} }: Props) {
+    return (
+        <Card className="w-full">
+            <CardHeader className="flex items-center justify-between">
+                <CardTitle className="text-xl">Members</CardTitle>
+                {/* <AddMemberDialog> */}
+                <Button onClick={onAddTask} className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Add Task
+                </Button>
+                {/* </AddMemberDialog> */}
+            </CardHeader>
+            <CardContent>
+                <DataTable columns={columns} data={data} />
+            </CardContent>
+        </Card>
+    );
+}
