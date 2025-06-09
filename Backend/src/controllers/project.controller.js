@@ -8,6 +8,7 @@ import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 import { Task } from "../models/task.models.js";
 import { SubTask } from "../models/subtasks.models.js";
 import mongoose from "mongoose";
+import { deleteFromCloudinary } from "../utils/fileUpload.cloudinary.js";
 
 const getProjects = asyncHandler(async (req, res) => {
     const userId = req.user?._id;
@@ -259,6 +260,15 @@ const deleteProject = asyncHandler(async (req, res) => {
     }
     // Delete the project
     const deletedProject = await Project.findByIdAndDelete(projectId);
+
+    // before deleting tasks get all attachments of all tasks delete all the task attachments from cloudinary
+    const allTasks = await Task.find({ project: projectId });
+    const allAttachments = allTasks.flatMap((task) => task.attachments);
+    if (allAttachments.length > 0) {
+        await deleteFromCloudinary(
+            allAttachments.map((attachment) => attachment.public_id),
+        );
+    }
 
     // Delete all tasks and subtasks associated with the project
     const deletedTasks = await Task.deleteMany({ project: projectId });
