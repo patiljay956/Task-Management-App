@@ -121,9 +121,8 @@ const removeMemberFromProject = asyncHandler(async (req, res) => {
         { project: projectId, assignedTo: memberId },
         { $unset: { assignedTo: "" } },
     );
-
-    if (updateTasks.modifiedCount === 0)
-        throw new ApiError(500, " Unable to update tasks or no tasks found");
+    if (!updateTasks)
+        throw new ApiError(500, "Unable to update tasks for removed member");
 
     return res.status(200).json(
         new ApiResponse(
@@ -228,6 +227,7 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
         new ApiResponse(
             201,
             {
+                projectMemberId: newProjectMember._id,
                 user: existingUser,
                 project: existingProject,
                 role: newProjectMember.role,
