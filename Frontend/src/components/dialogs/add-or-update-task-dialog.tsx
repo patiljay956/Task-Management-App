@@ -1,4 +1,4 @@
-import type { KanbanColumnKey, ProjectMember, Task } from "@/types/project";
+import type { KanbanColumnKey, Task } from "@/types/project";
 import {
     Dialog,
     DialogContent,

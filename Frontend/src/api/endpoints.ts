@@ -127,6 +127,19 @@ export const API_PROJECT_ENDPOINTS = {
     }): Promise<AxiosResponse> {
         return await api.post("/project", params);
     },
+    updateProject: async function name(params: {
+        projectId: string;
+        name: string;
+        description: string;
+    }) {
+        return await api.patch(`/project/${params.projectId}`, {
+            name: params.name,
+            description: params.description,
+        });
+    },
+    deleteProject: async function (projectId: string): Promise<AxiosResponse> {
+        return await api.delete(`/project/${projectId}`);  
+    },
     getProjectMembers: async function (
         projectId: string,
     ): Promise<AxiosResponse> {

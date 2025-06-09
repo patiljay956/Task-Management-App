@@ -1,4 +1,3 @@
-import AddOrUpdateTaskDialog from "@/components/dialogs/add-or-update-task-dialog";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -7,47 +6,38 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Task } from "@/types/project";
+import type { Project } from "@/types/project";
 import type { Row } from "@tanstack/react-table";
 import { EllipsisVertical, SquarePen, Trash2 } from "lucide-react";
 import ConfirmDialog from "@/components/dialogs/confirm-dialog";
 import { toast } from "sonner";
 import axios from "axios";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
-import { useParams } from "react-router";
+
 import { useStore } from "@/components/contexts/store-provider";
+import { AddOrUpdateProjectDialog } from "@/components/dialogs/add-or-update-project-dialog";
 
 type Props = {
-    row: Row<Task>;
+    row: Row<Project>;
 };
 
 export default function Action({ row }: Props) {
-    const { projectId } = useParams<{ projectId: string }>();
     const { setStore } = useStore();
 
     const handleDelete = async () => {
         try {
-            const response = await API_PROJECT_ENDPOINTS.deleteTask({
-                taskId: row.original._id,
-                projectId: projectId!,
-            });
+            const response = await API_PROJECT_ENDPOINTS.deleteProject(
+                row.original._id,
+            );
 
             if (response.data.statusCode === 200) {
-                toast.success("Task removed successfully!");
+                toast.success("Project removed successfully!");
                 setStore((prev) => {
                     return {
                         ...prev,
-                        projectTasks: {
-                            ...prev.projectTasks,
-                            [projectId!]: {
-                                ...prev.projectTasks[projectId!],
-                                [row.original.status]: prev.projectTasks[
-                                    projectId!
-                                ][row.original.status].filter(
-                                    (task) => task._id !== row.original._id,
-                                ),
-                            },
-                        },
+                        projects: prev.projects.filter(
+                            (project) => project._id !== row.original._id,
+                        ),
                     };
                 });
             }
@@ -68,7 +58,7 @@ export default function Action({ row }: Props) {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem asChild>
-                    <AddOrUpdateTaskDialog initialData={row.original}>
+                    <AddOrUpdateProjectDialog initialData={row.original}>
                         <span
                             onClick={(e) => e.stopPropagation()}
                             className="flex w-full items-center text-sm px-2 py-1.5 hover:bg-muted rounded-md"
@@ -76,7 +66,7 @@ export default function Action({ row }: Props) {
                             <SquarePen className="mr-2" size={16} />
                             Edit
                         </span>
-                    </AddOrUpdateTaskDialog>
+                    </AddOrUpdateProjectDialog>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20

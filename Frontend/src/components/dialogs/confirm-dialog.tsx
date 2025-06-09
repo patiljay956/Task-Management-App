@@ -38,7 +38,10 @@ export default function ConfirmDialog({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={onAction}>
+                    <AlertDialogAction
+                        className="border-1 border-red-500 text-destructive bg-background hover:bg-destructive/10"
+                        onClick={onAction}
+                    >
                         {actionText}
                     </AlertDialogAction>
                 </AlertDialogFooter>

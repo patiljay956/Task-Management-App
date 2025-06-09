@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { columns } from "./columns";
 import { DataTable } from "../table/data-table";
 import { type Project } from "@/types/project"; // Adjust import
-import { AddProjectDialog } from "../dialogs/add-project-dialog";
+import { AddOrUpdateProjectDialog } from "../dialogs/add-or-update-project-dialog";
 
 interface Props {
     data: Project[];
@@ -16,12 +16,12 @@ export default function ProjectTable({ data, onAddProject }: Props) {
         <Card className="w-full">
             <CardHeader className="flex items-center justify-between">
                 <CardTitle className="text-xl">Projects</CardTitle>
-                <AddProjectDialog>
+                <AddOrUpdateProjectDialog>
                     <Button onClick={onAddProject} className="gap-2">
                         <Plus className="w-4 h-4" />
                         Add Project
                     </Button>
-                </AddProjectDialog>
+                </AddOrUpdateProjectDialog>
             </CardHeader>
             <CardContent>
                 <DataTable columns={columns} data={data} />

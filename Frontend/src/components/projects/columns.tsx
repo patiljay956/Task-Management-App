@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import DescriptionHover from "./description-hover";
 import UserHover from "./user-hover";
 import type { User } from "@/types/auth";
+import Action from "./cell/action.cell";
 
 export const columns: ColumnDef<Project>[] = [
     {
@@ -43,6 +44,13 @@ export const columns: ColumnDef<Project>[] = [
         cell: ({ row }) => {
             const value = row.getValue("updatedAt") as string;
             return new Date(value).toLocaleDateString();
+        },
+    },
+    {
+        accessorKey: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+            return <Action row={row} />;
         },
     },
 ];
