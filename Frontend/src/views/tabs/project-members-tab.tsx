@@ -2,7 +2,7 @@ import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import { useStore } from "@/components/contexts/store-provider";
 import ProjectMembersTable from "@/components/projectmember/member-table";
 import type { User } from "@/types/auth";
-import type { ProjectRole } from "@/types/project";
+import type { ProjectMember, ProjectRole } from "@/types/project";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 import { useEffect } from "react";
@@ -24,12 +24,10 @@ export default function ProjectMembersTab({ projectId }: Props) {
                             projectId,
                         );
 
-                    if (response?.status === 200) {
-                        const members = response.data.data as {
-                            user: User;
-                            role: ProjectRole;
-                        }[];
+                    console.log(response);
 
+                    if (response?.status === 200) {
+                        const members = response.data.data as ProjectMember[];
                         setStore((prev) => ({
                             ...prev,
                             projectMembers: {

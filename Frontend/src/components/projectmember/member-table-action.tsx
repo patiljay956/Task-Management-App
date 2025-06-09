@@ -3,7 +3,7 @@ import { useStore } from "../contexts/store-provider";
 import { useState } from "react";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import type { Row } from "@tanstack/react-table";
-import type { ProjectRole } from "@/types/project";
+import type { ProjectMember, ProjectRole } from "@/types/project";
 import { toast } from "sonner";
 import axios, { type AxiosResponse } from "axios";
 import {
@@ -24,15 +24,9 @@ import {
     SelectValue,
 } from "../ui/select";
 import ConfirmDialog from "../dialogs/confirm-dialog";
-import type { User } from "@/types/auth";
-
-type ProjectMemberRow = {
-    user: User;
-    role: ProjectRole;
-};
 
 type Props = {
-    row: Row<ProjectMemberRow>;
+    row: Row<ProjectMember>;
 };
 
 export default function MemberTableAction({ row }: Props) {
@@ -43,22 +37,21 @@ export default function MemberTableAction({ row }: Props) {
     const handleDelete = async () => {
         try {
             const response = await API_PROJECT_ENDPOINTS.removeMember({
-                memberId: row.original.user._id,
+                memberId: row.original._id,
                 projectId: projectId!,
             });
 
             if (response.data.statusCode === 200) {
-                toast.success("Member removed successfully!");
                 setStore((prev) => ({
                     ...prev,
                     projectMembers: {
                         ...prev.projectMembers,
                         [projectId!]: prev.projectMembers[projectId!].filter(
-                            (member) =>
-                                member.user._id !== row.original.user._id,
+                            (member) => member._id !== row.original._id,
                         ),
                     },
                 }));
+                toast.success("Member removed successfully!");
             }
         } catch (error) {
             if (axios.isAxiosError(error))

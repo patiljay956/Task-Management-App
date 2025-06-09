@@ -146,11 +146,7 @@ export const API_PROJECT_ENDPOINTS = {
         projectId: string;
         memberId: string;
     }): Promise<AxiosResponse> {
-        return await api.delete(`/project/${params.projectId}/member`, {
-            params: {
-                memberId: params.memberId,
-            },
-        });
+        return await api.delete(`/project/${params.projectId}/member/${params.memberId}`);
     },
     updateMemberRole: async function (params: {
         projectId: string;
