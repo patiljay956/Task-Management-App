@@ -10,6 +10,38 @@ import {
 } from "../utils/fileUpload.cloudinary.js";
 import { ProjectMember } from "../models/projectmember.models.js";
 
+/**
+ * Uploads an array of files to Cloudinary and returns attachment metadata.
+ * @param {Array} files - Array of file objects (from multer) to upload.
+ * @returns {Array} uploadedAttachments - Array of attachment metadata.
+ * @throws {ApiError} if any file fails to upload.
+ */
+const uploadTaskAttachments = async (files) => {
+    if (!files || !Array.isArray(files) || files.length === 0) {
+        throw new ApiError(400, "No attachments provided");
+    }
+
+    const uploadedAttachments = [];
+
+    for (const file of files) {
+        const uploaded = await uploadOnCloudinary(file.path, "tasks");
+        if (uploaded) {
+            uploadedAttachments.push({
+                url: uploaded.secure_url,
+                mimeType: file.mimetype,
+                size: file.size,
+                public_id: uploaded.public_id,
+            });
+        }
+    }
+
+    if (uploadedAttachments.length !== files.length) {
+        throw new ApiError(500, "Failed to upload all attachments");
+    }
+
+    return uploadedAttachments;
+};
+
 const getTasksOfProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
 
@@ -91,6 +123,17 @@ const createTask = asyncHandler(async (req, res) => {
     if (isTitleExists)
         throw new ApiError(409, "Task title already exists in the project");
 
+    // check if attachments are provided
+    let uploadedAttachments = [];
+    if (req.files && req.files.attachments) {
+        if (req.files.attachments.length > 5) {
+            throw new ApiError(400, "Maximum 5 attachments are allowed");
+        }
+        uploadedAttachments = await uploadTaskAttachments(
+            req.files.attachments,
+        );
+    }
+
     // Create task (without attachments)
     const newTask = await Task.create({
         title,
@@ -98,9 +141,9 @@ const createTask = asyncHandler(async (req, res) => {
         project: projectId,
         assignedTo,
         assignedBy: existingProjectMember._id, // Use ProjectMember ID
-        status: status || "TODO", // Default to TODO if not provided
-        priority: priority || "LOW", // Default to LOW if not provided
-        attachments: [], // Empty by default
+        status: status || "todo", // Default to TODO if not provided
+        priority: priority || "low", // Default to LOW if not provided
+        attachments: uploadedAttachments || [], // Use uploaded attachments
     });
 
     if (!newTask) throw new ApiError(500, "Failed to create task");
@@ -150,6 +193,26 @@ const updateTask = asyncHandler(async (req, res) => {
 
     const { title, description, assignedTo, status, priority } = req.body;
 
+    // check if title is already exists in the project except for the current task
+    const isTitleExists = await Task.findOne({
+        title,
+        project: existingTask.project,
+        _id: { $ne: taskId }, // Exclude current task
+    });
+    if (isTitleExists)
+        throw new ApiError(409, "Task title already exists in the project");
+
+    // check if attachments are provided
+    let uploadedAttachments = [];
+    if (req.files && req.files.attachments) {
+        if (req.files.attachments.length > 5) {
+            throw new ApiError(400, "Maximum 5 attachments are allowed");
+        }
+        uploadedAttachments = await uploadTaskAttachments(
+            req.files.attachments,
+        );
+    }
+
     // Update task (no attachments)
     const updatedTask = await Task.findByIdAndUpdate(
         taskId,
@@ -159,6 +222,7 @@ const updateTask = asyncHandler(async (req, res) => {
             assignedTo,
             status,
             priority,
+            attachments: uploadedAttachments || [], // Use uploaded attachments
         },
         { new: true },
     )
@@ -316,9 +380,6 @@ const updateTaskAttachments = asyncHandler(async (req, res) => {
         );
 });
 
-const assignTaskToProjectMember = asyncHandler(async (req, res) => {
-    const { taskId } = req.params;
-});
 export {
     getTasksOfProject,
     createTask,
