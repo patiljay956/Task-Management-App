@@ -8,6 +8,7 @@ import { Project } from "../models/project.models.js";
 import { projectInvitationMailGenContent } from "../utils/mail.js";
 
 import { sendMail } from "../utils/mail.js";
+import { Task } from "../models/task.models.js";
 
 const getProjectMembers = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
@@ -43,19 +44,20 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 
 const addMemberToProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const { memberId, role } = req.body; //validation handled in middleware
+    const { userId, role } = req.body; //validation handled in middleware
+    if (!projectId) throw new ApiError(400, "Project ID is required");
 
     // check if project is exists
     const existingProject = await Project.findById(projectId);
     if (!existingProject) throw new ApiError(404, "Project not found ");
 
     // check if user is exists before add
-    const existingUser = await User.findById(memberId).lean();
+    const existingUser = await User.findById(userId).lean();
     if (!existingUser) throw new ApiError(404, "User not found");
 
     // check if user is already a member of the project
     const existingMember = await ProjectMember.findOne({
-        user: memberId,
+        user: userId,
         project: projectId,
     }).lean();
 
@@ -65,7 +67,7 @@ const addMemberToProject = asyncHandler(async (req, res) => {
     // add new member to the project
 
     const newProjectMember = await ProjectMember.create({
-        user: memberId,
+        user: userId,
         project: projectId,
         role,
     });
@@ -85,23 +87,19 @@ const addMemberToProject = asyncHandler(async (req, res) => {
 });
 
 const removeMemberFromProject = asyncHandler(async (req, res) => {
-    const { projectId } = req.params;
-    const { memberId } = req.body; //validation handled in middleware
+    const { projectId, memberId } = req.params;
 
     // check if project is exists
     const existingProject = await Project.findById(projectId);
     if (!existingProject) throw new ApiError(404, "Project not found ");
 
-    // check if user is exists before removing
-    const existingUser = await User.findById(memberId).lean();
-    if (!existingUser) throw new ApiError(404, "User not found");
-
-    // check if user is  a member of the project
+    console.log(`Removing member ${memberId} from project ${projectId}`);
+    // check if member is exists before remove
     const existingMember = await ProjectMember.findOne({
-        user: memberId,
+        _id: memberId,
         project: projectId,
     });
-
+    console.log(existingMember);
     if (!existingMember)
         throw new ApiError(409, "User is not a member of the project");
 
@@ -110,24 +108,33 @@ const removeMemberFromProject = asyncHandler(async (req, res) => {
     }
 
     const deleteMember = await ProjectMember.deleteOne({
-        user: memberId,
+        _id: memberId,
         project: projectId,
     });
 
-    // TODO: delete tasks and notes
-
-    if (deleteMember.deletedCount === 0)
+    // TODO: update task:  clear assignedTo field if user is assigned to any task in the project
+    if (!deleteMember || deleteMember.deletedCount === 0)
         throw new ApiError(500, "Unable to remove member from project");
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                deleteMember,
-                "Member removed from project successfully",
-            ),
-        );
+    // update task: clear assignedTo field if user is assigned to any task in the project
+    const updateTasks = await Task.updateMany(
+        { project: projectId, assignedTo: memberId },
+        { $unset: { assignedTo: "" } },
+    );
+
+    if (updateTasks.modifiedCount === 0)
+        throw new ApiError(500, " Unable to update tasks or no tasks found");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                updatedTask: updateTasks, // The updated task object
+                deletedMember: deleteMember, // The deleted member info
+            },
+            "Member removed from project successfully",
+        ),
+    );
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {
@@ -217,15 +224,17 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
         mailGenContent: emailContent,
     });
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(
-                201,
-                existingUser,
-                "Member added to project successfully",
-            ),
-        );
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            {
+                user: existingUser,
+                project: existingProject,
+                role: newProjectMember.role,
+            },
+            "Member added to project successfully",
+        ),
+    );
 });
 
 export {
