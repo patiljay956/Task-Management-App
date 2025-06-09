@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { API_USER_ENDPOINTS } from "@/api/endpoints";
-import { replace, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { useAuth } from "@/hooks/use-auth";
 import { LoaderCircle } from "lucide-react";
@@ -132,9 +132,4 @@ export default function ChangePasswordForm({}: Props) {
             </form>
         </Form>
     );
-}
-
-// 🔧 Mock API call — replace this with real call to backend
-async function fakeChangePassword(oldPass: string, newPass: string) {
-    return new Promise((resolve) => setTimeout(resolve, 1000));
 }

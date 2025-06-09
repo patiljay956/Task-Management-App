@@ -179,4 +179,33 @@ export const API_PROJECT_ENDPOINTS = {
             },
         );
     },
+    addTask: async function (params: {
+        projectId: string;
+        title: string;
+        description: string;
+        assignedTo?: string;
+        status: string;
+        priority: string;
+        files?: File[];
+    }): Promise<AxiosResponse> {
+        //create form data
+        const formData = new FormData();
+        if (params.files) {
+            for (let i = 0; i < params.files.length; i++) {
+                formData.append("attachments", params.files[i]);
+            }
+        }
+
+        formData.append("title", params.title);
+        formData.append("description", params.description);
+        formData.append("assignedTo", params.assignedTo || "");
+        formData.append("status", params.status);
+        formData.append("priority", params.priority);
+
+        return await api.post(`/project/${params.projectId}/tasks`, formData, {
+            headers: {
+                "Content-Type": undefined, // automatically set by the browser for multipart/form-data
+            },
+        });
+    },
 };

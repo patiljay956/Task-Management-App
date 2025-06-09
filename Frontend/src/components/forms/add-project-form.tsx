@@ -51,7 +51,7 @@ export default function AddProjectForm({ onSuccess }: Props) {
                 toast.success("Project created successfully");
                 form.reset();
 
-                newProject.createdBy = user;
+                newProject.createdByUser = user;
 
                 setStore((prev) => {
                     return {

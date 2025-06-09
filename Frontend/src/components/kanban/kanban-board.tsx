@@ -52,7 +52,7 @@ export default function KanbanBoard() {
         if (!over) return;
 
         //Do nothing if already in the same column
-        if (over.id === active.data.current?.status) return;
+        if (over.id === active.data.current?.task.status) return;
 
         setActiveTask(null);
 

@@ -36,8 +36,8 @@ export type Task = {
     description: string;
     status: TaskStatusEnum;
     priority: TaskPriorityEnum;
-    assignedTo: ProjectMember;
-    assignedBy: ProjectMember;
+    assignedTo: ProjectMember | undefined;
+    assignedBy: ProjectMember | undefined;
     createdAt: Date;
     updatedAt: Date;
 };
