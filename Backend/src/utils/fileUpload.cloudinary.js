@@ -16,7 +16,7 @@ const uploadOnCloudinary = async (localFilePath, folder = "users") => {
             throw new ApiError(400, "Local file path is missing");
 
         const result = await cloudinary.uploader.upload(localFilePath, {
-            folder,
+            folder: `project_management/${folder}`,
             resource_type: "auto",
         });
 
