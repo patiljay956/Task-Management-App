@@ -372,8 +372,7 @@ const updateTaskAttachments = asyncHandler(async (req, res) => {
 });
 
 const deleteTaskAttachment = asyncHandler(async (req, res) => {
-    const { taskId } = req.params;
-    const { attachmentId } = req.body;
+    const { taskId, attachmentId } = req.params;
 
     if (!taskId) throw new ApiError(400, "Task id is required");
     if (!attachmentId) throw new ApiError(400, "Attachment id is required");
