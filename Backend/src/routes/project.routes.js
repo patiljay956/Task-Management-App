@@ -199,7 +199,10 @@ router
         verifyToken,
         hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         updateTaskAttachments,
-    )
+    );
+
+router
+    .route("/:projectId/tasks/:taskId/attachments/:attachmentId")
     .delete(
         [projectIdValidator(), taskIdValidator()],
         validate,
