@@ -41,9 +41,7 @@ const deleteFromCloudinary = async (publicId) => {
     try {
         if (!publicId) throw new ApiError(400, "Public ID is missing");
 
-        const result = await cloudinary.uploader.destroy(publicId, {
-            resource_type: "auto",
-        });
+        const result = await cloudinary.uploader.destroy(publicId);
 
         if (result.result !== "ok") {
             throw new ApiError(500, "Failed to delete from Cloudinary");

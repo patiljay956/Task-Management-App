@@ -193,15 +193,6 @@ const updateTask = asyncHandler(async (req, res) => {
 
     const { title, description, assignedTo, status, priority } = req.body;
 
-    // check if title is already exists in the project except for the current task
-    const isTitleExists = await Task.findOne({
-        title,
-        project: existingTask.project,
-        _id: { $ne: taskId }, // Exclude current task
-    });
-    if (isTitleExists)
-        throw new ApiError(409, "Task title already exists in the project");
-
     // check if attachments are provided
     let uploadedAttachments = [];
     if (req.files && req.files.attachments) {
@@ -380,6 +371,102 @@ const updateTaskAttachments = asyncHandler(async (req, res) => {
         );
 });
 
+const deleteTaskAttachment = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+    const { attachmentId } = req.body;
+
+    if (!taskId) throw new ApiError(400, "Task id is required");
+    if (!attachmentId) throw new ApiError(400, "Attachment id is required");
+
+    // Check if task exists
+    const existingTask = await Task.findById(taskId).lean();
+    if (!existingTask) throw new ApiError(404, "Task not found");
+
+    // Find the attachment to delete
+    const attachmentToDelete = existingTask.attachments.find(
+        (attachment) => attachment._id.toString() === attachmentId,
+    );
+
+    if (!attachmentToDelete) {
+        throw new ApiError(404, "Attachment not found in this task");
+    }
+
+    // Delete from Cloudinary
+    await deleteFromCloudinary(attachmentToDelete.public_id);
+
+    // Remove the attachment from the task
+    const updatedTask = await Task.findByIdAndUpdate(
+        taskId,
+        { $pull: { attachments: { _id: attachmentId } } },
+        { new: true },
+    )
+        .select("-__v")
+        .populate("project", "_id name")
+        .populate({
+            path: "assignedTo",
+            select: "_id name email",
+        });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                updatedTask,
+                "Attachment deleted successfully",
+            ),
+        );
+});
+
+const getUserAssignedTasks = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+    if (!userId) throw new ApiError(401, "Unauthorized access, please login");
+
+    // get all member ids of the user in all projects
+    const projectMembers = await ProjectMember.find({ user: userId })
+        .select("_id project")
+        .lean();
+    if (!projectMembers || projectMembers.length === 0) {
+        return res
+            .status(404)
+            .json(new ApiResponse(404, [], "No projects found for this user"));
+    }
+
+    // get all member ids
+    const projectMemberIds = projectMembers.map((member) => member._id);
+    // Fetch all tasks assigned to the user in all projects
+    const userAssignedTasks = await Task.find({
+        assignedTo: { $in: projectMemberIds },
+    })
+        .populate("project", "_id name") // Populates the project details
+        .populate({
+            path: "assignedTo", // First, populate the ProjectMember document
+            select: "user", // Select only the 'user' field from ProjectMember
+            populate: {
+                path: "user", // Then, populate the actual User document linked by 'user'
+                select: "_id name email username avatar", // Select desired fields from the User
+            },
+        })
+        .populate({
+            path: "assignedBy", // Similarly for assignedBy
+            select: "user",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                userAssignedTasks,
+                "User assigned tasks fetched successfully",
+            ),
+        );
+});
+
 export {
     getTasksOfProject,
     createTask,
@@ -388,4 +475,6 @@ export {
     deleteTask,
     updateTaskStatusOrPriority,
     updateTaskAttachments,
+    deleteTaskAttachment,
+    getUserAssignedTasks,
 };

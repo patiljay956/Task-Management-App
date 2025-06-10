@@ -32,8 +32,10 @@ import {
 import {
     createTask,
     deleteTask,
+    deleteTaskAttachment,
     getTaskById,
     getTasksOfProject,
+    getUserAssignedTasks,
     updateTask,
     updateTaskAttachments,
     updateTaskStatusOrPriority,
@@ -134,6 +136,18 @@ router
         createTask,
     );
 
+router.route("/:projectId/tasks/user-tasks").get(
+    projectIdValidator(),
+    validate,
+    verifyToken,
+    hasProjectRole([
+        UserRolesEnum.ADMIN,
+        UserRolesEnum.PROJECT_MANAGER,
+        UserRolesEnum.MEMBER,
+    ]),
+    getUserAssignedTasks, // Assuming this function can handle user-specific tasks
+);
+
 router
     .route("/:projectId/tasks/:taskId")
     .get(
@@ -176,14 +190,22 @@ router.patch(
     updateTaskStatusOrPriority,
 );
 
-router.patch(
-    "/:projectId/tasks/:taskId/attachments",
-    upload.fields([{ name: "attachments" }]),
-    [projectIdValidator(), taskIdValidator()],
-    validate,
-    verifyToken,
-    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
-    updateTaskAttachments,
-);
+router
+    .route("/:projectId/tasks/:taskId/attachments")
+    .patch(
+        upload.fields([{ name: "attachments" }]),
+        [projectIdValidator(), taskIdValidator()],
+        validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        updateTaskAttachments,
+    )
+    .delete(
+        [projectIdValidator(), taskIdValidator()],
+        validate,
+        verifyToken,
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        deleteTaskAttachment,
+    );
 
 export default router;
