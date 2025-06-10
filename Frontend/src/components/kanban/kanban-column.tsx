@@ -41,7 +41,7 @@ export default function KanbanColumnView({
             </div>
             <ScrollArea className="h-[65vh] pr-2">
                 <div className="space-y-2">
-                    {tasks[column.key].map((task) => (
+                    {tasks[column.key]?.map((task) => (
                         <TaskCard task={task} key={task._id} />
                     ))}
                 </div>

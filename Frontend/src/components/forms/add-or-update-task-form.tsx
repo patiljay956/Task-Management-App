@@ -14,7 +14,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
-import type { Task, KanbanColumnKey } from "@/types/project";
+import type { Task, KanbanColumnKey, ProjectMember } from "@/types/project";
 import {
     Select,
     SelectContent,
@@ -23,7 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { taskFormSchema } from "@/schemas/add-or-update-task-form.schema";
-import { LoaderCircle, X } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
@@ -37,20 +37,21 @@ type Props = {
     initialData?: Task | null;
     onSuccess?: () => void;
     status?: KanbanColumnKey;
+    projectMembers?: ProjectMember[];
 };
 
 export default function AddOrUpdateTaskForm({
     initialData,
     onSuccess,
     status,
+    projectMembers,
 }: Props) {
     const { projectId } = useParams<{ projectId: string }>();
     const { store, setStore } = useStore();
 
-    const members = useMemo(
-        () => store.projectMembers[projectId!],
-        [store.projectMembers, projectId],
-    );
+    const members = useMemo(() => {
+        return projectMembers || store.projectMembers[projectId!] || [];
+    }, [store.projectMembers, projectId]);
 
     const form = useForm<TaskFormSchema>({
         resolver: zodResolver(taskFormSchema),
@@ -103,10 +104,16 @@ export default function AddOrUpdateTaskForm({
                         const prevStatus = initialData.status; // status before update
                         const newStatus = values.status;
 
-                        const prevTasks =
-                            prev.projectTasks[projectId!][prevStatus] || [];
-                        const newTasks =
-                            prev.projectTasks[projectId!][newStatus] || [];
+                        // Ensure the store structure exists with proper defaults
+                        const currentProjectTasks = prev.projectTasks?.[
+                            projectId!
+                        ] || {
+                            todo: [],
+                            doing: [],
+                            done: [],
+                        };
+                        const prevTasks = currentProjectTasks[prevStatus] || [];
+                        const newTasks = currentProjectTasks[newStatus] || [];
 
                         // Remove from old status
                         const cleanedPrevTasks = prevTasks.filter(
@@ -117,6 +124,7 @@ export default function AddOrUpdateTaskForm({
                         const taskIndex = newTasks.findIndex(
                             (task) => task._id === initialData._id,
                         );
+
                         const updatedNewTasks =
                             taskIndex !== -1
                                 ? newTasks.map((task) =>
@@ -131,7 +139,7 @@ export default function AddOrUpdateTaskForm({
                             projectTasks: {
                                 ...prev.projectTasks,
                                 [projectId!]: {
-                                    ...prev.projectTasks[projectId!],
+                                    ...currentProjectTasks,
                                     [prevStatus]: cleanedPrevTasks,
                                     [newStatus]: updatedNewTasks,
                                 },
@@ -154,33 +162,47 @@ export default function AddOrUpdateTaskForm({
                     toast.success("Task added successfully!");
                     form.reset();
                     onSuccess?.();
+
                     setStore((prev) => {
-                        const assignedBy = prev.projectMembers[projectId!].find(
+                        // Safe access to project members with fallback
+                        const projectMembers =
+                            prev.projectMembers?.[projectId!] || [];
+
+                        const assignedBy = projectMembers.find(
                             (member) =>
                                 member._id === response.data.data.assignedBy,
                         );
 
-                        const assignedTo = prev.projectMembers[projectId!].find(
+                        const assignedTo = projectMembers.find(
                             (member) =>
                                 member._id === response.data.data.assignedTo,
                         );
 
                         const newTask: Task = {
                             ...response.data.data,
-                            assignedBy: assignedBy,
-                            assignedTo: assignedTo,
+                            assignedBy: assignedBy || undefined,
+                            assignedTo: assignedTo || undefined,
                         };
+
+                        // Ensure the store structure exists with proper defaults
+                        const currentProjectTasks = prev.projectTasks?.[
+                            projectId!
+                        ] || {
+                            todo: [],
+                            doing: [],
+                            done: [],
+                        };
+                        const currentStatusTasks =
+                            currentProjectTasks[values.status] || [];
 
                         return {
                             ...prev,
                             projectTasks: {
                                 ...prev.projectTasks,
                                 [projectId!]: {
-                                    ...prev.projectTasks[projectId!],
+                                    ...currentProjectTasks,
                                     [values.status]: [
-                                        ...prev.projectTasks[projectId!][
-                                            values.status
-                                        ],
+                                        ...currentStatusTasks,
                                         newTask,
                                     ],
                                 },
@@ -345,7 +367,7 @@ export default function AddOrUpdateTaskForm({
                         )}
                     />
                 </div>
-                <FilePreviewList    
+                <FilePreviewList
                     files={Array.from(form.watch("files") ?? [])}
                     onRemove={(idx) => {
                         const currentFiles = Array.from(

@@ -1,4 +1,4 @@
-import type { KanbanColumnKey, Task } from "@/types/project";
+import type { KanbanColumnKey, ProjectMember, Task } from "@/types/project";
 import {
     Dialog,
     DialogContent,
@@ -14,12 +14,14 @@ type Props = {
     initialData?: Task | null;
     children?: React.ReactNode;
     status?: KanbanColumnKey;
+    projectMembers?: ProjectMember[];
 };
 
 export default function AddOrUpdateTaskDialog({
     initialData,
     children,
     status,
+    projectMembers,
 }: Props) {
     const [open, setOpen] = useState<boolean>(false);
 
@@ -37,6 +39,7 @@ export default function AddOrUpdateTaskDialog({
                         status={status}
                         onSuccess={() => setOpen(false)}
                         initialData={initialData}
+                        projectMembers={projectMembers}
                     ></AddOrUpdateTaskForm>
                 </ScrollArea>
             </DialogContent>

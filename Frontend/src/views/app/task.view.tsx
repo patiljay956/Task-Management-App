@@ -13,6 +13,7 @@ import { useParams } from "react-router";
 import { useStore } from "@/components/contexts/store-provider";
 import type { ProjectTasks, SubTask, Task } from "@/types/project";
 import { Input } from "@/components/ui/input";
+import AddOrUpdateTaskDialog from "@/components/dialogs/add-or-update-task-dialog";
 
 type Props = {};
 
@@ -152,18 +153,19 @@ export const TaskView = ({}: Props) => {
                 const subtask = response.data.data;
 
                 setStore((prev) => {
+                    // Ensure the store structure exists with proper defaults
+                    const currentProjectSubTasks =
+                        prev.projectTaskSubTasks?.[projectId!] || {};
+                    const currentTaskSubTasks =
+                        currentProjectSubTasks[taskId!] || [];
+
                     return {
                         ...prev,
                         projectTaskSubTasks: {
                             ...prev.projectTaskSubTasks,
                             [projectId!]: {
-                                ...prev.projectTaskSubTasks[projectId!],
-                                [taskId!]: [
-                                    ...prev.projectTaskSubTasks[projectId!][
-                                        taskId!
-                                    ],
-                                    subtask,
-                                ],
+                                ...currentProjectSubTasks,
+                                [taskId!]: [...currentTaskSubTasks, subtask],
                             },
                         },
                     };
@@ -244,9 +246,14 @@ export const TaskView = ({}: Props) => {
                             <Badge variant="secondary">{task?.priority}</Badge>
                         </div>
                     </div>
-                    <Button size="icon" variant="ghost" title="Edit Task">
-                        <Pencil className="w-4 h-4" />
-                    </Button>
+                    <AddOrUpdateTaskDialog
+                        initialData={task}
+                        projectMembers={store.projectMembers[projectId!] || []}
+                    >
+                        <Button size="icon" variant="ghost" title="Edit Task">
+                            <Pencil className="w-4 h-4" />
+                        </Button>
+                    </AddOrUpdateTaskDialog>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
