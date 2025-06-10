@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Task } from "@/types/project";
 import type { Row } from "@tanstack/react-table";
-import { EllipsisVertical, SquarePen, Trash2 } from "lucide-react";
+import { EllipsisVertical, SquarePen, Trash } from "lucide-react";
 import ConfirmDialog from "@/components/dialogs/confirm-dialog";
 import { toast } from "sonner";
 import axios from "axios";
@@ -87,7 +87,7 @@ export default function Action({ row }: Props) {
                             className="flex gap-2 items-center"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <Trash2 className="text-destructive" />
+                            <Trash className="text-destructive" />
                             Delete
                         </span>
                     </ConfirmDialog>

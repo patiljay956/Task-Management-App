@@ -4,7 +4,7 @@ import type { KanbanColumn, KanbanColumnKey, Task } from "@/types/project";
 import { ScrollArea } from "../ui/scroll-area";
 import { Card } from "../ui/card";
 import { useDroppable } from "@dnd-kit/core";
-import TaskCard from "./task";
+import TaskCard from "./kanban-task-card";
 import AddOrUpdateTaskDialog from "../dialogs/add-or-update-task-dialog";
 
 type Props = {

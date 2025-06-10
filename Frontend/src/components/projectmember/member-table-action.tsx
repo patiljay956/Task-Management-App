@@ -15,7 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Trash } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -138,10 +138,12 @@ export default function MemberTableAction({ row }: Props) {
                 <DropdownMenuItem>
                     <ConfirmDialog onAction={handleDelete} actionText="Remove">
                         <span
+                            className="flex items-center gap-2 text-destructive"
                             onClick={(event) => {
                                 event.stopPropagation();
                             }}
                         >
+                            <Trash className="text-destructive"></Trash>
                             Remove
                         </span>
                     </ConfirmDialog>

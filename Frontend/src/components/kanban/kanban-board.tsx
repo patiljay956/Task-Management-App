@@ -16,7 +16,7 @@ import {
     type DragEndEvent,
     type DragStartEvent,
 } from "@dnd-kit/core";
-import TaskCard from "@/components/kanban/task";
+import TaskCard from "@/components/kanban/kanban-task-card";
 import { useStore } from "../contexts/store-provider";
 import { useParams } from "react-router";
 import type { AxiosResponse } from "axios";

@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import { useParams } from "react-router";
 import { useStore } from "../contexts/store-provider";
+import { FilePreviewList } from "../task/file-preview-list";
 
 type TaskFormSchema = z.infer<typeof taskFormSchema>;
 
@@ -344,30 +345,18 @@ export default function AddOrUpdateTaskForm({
                         )}
                     />
                 </div>
-                {form.watch("files") &&
-                    Array.from(form.watch("files") ?? []).map((file, idx) => (
-                        <div
-                            key={file.name}
-                            className="flex items-center justify-between gap-2"
-                        >
-                            <p className="text-sm">{file.name}</p>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const currentFiles = Array.from(
-                                        form.watch("files") ?? [],
-                                    );
-                                    currentFiles.splice(idx, 1); // Remove by index
-                                    form.setValue("files", currentFiles, {
-                                        shouldValidate: true,
-                                    });
-                                }}
-                                className="text-red-500 font-bold"
-                            >
-                                <X />
-                            </button>
-                        </div>
-                    ))}
+                <FilePreviewList    
+                    files={Array.from(form.watch("files") ?? [])}
+                    onRemove={(idx) => {
+                        const currentFiles = Array.from(
+                            form.watch("files") ?? [],
+                        );
+                        currentFiles.splice(idx, 1);
+                        form.setValue("files", currentFiles, {
+                            shouldValidate: true,
+                        });
+                    }}
+                />
                 <div className="flex">
                     <Button
                         disabled={form.formState.isSubmitting}

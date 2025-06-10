@@ -3,12 +3,14 @@ import {
     type Project,
     type ProjectMembers,
     type ProjectTasks,
+    type SubTask,
 } from "@/types/project";
 
 export type StoreState = {
     projects: Project[];
     projectMembers: ProjectMembers;
     projectTasks: Record<string, ProjectTasks>;
+    projectTaskSubTasks: Record<string, Record<string, SubTask[]>>;
 };
 
 //initial state
@@ -16,6 +18,7 @@ export const initialState: StoreState = {
     projects: [],
     projectMembers: {},
     projectTasks: {},
+    projectTaskSubTasks: {},
 };
 
 type StoreContextState = {

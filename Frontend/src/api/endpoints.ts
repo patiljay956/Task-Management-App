@@ -138,7 +138,7 @@ export const API_PROJECT_ENDPOINTS = {
         });
     },
     deleteProject: async function (projectId: string): Promise<AxiosResponse> {
-        return await api.delete(`/project/${projectId}`);  
+        return await api.delete(`/project/${projectId}`);
     },
     getProjectMembers: async function (
         projectId: string,
@@ -261,6 +261,54 @@ export const API_PROJECT_ENDPOINTS = {
     }): Promise<AxiosResponse> {
         return await api.delete(
             `/project/${params.projectId}/tasks/${params.taskId}`,
+        );
+    },
+};
+
+export const API_TASK_ENDPOINTS = {
+    getSubTasks: async function (params: {
+        taskId: string;
+        projectId: string;
+    }): Promise<AxiosResponse> {
+        return await api.get(
+            `/subtask/p/${params.projectId}/t/${params.taskId}`,
+        );
+    },
+    updateSubTask: async function (params: {
+        taskId: string;
+        projectId: string;
+        subtaskId: string;
+        title: string;
+        isCompleted: boolean;
+    }): Promise<AxiosResponse> {
+        return await api.patch(
+            `/subtask/p/${params.projectId}/t/${params.taskId}/st/${params.subtaskId}`,
+            {
+                title: params.title,
+                isCompleted: params.isCompleted,
+            },
+        );
+    },
+    addSubTask: async function (params: {
+        taskId: string;
+        projectId: string;
+        title: string;
+    }): Promise<AxiosResponse> {
+        return await api.post(
+            `/subtask/p/${params.projectId}/t/${params.taskId}`,
+            {
+                title: params.title,
+                isCompleted: false,
+            },
+        );
+    },
+    deleteSubTask: async function (params: {
+        taskId: string;
+        projectId: string;
+        subtaskId: string;
+    }): Promise<AxiosResponse> {
+        return await api.delete(
+            `/subtask/p/${params.projectId}/t/${params.taskId}/st/${params.subtaskId}`,
         );
     },
 };

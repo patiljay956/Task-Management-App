@@ -4,8 +4,10 @@ import { Route, Routes } from "react-router";
 import UserProjects from "./app/user-projects.view";
 import ProjectView from "./app/project.view";
 import { ErrorBoundary } from "@/components/error/error-boundary";
+import { TaskView } from "./app/task.view";
 
 type Props = {};
+
 
 export default function MainApp({}: Props) {
     return (
@@ -17,6 +19,10 @@ export default function MainApp({}: Props) {
                         <Route
                             path={"project/:projectId"}
                             element={<ProjectView />}
+                        />
+                        <Route
+                            path="project/:projectId/task/:taskId"
+                            element={<TaskView />}
                         />
                     </Routes>
                 </ErrorBoundary>

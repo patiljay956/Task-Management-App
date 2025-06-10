@@ -41,3 +41,21 @@ export type Task = {
     createdAt: Date;
     updatedAt: Date;
 };
+
+export type SubTask = {
+    _id: string;
+    title: string;
+    task: Task;
+    isCompleted: boolean;
+    createdBy: User;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type TaskFile = {
+    _id: string;
+    url: string;
+    name: string;
+    size?: number; // in bytes
+    type?: string;
+};
