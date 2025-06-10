@@ -5,7 +5,6 @@ import { SubtaskSection } from "@/components/task/sub-task-section";
 import { Button } from "@/components/ui/button";
 import { Pencil, Plus } from "lucide-react";
 import { TaskFileSection } from "@/components/task/file-section";
-import { mockTaskFiles } from "@/components/task/dummy";
 import { useEffect, useState } from "react";
 import axios, { type AxiosResponse } from "axios";
 import { toast } from "sonner";
@@ -27,6 +26,7 @@ export const TaskView = ({}: Props) => {
     const [task, setTask] = useState<Task | null>(null);
     const [subtasks, setSubtasks] = useState<SubTask[] | null>(null);
     const [newSubtaskTitle, setNewSubtaskTitle] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         const getSubtasksByTaskId = async () => {
@@ -178,6 +178,58 @@ export const TaskView = ({}: Props) => {
         }
     };
 
+    const onUploadHandler = async (files: FileList) => {
+        const fileList = Array.from(files);
+        if (!fileList) return;
+        if (fileList.length > 5)
+            return toast.error("You can only upload 5 files at a time.");
+
+        try {
+            setIsSubmitting(true);
+            const response = await API_PROJECT_ENDPOINTS.uploadFiles({
+                taskId: taskId!,
+                projectId: projectId!,
+                files: fileList,
+            });
+
+            if (response.data.statusCode === 200) {
+                const task = response.data.data as Task;
+                setStore((prev) => {
+                    const oldtTasks =
+                        prev.projectTasks[projectId!][task.status];
+
+                    // remove task with same id from the old tasks array
+                    const newTasks = oldtTasks?.filter(
+                        (t) => t._id !== task._id,
+                    );
+
+                    // add new task to the new tasks array
+                    newTasks?.push(task);
+
+                    return {
+                        ...prev,
+                        projectTasks: {
+                            ...prev.projectTasks,
+                            [projectId!]: {
+                                ...prev.projectTasks[projectId!],
+                                [task.status]: newTasks,
+                            },
+                        },
+                    };
+                });
+
+                toast.success("Files uploaded successfully.");
+                setIsSubmitting(false);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error))
+                toast.error(error.response?.data?.message);
+            else toast.error("Something went wrong.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <Card className="w-full max-w-2xl rounded-2xl shadow-md mx-auto">
             <CardHeader className="pb-3">
@@ -228,9 +280,10 @@ export const TaskView = ({}: Props) => {
                     </div>
                 </div>
                 <TaskFileSection
-                    files={mockTaskFiles}
+                    files={task?.attachments || []}
                     onDelete={(fileId) => {}}
-                    onUpload={(files) => {}}
+                    onUpload={onUploadHandler}
+                    isSubmitting={isSubmitting}
                 />
             </CardContent>
         </Card>

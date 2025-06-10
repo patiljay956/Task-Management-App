@@ -255,6 +255,26 @@ export const API_PROJECT_ENDPOINTS = {
             },
         );
     },
+    uploadFiles: async function (params: {
+        projectId: string;
+        taskId: string;
+        files: File[];
+    }) {
+        const formData = new FormData();
+        for (let i = 0; i < params.files.length; i++) {
+            formData.append("attachments", params.files[i]);
+        }
+
+        return await api.patch(
+            `/project/${params.projectId}/tasks/${params.taskId}/attachments`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": undefined, // automatically set by the browser for multipart/form-data
+                },
+            },
+        );
+    },
     deleteTask: async function (params: {
         projectId: string;
         taskId: string;

@@ -40,6 +40,7 @@ export type Task = {
     assignedBy: ProjectMember | undefined;
     createdAt: Date;
     updatedAt: Date;
+    attachments: TaskFile[];
 };
 
 export type SubTask = {
@@ -54,8 +55,9 @@ export type SubTask = {
 
 export type TaskFile = {
     _id: string;
+    public_id: string;
     url: string;
-    name: string;
+    name?: string;
     size?: number; // in bytes
-    type?: string;
+    mimeType?: string;
 };

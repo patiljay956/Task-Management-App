@@ -1,7 +1,6 @@
 // components/task/task-file-section.tsx
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Trash, UploadCloud } from "lucide-react";
+import { LoaderCircle, Trash, UploadCloud } from "lucide-react";
 import { useRef } from "react";
 import type { TaskFile } from "@/types/project";
 
@@ -9,9 +8,15 @@ type Props = {
     files: TaskFile[];
     onDelete: (fileId: string) => void;
     onUpload: (files: FileList) => void;
+    isSubmitting: boolean;
 };
 
-export const TaskFileSection = ({ files, onDelete, onUpload }: Props) => {
+export const TaskFileSection = ({
+    files,
+    onDelete,
+    onUpload,
+    isSubmitting,
+}: Props) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,11 +43,16 @@ export const TaskFileSection = ({ files, onDelete, onUpload }: Props) => {
                             className="flex items-center justify-between px-3 py-2 bg-muted/20 rounded-md"
                         >
                             <div className="flex flex-col overflow-hidden">
-                                <span className="truncate text-sm font-medium">
-                                    {file.name}
-                                </span>
+                                <a
+                                    href={file.url}
+                                    className="truncate text-sm font-medium hover:underline"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {file.public_id}
+                                </a>
                                 <span className="text-xs text-muted-foreground">
-                                    {file.type ?? "Unknown type"}
+                                    {file.mimeType ?? "Unknown type"}
                                 </span>
                             </div>
                             <Button
@@ -59,19 +69,24 @@ export const TaskFileSection = ({ files, onDelete, onUpload }: Props) => {
             </div>
 
             <div className="mt-4">
-                <Input
+                <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileSelect}
                     className="hidden"
+                    multiple
                 />
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    <UploadCloud className="w-4 h-4 mr-2" />
-                    Upload File
+                    {isSubmitting ? (
+                        <LoaderCircle className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                        <UploadCloud className="w-4 h-4 mr-2" />
+                    )}
+                    {isSubmitting ? "Uploading..." : "Upload files"}
                 </Button>
             </div>
         </div>
