@@ -232,6 +232,52 @@ export const TaskView = ({}: Props) => {
         }
     };
 
+    const onFileDeleteHandler = async (fileId: string) => {
+        try {
+            const response = await API_PROJECT_ENDPOINTS.deleteTaskAttachment({
+                projectId: projectId!,
+                taskId: taskId!,
+                attachmentId: fileId,
+            });
+
+            if (response.data.statusCode === 200) {
+                const task = response.data.data as Task;
+                toast.success("File deleted successfully.");
+                setStore((prev) => {
+                    // Ensure the store structure exists with proper defaults
+                    const currentProjectTasks = prev.projectTasks?.[
+                        projectId!
+                    ] || {
+                        todo: [],
+                        in_progress: [],
+                        done: [],
+                    };
+                    const oldTasks = currentProjectTasks[task.status] || [];
+
+                    // Remove task with same id from the old tasks array and add the updated task
+                    const newTasks = oldTasks
+                        .filter((t) => t._id !== task._id)
+                        .concat(task);
+
+                    return {
+                        ...prev,
+                        projectTasks: {
+                            ...prev.projectTasks,
+                            [projectId!]: {
+                                ...currentProjectTasks,
+                                [task.status]: newTasks,
+                            },
+                        },
+                    };
+                });
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error))
+                toast.error(error.response?.data?.message);
+            else toast.error("Something went wrong.");
+        }
+    };
+
     return (
         <Card className="w-full max-w-2xl rounded-2xl shadow-md mx-auto">
             <CardHeader className="pb-3">
@@ -288,7 +334,7 @@ export const TaskView = ({}: Props) => {
                 </div>
                 <TaskFileSection
                     files={task?.attachments || []}
-                    onDelete={(fileId) => {}}
+                    onDelete={onFileDeleteHandler}
                     onUpload={onUploadHandler}
                     isSubmitting={isSubmitting}
                 />

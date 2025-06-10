@@ -283,6 +283,15 @@ export const API_PROJECT_ENDPOINTS = {
             `/project/${params.projectId}/tasks/${params.taskId}`,
         );
     },
+    deleteTaskAttachment: async function (params: {
+        projectId: string;
+        taskId: string;
+        attachmentId: string;
+    }): Promise<AxiosResponse> {
+        return await api.delete(
+            `/project/${params.projectId}/tasks/${params.taskId}/attachments/${params.attachmentId}`,
+        );
+    },
 };
 
 export const API_TASK_ENDPOINTS = {

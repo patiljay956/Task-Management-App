@@ -76,13 +76,13 @@ export default function TaskCard({ task }: Props) {
 
                 <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={task.assignedTo?.user.avatar.url} />
+                        <AvatarImage src={task.assignedTo?.user?.avatar?.url} />
                         <AvatarFallback>
-                            {task.assignedTo?.user.name?.[0]}
+                            {task.assignedTo?.user?.name?.[0]}
                         </AvatarFallback>
                     </Avatar>
                     <span className="hidden md:inline truncate max-w-[100px]">
-                        {task.assignedTo?.user.name}
+                        {task.assignedTo?.user?.name}
                     </span>
                 </div>
             </div>
