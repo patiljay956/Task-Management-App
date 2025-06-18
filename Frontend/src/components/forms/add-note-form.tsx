@@ -17,7 +17,7 @@ import { Textarea } from "../ui/textarea";
 import { API_NOTE_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
-import type { Note, Project } from "@/types/project";
+import type { Note, Project, ProjectMember } from "@/types/project";
 import type { User } from "@/types/auth";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -54,7 +54,11 @@ export function AddNoteForm({ onSuccess }: Props) {
                     (project) => project._id === projectId,
                 ) as Project;
 
-                note.createdBy = user as User;
+                note.createdBy = {
+                    _id: response.data.data.createdBy,
+                } as ProjectMember;
+
+                note.createdBy.user = user as User;
 
                 setStore((prev) => ({
                     ...prev,

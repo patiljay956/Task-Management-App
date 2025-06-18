@@ -8,14 +8,16 @@ type Props = {
 };
 
 export default function UserHover({ user }: Props) {
+    if (!user) return null;
+
     return (
         <HoverCard>
             <HoverCardTrigger asChild>
                 <div className="inline-flex items-center gap-2 cursor-pointer hover:underline">
                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={user?.avatar?.url} />
+                        <AvatarImage src={user.avatar.url} />
                         <AvatarFallback>
-                            {user.name
+                            {user?.name
                                 ?.split(" ")
                                 .map((n) => n[0])
                                 .join("")
@@ -28,9 +30,9 @@ export default function UserHover({ user }: Props) {
             <HoverCardContent className="w-64 p-4 space-y-2">
                 <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.avatar?.url} />
+                        <AvatarImage src={user.avatar.url} />
                         <AvatarFallback>
-                            {user.name
+                            {user?.name
                                 ?.split(" ")
                                 .map((n) => n[0])
                                 .join("")

@@ -20,7 +20,7 @@ export const NotesGrid = ({ notes }: Props) => {
                     <NoteCard
                         key={note._id}
                         note={note}
-                        disableActions={user?._id !== note.createdBy._id}
+                        disableActions={user?._id !== note.createdBy?.user?._id}
                     />
                 ))}
             </div>

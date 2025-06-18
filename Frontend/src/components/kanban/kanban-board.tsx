@@ -23,6 +23,7 @@ import type { AxiosResponse } from "axios";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
+import { Card, CardHeader, CardTitle } from "../ui/card";
 
 const columnsData: KanbanColumn[] = [
     { title: "Todo", key: "todo" },
@@ -133,26 +134,36 @@ export default function KanbanBoard() {
     const onDragCancel = () => setActiveTask(null);
 
     return (
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragCancel={onDragCancel}
-        >
-            <ScrollArea className="flex flex-1 flex-col md:flex-row gap-4 min-h-0 min-w-0">
-                {columnsData.map((col) => (
-                    <KanbanColumnView
-                        key={col.key}
-                        column={col}
-                        tasks={store.projectTasks[projectId!]}
-                    />
-                ))}
-            </ScrollArea>
-            {/* ✅ Global overlay OUTSIDE columns */}
-            <DragOverlay>
-                {activeTask && <TaskCard task={activeTask} />}
-            </DragOverlay>
-        </DndContext>
+        <div className="flex flex-1 flex-col gap-2 min-h-0 min-w-0">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-xl">
+                        {store.projects.find((p) => p._id === projectId)?.name +
+                            " : Kanban Board"}
+                    </CardTitle>
+                </CardHeader>
+            </Card>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCorners}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={onDragCancel}
+            >
+                <ScrollArea className="flex flex-1 flex-col md:flex-row gap-4 min-h-0 min-w-0">
+                    {columnsData.map((col) => (
+                        <KanbanColumnView
+                            key={col.key}
+                            column={col}
+                            tasks={store.projectTasks[projectId!]}
+                        />
+                    ))}
+                </ScrollArea>
+                {/* ✅ Global overlay OUTSIDE columns */}
+                <DragOverlay>
+                    {activeTask && <TaskCard task={activeTask} />}
+                </DragOverlay>
+            </DndContext>
+        </div>
     );
 }

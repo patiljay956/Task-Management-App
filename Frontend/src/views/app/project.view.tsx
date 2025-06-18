@@ -1,12 +1,18 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectMembersTab from "../tabs/project-members-tab";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ProjectTasklistTab from "../tabs/project-tasklist-tab";
 import ProjectKanbanTab from "../tabs/project-kanban-tab";
 import { useStore } from "@/components/contexts/store-provider";
 import { useEffect } from "react";
 import type { AxiosResponse } from "axios";
-import type { Note, ProjectMember, ProjectTasks, Task } from "@/types/project";
+import type {
+    Note,
+    Project,
+    ProjectMember,
+    ProjectTasks,
+    Task,
+} from "@/types/project";
 import { API_NOTE_ENDPOINTS, API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
@@ -24,6 +30,48 @@ export default function ProjectView({ tab = "kanban" }: Props) {
     const handleTabChange = (value: string) => {
         navigate(`/app/project/${projectId}/${value}`);
     };
+
+    useEffect(() => {
+        const getProject = async () => {
+            if (!projectId) return;
+
+            try {
+                const response: AxiosResponse | undefined =
+                    await API_PROJECT_ENDPOINTS.getProjectById(projectId);
+
+                if (response.data.statusCode === 200) {
+                    const project = response.data.data[0] as Project;
+                    setStore((prev) => {
+                        const existingProjectIndex = prev.projects.findIndex(
+                            (p) => p._id === projectId,
+                        );
+
+                        if (existingProjectIndex !== -1) {
+                            // Update existing project
+                            const updatedProjects = [...prev.projects];
+                            updatedProjects[existingProjectIndex] = project;
+                            return {
+                                ...prev,
+                                projects: updatedProjects,
+                            };
+                        } else {
+                            // Add new project if it doesn't exist
+                            return {
+                                ...prev,
+                                projects: [...prev.projects, project],
+                            };
+                        }
+                    });
+                }
+            } catch (error) {
+                if (axios.isAxiosError(error))
+                    toast.error(error.response?.data?.message);
+                else toast.error("Something went wrong.");
+            }
+        };
+
+        getProject();
+    }, []);
 
     useEffect(() => {
         const getProjectTasks = async () => {

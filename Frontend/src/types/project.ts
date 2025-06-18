@@ -67,6 +67,6 @@ export type Note = {
     _id: string;
     content: string;
     createdAt: string;
-    createdBy: User;
+    createdBy: ProjectMember;
     project: Project;
 };

@@ -9,11 +9,12 @@ import { useEffect, useState } from "react";
 import axios, { type AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { API_PROJECT_ENDPOINTS, API_TASK_ENDPOINTS } from "@/api/endpoints";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { useStore } from "@/components/contexts/store-provider";
 import type { ProjectTasks, SubTask, Task } from "@/types/project";
 import { Input } from "@/components/ui/input";
 import AddOrUpdateTaskDialog from "@/components/dialogs/add-or-update-task-dialog";
+import { BASE_URL } from "@/constants/app-routes";
 
 type Props = {};
 
@@ -283,7 +284,16 @@ export const TaskView = ({}: Props) => {
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <CardTitle className="text-xl">{task?.title}</CardTitle>
+                        <CardTitle className="text-xl">
+                            {task?.title + " : "}
+                            <Link
+                                to={`${BASE_URL}/project/${task?.project?._id}/kanban`}
+                            >
+                                <span className="text-muted-foreground underline">
+                                    {task?.project?.name}
+                                </span>
+                            </Link>
+                        </CardTitle>
                         <p className="text-sm text-muted-foreground">
                             {task?.description}
                         </p>

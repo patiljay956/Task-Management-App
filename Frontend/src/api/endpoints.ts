@@ -360,16 +360,23 @@ export const API_NOTE_ENDPOINTS = {
     deleteProjectNote: async function (params: {
         noteId: string;
         projectId: string;
+        memberId: string;
     }) {
-        return await api.delete(`/note/${params.projectId}/${params.noteId}`);
+        return await api.delete(
+            `/note/${params.projectId}/${params.noteId}/${params.memberId}`,
+        );
     },
     updateProjectNote: async function (params: {
         noteId: string;
         projectId: string;
+        memberId: string;
         content: string;
     }) {
-        return await api.patch(`/note/${params.projectId}/${params.noteId}`, {
-            content: params.content,
-        });
+        return await api.patch(
+            `/note/${params.projectId}/${params.noteId}/${params.memberId}`,
+            {
+                content: params.content,
+            },
+        );
     },
 };

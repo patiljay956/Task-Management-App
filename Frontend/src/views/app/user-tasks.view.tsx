@@ -116,7 +116,7 @@ export default function UserTasksView({}: Props) {
 
     return (
         <>
-            <TaskTable data={userTasks}></TaskTable>
+            <TaskTable data={userTasks} title="My Tasks"></TaskTable>
         </>
     );
 }

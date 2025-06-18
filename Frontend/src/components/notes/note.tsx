@@ -38,6 +38,7 @@ export const NoteCard = ({ note, disableActions = false }: Props) => {
                 const response = await API_NOTE_ENDPOINTS.updateProjectNote({
                     noteId: note._id,
                     projectId: note.project?._id,
+                    memberId: note.createdBy._id,
                     content: editedContent,
                 });
 
@@ -82,6 +83,7 @@ export const NoteCard = ({ note, disableActions = false }: Props) => {
             const response = await API_NOTE_ENDPOINTS.deleteProjectNote({
                 noteId: note._id,
                 projectId: note.project?._id,
+                memberId: note.createdBy._id,
             });
 
             if (response.data.statusCode === 200) {
@@ -115,7 +117,7 @@ export const NoteCard = ({ note, disableActions = false }: Props) => {
 
                 <div className="flex items-center gap-2 ">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage src={note.createdBy.avatar?.url} />
+                        <AvatarImage src={note.createdBy?.user.avatar?.url} />
                     </Avatar>
 
                     {!disableActions && !isEditing && (
