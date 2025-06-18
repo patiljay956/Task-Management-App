@@ -120,7 +120,7 @@ const getNoteById = asyncHandler(async (req, res) => {
 });
 
 const updateNote = asyncHandler(async (req, res) => {
-    const { noteId } = req.params;
+    const { noteId, memberId } = req.params;
     const { content } = req.body;
 
     if (!noteId) {
@@ -128,7 +128,7 @@ const updateNote = asyncHandler(async (req, res) => {
     }
 
     const existingMember = await ProjectMember.findOne({
-        _id: noteId,
+        _id: memberId,
         user: req.user?._id,
     });
 
@@ -163,7 +163,7 @@ const updateNote = asyncHandler(async (req, res) => {
 });
 
 const deleteNote = asyncHandler(async (req, res) => {
-    const { noteId } = req.params;
+    const { noteId, memberId } = req.params;
 
     if (!noteId) {
         throw new ApiError(400, "Note ID is required");
@@ -171,9 +171,9 @@ const deleteNote = asyncHandler(async (req, res) => {
 
     const deletedNote = await ProjectNote.findOneAndDelete({
         _id: noteId,
-        createdBy: req.user?._id,
+        createdBy: memberId,
     });
-
+    
     if (!deletedNote) {
         throw new ApiError(404, "Note not found or not authorized to delete");
     }
@@ -190,6 +190,7 @@ const getNotesOfMember = asyncHandler(async (req, res) => {
     const projectMembers = await ProjectMember.find({ user: userId })
         .select("_id project")
         .lean();
+
     if (projectMembers?.length === 0) {
         return res
             .status(200)
