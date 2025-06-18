@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import {
+    type Note,
     type Project,
     type ProjectMembers,
     type ProjectTasks,
@@ -11,6 +12,7 @@ export type StoreState = {
     projectMembers: ProjectMembers;
     projectTasks: Record<string, ProjectTasks>;
     projectTaskSubTasks: Record<string, Record<string, SubTask[]>>;
+    projectNotes: Record<string, Note[]>;
 };
 
 //initial state
@@ -19,6 +21,7 @@ export const initialState: StoreState = {
     projectMembers: {},
     projectTasks: {},
     projectTaskSubTasks: {},
+    projectNotes: {},
 };
 
 type StoreContextState = {

@@ -344,3 +344,32 @@ export const API_TASK_ENDPOINTS = {
         );
     },
 };
+
+export const API_NOTE_ENDPOINTS = {
+    getProjectNotes: async function (params: { projectId: string }) {
+        return await api.get(`/note/${params.projectId}`);
+    },
+    addProjectNote: async function (params: {
+        projectId: string;
+        content: string;
+    }) {
+        return await api.post(`/note/${params.projectId}`, {
+            content: params.content,
+        });
+    },
+    deleteProjectNote: async function (params: {
+        noteId: string;
+        projectId: string;
+    }) {
+        return await api.delete(`/note/${params.projectId}/${params.noteId}`);
+    },
+    updateProjectNote: async function (params: {
+        noteId: string;
+        projectId: string;
+        content: string;
+    }) {
+        return await api.patch(`/note/${params.projectId}/${params.noteId}`, {
+            content: params.content,
+        });
+    },
+};

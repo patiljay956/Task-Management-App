@@ -6,10 +6,11 @@ import ProjectKanbanTab from "../tabs/project-kanban-tab";
 import { useStore } from "@/components/contexts/store-provider";
 import { useEffect } from "react";
 import type { AxiosResponse } from "axios";
-import type { ProjectMember, ProjectTasks, Task } from "@/types/project";
-import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
+import type { Note, ProjectMember, ProjectTasks, Task } from "@/types/project";
+import { API_NOTE_ENDPOINTS, API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
+import ProjectNotesTab from "../tabs/project-notes-tab";
 
 type Props = {};
 
@@ -70,8 +71,6 @@ export default function ProjectView({}: Props) {
                             projectId,
                         );
 
-                    console.log(response);
-
                     if (response?.status === 200) {
                         const members = response.data.data as ProjectMember[];
                         setStore((prev) => ({
@@ -93,6 +92,34 @@ export default function ProjectView({}: Props) {
         getProjectMembers();
     }, []);
 
+    useEffect(() => {
+        const getProjectNotes = async () => {
+            if (!projectId) return;
+            try {
+                const response: AxiosResponse | undefined =
+                    await API_NOTE_ENDPOINTS.getProjectNotes({ projectId });
+
+                if (response.data.statusCode === 200) {
+                    const notes = response.data.data as Note[];
+
+                    setStore((prev) => ({
+                        ...prev,
+                        projectNotes: {
+                            ...prev.projectNotes,
+                            [projectId]: notes,
+                        },
+                    }));
+                }
+            } catch (error) {
+                if (axios.isAxiosError(error))
+                    toast.error(error.response?.data?.message);
+                else toast.error("Something went wrong.");
+            }
+        };
+
+        getProjectNotes();
+    }, []);
+
     return (
         <Tabs
             defaultValue="kanban-board"
@@ -102,6 +129,7 @@ export default function ProjectView({}: Props) {
                 <TabsTrigger value="kanban-board">Kanban Board</TabsTrigger>
                 <TabsTrigger value="list-view">List View</TabsTrigger>
                 <TabsTrigger value="members">Members</TabsTrigger>
+                <TabsTrigger value="notes">Notes</TabsTrigger>
             </TabsList>
             <TabsContent
                 value="kanban-board"
@@ -114,6 +142,9 @@ export default function ProjectView({}: Props) {
             </TabsContent>
             <TabsContent value="members">
                 <ProjectMembersTab projectId={projectId} />
+            </TabsContent>
+            <TabsContent value="notes">
+                <ProjectNotesTab />
             </TabsContent>
         </Tabs>
     );

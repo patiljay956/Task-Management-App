@@ -62,3 +62,11 @@ export type TaskFile = {
     size?: number; // in bytes
     mimeType?: string;
 };
+
+export type Note = {
+    _id: string;
+    content: string;
+    createdAt: string;
+    createdBy: User;
+    project: Project;
+};
