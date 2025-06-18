@@ -16,6 +16,7 @@ import axios from "axios";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import { useParams } from "react-router";
 import { useStore } from "@/components/contexts/store-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 type Props = {
     row: Row<Task>;
@@ -24,6 +25,7 @@ type Props = {
 export default function Action({ row }: Props) {
     const { projectId } = useParams<{ projectId: string }>();
     const { setStore } = useStore();
+    const { user } = useAuth();
 
     const handleDelete = async () => {
         try {
@@ -61,7 +63,10 @@ export default function Action({ row }: Props) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost">
+                <Button
+                    variant="ghost"
+                    disabled={row.original.assignedTo?.user._id === user?._id}
+                >
                     <EllipsisVertical size={18} />
                 </Button>
             </DropdownMenuTrigger>

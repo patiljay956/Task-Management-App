@@ -1,11 +1,12 @@
-import { BASE_URL} from "@/constants/app-routes";
+import { BASE_URL } from "@/constants/app-routes";
 import type { Task } from "@/types/project";
-import { Link, useParams } from "react-router";
+import { Link } from "react-router";
 
-export function TitleCell({ task }: { task: Task }) {
-    const { projectId } = useParams<{ projectId: string }>();
+export function TitleCell({ task }: { task: Task | null }) {
+    if (!task) return null;
+
     return (
-        <Link to={`${BASE_URL}/project/${projectId}/task/${task._id}`}>
+        <Link to={`${BASE_URL}/project/${task.project?._id}/task/${task._id}`}>
             <div className="flex flex-col">
                 <span className="font-medium line-clamp-1">{task.title}</span>
                 <span className="text-muted-foreground text-xs line-clamp-1">

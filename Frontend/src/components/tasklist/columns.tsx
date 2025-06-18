@@ -14,28 +14,33 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "priority",
         header: "Priority",
-        cell: ({ row }) => <PriorityCell priority={row.original.priority} />,
+        cell: ({ row }) => {
+            if (!row.original) return null;
+            return <PriorityCell priority={row.original.priority} />;
+        },
     },
     {
         accessorKey: "assignedTo",
         header: "Assigned To",
         cell: ({ row }) =>
-            row.original.assignedTo?.user ? (
+            row.original?.assignedTo ? (
                 <AssignedToCell user={row.original.assignedTo.user} />
-            ) : (
-                <span>Unassigned</span>
-            ),
+            ) : null,
     },
     {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-            <span className="capitalize">{row.original.status}</span>
-        ),
+        cell: ({ row }) => {
+            if (!row.original) return null;
+            return <span className="capitalize">{row.original?.status}</span>;
+        },
     },
     {
         accessorKey: "actions",
         header: "Actions",
-        cell: ({ row }) => <Action row={row} />,
+        cell: ({ row }) => {
+            if (!row.original) return null;
+            return <Action row={row} />;
+        },
     },
 ];

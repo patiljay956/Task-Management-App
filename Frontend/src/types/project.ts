@@ -41,6 +41,7 @@ export type Task = {
     createdAt: Date;
     updatedAt: Date;
     attachments: TaskFile[];
+    project?: Project;
 };
 
 export type SubTask = {

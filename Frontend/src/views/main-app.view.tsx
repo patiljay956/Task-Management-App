@@ -5,9 +5,9 @@ import UserProjects from "./app/user-projects.view";
 import ProjectView from "./app/project.view";
 import { ErrorBoundary } from "@/components/error/error-boundary";
 import { TaskView } from "./app/task.view";
+import UserTasksView from "./app/user-tasks.view";
 
 type Props = {};
-
 
 export default function MainApp({}: Props) {
     return (
@@ -24,6 +24,7 @@ export default function MainApp({}: Props) {
                             path="project/:projectId/task/:taskId"
                             element={<TaskView />}
                         />
+                        <Route path="tasks" element={<UserTasksView />} />
                     </Routes>
                 </ErrorBoundary>
             </AppLayout>

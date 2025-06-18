@@ -192,6 +192,9 @@ export const API_PROJECT_ENDPOINTS = {
             },
         );
     },
+    getUserTasks: async function (): Promise<AxiosResponse> {
+        return await api.get(`/project/tasks/user-tasks`);
+    },
     addTask: async function (params: {
         projectId: string;
         title: string;
