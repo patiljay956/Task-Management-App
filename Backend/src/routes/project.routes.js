@@ -136,15 +136,8 @@ router
         createTask,
     );
 
-router.route("/:projectId/tasks/user-tasks").get(
-    projectIdValidator(),
-    validate,
+router.route("/tasks/user-tasks").get(
     verifyToken,
-    hasProjectRole([
-        UserRolesEnum.ADMIN,
-        UserRolesEnum.PROJECT_MANAGER,
-        UserRolesEnum.MEMBER,
-    ]),
     getUserAssignedTasks, // Assuming this function can handle user-specific tasks
 );
 
