@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectMembersTab from "../tabs/project-members-tab";
-import { useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import ProjectTasklistTab from "../tabs/project-tasklist-tab";
 import ProjectKanbanTab from "../tabs/project-kanban-tab";
 import { useStore } from "@/components/contexts/store-provider";
@@ -12,11 +12,18 @@ import axios from "axios";
 import { toast } from "sonner";
 import ProjectNotesTab from "../tabs/project-notes-tab";
 
-type Props = {};
+type Props = {
+    tab: "members" | "tasklist" | "kanban" | "notes";
+};
 
-export default function ProjectView({}: Props) {
+export default function ProjectView({ tab = "kanban" }: Props) {
     const { projectId } = useParams<{ projectId: string }>();
     const { setStore } = useStore();
+    const navigate = useNavigate();
+
+    const handleTabChange = (value: string) => {
+        navigate(`/app/project/${projectId}/${value}`);
+    };
 
     useEffect(() => {
         const getProjectTasks = async () => {
@@ -122,22 +129,23 @@ export default function ProjectView({}: Props) {
 
     return (
         <Tabs
-            defaultValue="kanban-board"
+            defaultValue={tab}
+            onValueChange={handleTabChange}
             className="flex-1 flex flex-col min-h-0"
         >
             <TabsList>
-                <TabsTrigger value="kanban-board">Kanban Board</TabsTrigger>
-                <TabsTrigger value="list-view">List View</TabsTrigger>
+                <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
+                <TabsTrigger value="tasklist">List View</TabsTrigger>
                 <TabsTrigger value="members">Members</TabsTrigger>
                 <TabsTrigger value="notes">Notes</TabsTrigger>
             </TabsList>
             <TabsContent
-                value="kanban-board"
+                value="kanban"
                 className="flex flex-1 gap-4 min-h-0 min-w-0"
             >
                 <ProjectKanbanTab />
             </TabsContent>
-            <TabsContent value="list-view">
+            <TabsContent value="tasklist">
                 <ProjectTasklistTab />
             </TabsContent>
             <TabsContent value="members">

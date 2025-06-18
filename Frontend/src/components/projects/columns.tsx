@@ -12,7 +12,7 @@ export const columns: ColumnDef<Project>[] = [
         header: "Name",
         cell: ({ row }) => {
             const name = row.original.name;
-            return <Link to={`/app/project/${row.original._id}`}>{name}</Link>;
+            return <Link to={`/app/project/${row.original._id}/kanban`}>{name}</Link>;
         },
     },
     {

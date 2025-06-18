@@ -17,8 +17,20 @@ export default function MainApp({}: Props) {
                     <Routes>
                         <Route path={"projects"} element={<UserProjects />} />
                         <Route
-                            path={"project/:projectId"}
-                            element={<ProjectView />}
+                            path={"project/:projectId/kanban"}
+                            element={<ProjectView tab="kanban" />}
+                        />
+                        <Route
+                            path={"project/:projectId/tasklist"}
+                            element={<ProjectView tab="tasklist" />}
+                        />
+                        <Route
+                            path={"project/:projectId/members"}
+                            element={<ProjectView tab="members" />}
+                        />
+                        <Route
+                            path={"project/:projectId/notes"}
+                            element={<ProjectView tab="notes" />}
                         />
                         <Route
                             path="project/:projectId/task/:taskId"
