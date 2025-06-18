@@ -9,7 +9,7 @@ const projectNoteSchema = new mongoose.Schema(
         },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "ProjectMember",
             required: true,
         },
         content: {
