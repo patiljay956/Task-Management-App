@@ -5,6 +5,7 @@ import {
     getNoteById,
     updateNote,
     deleteNote,
+    getNotesOfMember,
 } from "../controllers/note.controller.js";
 import { hasProjectRole, verifyToken } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validator.middleware.js";
@@ -19,6 +20,9 @@ const router = Router();
 router.use(verifyToken); // Apply token verification middleware to all routes
 
 // Routes for notes
+router
+    .route("/:projectId/all-notes")
+    .get([projectIdValidator()], validate, getNotesOfMember);
 router
     .route("/:projectId")
     .get(
@@ -65,7 +69,7 @@ router
         updateNote,
     )
     .delete(
-        noteIdValidator(),
+        [projectIdValidator(), noteIdValidator()],
         hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
         validate,
         deleteNote,

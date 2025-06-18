@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ProjectNote } from "../models/notes.models.js";
 import { Project } from "../models/project.models.js";
+import { ProjectMember } from "../models/projectmember.models.js";
 
 const createNote = asyncHandler(async (req, res) => {
     const { content } = req.body;
@@ -15,6 +16,16 @@ const createNote = asyncHandler(async (req, res) => {
 
     const existingProject = await Project.findById(projectId).lean();
 
+    // get the member id of the user in the project
+    const existingMember = await ProjectMember.findOne({
+        project: projectId,
+        user: req.user?._id,
+    });
+
+    if (!existingMember) {
+        throw new ApiError(403, "You are not a member of this project");
+    }
+
     if (!existingProject) {
         throw new ApiError(404, "Project not found");
     }
@@ -22,8 +33,12 @@ const createNote = asyncHandler(async (req, res) => {
     const newNote = await ProjectNote.create({
         project: projectId,
         content,
-        createdBy: req.user?._id,
+        createdBy: existingMember._id,
     });
+
+    if (!newNote) {
+        throw new ApiError(500, "Failed to create note");
+    }
 
     return res
         .status(201)
@@ -49,12 +64,15 @@ const getNotes = asyncHandler(async (req, res) => {
     })
         .select("-__v")
         .populate("project", "name")
-        .populate("createdBy", "name email avatar")
+        .populate({
+            path: "createdBy",
+            select: "user",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
         .lean();
-
-    if (!notes || notes.length === 0) {
-        throw new ApiError(404, "No notes found");
-    }
 
     return res
         .status(200)
@@ -68,13 +86,28 @@ const getNoteById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Note ID is required");
     }
 
+    // get the member id of the user in the project
+    const existingMember = await ProjectMember.findOne({
+        user: req.user?._id,
+    });
+
+    if (!existingMember) {
+        throw new ApiError(403, "You are not authorized to view this note");
+    }
+
     const note = await ProjectNote.findOne({
         _id: noteId,
-        createdBy: req.user?._id,
     })
         .select("-__v")
         .populate("project", "name")
-        .populate("createdBy", "name email")
+        .populate({
+            path: "createdBy",
+            select: "user",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
         .lean();
 
     if (!note) {
@@ -94,14 +127,30 @@ const updateNote = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Note ID is required");
     }
 
+    const existingMember = await ProjectMember.findOne({
+        _id: noteId,
+        user: req.user?._id,
+    });
+
+    if (!existingMember) {
+        throw new ApiError(403, "You are not authorized to update this note");
+    }
+
     const updatedNote = await ProjectNote.findOneAndUpdate(
-        { _id: noteId, createdBy: req.user?._id },
+        { _id: noteId, createdBy: existingMember._id },
         { content },
         { new: true, runValidators: true },
     )
         .select("-__v")
         .populate("project", "name")
-        .populate("createdBy", "name email")
+        .populate({
+            path: "createdBy",
+            select: "user",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
         .lean();
 
     if (!updatedNote) {
@@ -134,4 +183,48 @@ const deleteNote = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, null, "Note deleted successfully"));
 });
 
-export { createNote, getNotes, getNoteById, updateNote, deleteNote };
+const getNotesOfMember = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+
+    // get all member ids of the user in all projects
+    const projectMembers = await ProjectMember.find({ user: userId })
+        .select("_id project")
+        .lean();
+    if (projectMembers?.length === 0) {
+        return res
+            .status(200)
+            .json(new ApiResponse(200, [], "No projects found for this user"));
+    }
+
+    // get all member ids
+    const projectMemberIds = projectMembers.map((member) => member._id);
+
+    // get all notes of the user in all projects
+    const notes = await ProjectNote.find({
+        createdBy: { $in: projectMemberIds },
+    })
+        .select("-__v")
+        .populate("project", "name description ")
+        .populate({
+            path: "createdBy",
+            select: "user",
+            populate: {
+                path: "user",
+                select: "_id name email username avatar",
+            },
+        })
+        .lean();
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, notes, "Notes fetched successfully"));
+});
+
+export {
+    createNote,
+    getNotes,
+    getNoteById,
+    updateNote,
+    deleteNote,
+    getNotesOfMember,
+};
