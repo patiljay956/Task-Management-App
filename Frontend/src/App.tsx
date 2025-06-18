@@ -11,6 +11,7 @@ import { ErrorBoundary } from "./components/error/error-boundary";
 import { Toaster } from "./components/ui/sonner";
 import TokenAction from "./views/token-action.view";
 import { StoreProvider } from "./components/contexts/store-provider";
+import NotFound from "./views/not-found.view";
 
 function App() {
     return (
@@ -48,6 +49,12 @@ function App() {
                                         <RequireAuth>
                                             <MainApp />
                                         </RequireAuth>
+                                    }
+                                />
+                                <Route
+                                    path="*"
+                                    element={
+                                        <NotFound className="min-h-screen" />
                                     }
                                 />
                             </Routes>

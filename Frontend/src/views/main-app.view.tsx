@@ -7,6 +7,7 @@ import { ErrorBoundary } from "@/components/error/error-boundary";
 import { TaskView } from "./app/task.view";
 import UserTasksView from "./app/user-tasks.view";
 import UserNotesView from "./app/notes.view";
+import NotFound from "./not-found.view";
 
 type Props = {};
 
@@ -39,6 +40,10 @@ export default function MainApp({}: Props) {
                         />
                         <Route path="tasks" element={<UserTasksView />} />
                         <Route path="notes" element={<UserNotesView />} />
+                        <Route
+                            path="*"
+                            element={<NotFound className="h-full" />}
+                        />
                     </Routes>
                 </ErrorBoundary>
             </AppLayout>
