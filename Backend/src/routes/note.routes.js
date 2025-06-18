@@ -57,9 +57,12 @@ router
             UserRolesEnum.MEMBER,
         ]),
         getNoteById,
-    )
+    );
+
+router
+    .route("/:projectId/:noteId/:memberId")
     .patch(
-        [projectIdValidator(), noteIdValidator(), noteValidator()],
+        [projectIdValidator(), noteIdValidator()],
         validate,
         hasProjectRole([
             UserRolesEnum.ADMIN,
