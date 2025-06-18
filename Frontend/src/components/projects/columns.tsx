@@ -12,7 +12,11 @@ export const columns: ColumnDef<Project>[] = [
         header: "Name",
         cell: ({ row }) => {
             const name = row.original.name;
-            return <Link to={`/app/project/${row.original._id}/kanban`}>{name}</Link>;
+            return (
+                <Link to={`/app/project/${row.original._id}/kanban`}>
+                    {name}
+                </Link>
+            );
         },
     },
     {
@@ -35,14 +39,6 @@ export const columns: ColumnDef<Project>[] = [
         header: "Created At",
         cell: ({ row }) => {
             const value = row.getValue("createdAt") as string;
-            return new Date(value).toLocaleDateString();
-        },
-    },
-    {
-        accessorKey: "updatedAt",
-        header: "Updated At",
-        cell: ({ row }) => {
-            const value = row.getValue("updatedAt") as string;
             return new Date(value).toLocaleDateString();
         },
     },

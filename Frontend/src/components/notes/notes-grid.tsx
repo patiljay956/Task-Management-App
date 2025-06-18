@@ -8,9 +8,10 @@ import { useAuth } from "@/hooks/use-auth";
 
 type Props = {
     notes: Note[];
+    disableAddOption?: boolean;
 };
 
-export const NotesGrid = ({ notes }: Props) => {
+export const NotesGrid = ({ notes, disableAddOption = false }: Props) => {
     const [open, setOpen] = useState<boolean>(false);
     const { user } = useAuth();
     return (
@@ -25,19 +26,21 @@ export const NotesGrid = ({ notes }: Props) => {
                 ))}
             </div>
 
-            <AddNoteDialog
-                open={open}
-                onOpenChange={(value) => {
-                    setOpen(value);
-                }}
-            >
-                <Button
-                    size="icon"
-                    className="fixed bottom-6 right-6 rounded-full p-4 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 ease-out"
+            {!disableAddOption && (
+                <AddNoteDialog
+                    open={open}
+                    onOpenChange={(value) => {
+                        setOpen(value);
+                    }}
                 >
-                    <Plus className="h-8 w-8" />
-                </Button>
-            </AddNoteDialog>
+                    <Button
+                        size="icon"
+                        className="fixed bottom-6 right-6 rounded-full p-4 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 ease-out"
+                    >
+                        <Plus className="h-8 w-8" />
+                    </Button>
+                </AddNoteDialog>
+            )}
         </>
     );
 };

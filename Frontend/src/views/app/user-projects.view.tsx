@@ -18,7 +18,6 @@ export default function UserProjects({}: Props) {
                     await API_PROJECT_ENDPOINTS.getProjects();
 
                 if (response.status === 200) {
-                    console.log(response.data);
                     setStore((prev) => {
                         return {
                             ...prev,

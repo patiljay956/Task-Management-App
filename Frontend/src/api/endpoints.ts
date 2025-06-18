@@ -379,4 +379,7 @@ export const API_NOTE_ENDPOINTS = {
             },
         );
     },
+    getUserNotes: async function () {
+        return await api.get(`/note/user-notes`);
+    },
 };
