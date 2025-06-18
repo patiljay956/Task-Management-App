@@ -20,9 +20,8 @@ const router = Router();
 router.use(verifyToken); // Apply token verification middleware to all routes
 
 // Routes for notes
-router
-    .route("/:projectId/all-notes")
-    .get([projectIdValidator()], validate, getNotesOfMember);
+router.route("/user-notes").get(getNotesOfMember);
+
 router
     .route("/:projectId")
     .get(
