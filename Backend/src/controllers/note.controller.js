@@ -49,7 +49,7 @@ const getNotes = asyncHandler(async (req, res) => {
     })
         .select("-__v")
         .populate("project", "name")
-        .populate("createdBy", "name email")
+        .populate("createdBy", "name email avatar")
         .lean();
 
     if (!notes || notes.length === 0) {
