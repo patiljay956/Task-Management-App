@@ -23,12 +23,15 @@ import projectsRouters from "./routes/project.routes.js";
 import notesRoutes from "./routes/note.routes.js";
 import subtasksRoutes from "./routes/subtask.routes.js";
 
+import projectAdminRoutes from "./routes/project_admin.routes.js";
+
 // routes declaration
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/user", usersRouters);
 app.use("/api/v1/project", projectsRouters);
 app.use("/api/v1/note", notesRoutes);
 app.use("/api/v1/subtask", subtasksRoutes);
+app.use("/api/v1/project-admin", projectAdminRoutes);
 
 import { ApiError } from "./utils/apiErrors.js";
 
