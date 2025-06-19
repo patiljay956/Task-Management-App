@@ -12,6 +12,7 @@ import { Toaster } from "./components/ui/sonner";
 import TokenAction from "./views/token-action.view";
 import { StoreProvider } from "./components/contexts/store-provider";
 import NotFound from "./views/not-found.view";
+import Home from "./views/home";
 
 function App() {
     return (
@@ -23,8 +24,9 @@ function App() {
                             <Routes>
                                 <Route
                                     path="/"
-                                    element={<Navigate to="/app" replace />}
+                                    element={<Navigate to="/home" replace />}
                                 />
+                                <Route path="/home" Component={Home} />
                                 <Route path="/login" Component={Login} />
                                 <Route path="/register" Component={Register} />
                                 <Route

@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import MemberTableAction from "./member-table-action";
 import type { ProjectMember } from "@/types/project";
 import UserHover from "../projects/user-hover";
@@ -17,7 +17,13 @@ export const columns: ColumnDef<ProjectMember>[] = [
                     className="size-8"
                     onClick={() => column.toggleSorting()}
                 >
-                    <ArrowUpDown className="size-4" />
+                    {column.getIsSorted() === "asc" ? (
+                        <ArrowUp className="size-4" />
+                    ) : column.getIsSorted() === "desc" ? (
+                        <ArrowDown className="size-4" />
+                    ) : (
+                        <ArrowUpDown className="size-4" />
+                    )}
                 </Button>
             </div>
         ),
@@ -28,12 +34,48 @@ export const columns: ColumnDef<ProjectMember>[] = [
     },
     {
         accessorKey: "user.email",
-        header: "Email",
+        header: ({ column }) => (
+            <div className="flex items-center gap-2">
+                Email
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                    onClick={() => column.toggleSorting()}
+                >
+                    {column.getIsSorted() === "asc" ? (
+                        <ArrowUp className="size-4" />
+                    ) : column.getIsSorted() === "desc" ? (
+                        <ArrowDown className="size-4" />
+                    ) : (
+                        <ArrowUpDown className="size-4" />
+                    )}
+                </Button>
+            </div>
+        ),
         cell: ({ row }) => row.original.user.email,
     },
     {
         accessorKey: "role",
-        header: "Role",
+        header: ({ column }) => (
+            <div className="flex items-center gap-2">
+                Role
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8"
+                    onClick={() => column.toggleSorting()}
+                >
+                    {column.getIsSorted() === "asc" ? (
+                        <ArrowUp className="size-4" />
+                    ) : column.getIsSorted() === "desc" ? (
+                        <ArrowDown className="size-4" />
+                    ) : (
+                        <ArrowUpDown className="size-4" />
+                    )}
+                </Button>
+            </div>
+        ),
         cell: ({ row }) => (
             <span className="capitalize">{row.original.role}</span>
         ),
@@ -41,6 +83,7 @@ export const columns: ColumnDef<ProjectMember>[] = [
     {
         id: "actions",
         header: "Actions",
+        enableSorting: false,
         cell: ({ row }) => {
             return <MemberTableAction row={row} />;
         },
