@@ -70,3 +70,48 @@ export type Note = {
     createdBy: ProjectMember;
     project: Project;
 };
+
+// project summary types
+export type TaskStat = {
+    _id: "todo" | "done" | "in_progress";
+    count: number;
+};
+
+export type TopProject = {
+    _id: string;
+    taskCount: number;
+};
+
+export type ProjectSummary = {
+    totalProjects: number;
+    AllTaskStats: TaskStat[];
+    topFiveActiveProjects: TopProject[];
+};
+
+export type ProjectDetails = {
+    _id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    memberCount: number;
+    taskCount: number;
+    completionRate: number;
+};
+
+// recent activity types
+export type ActivityItem =
+    | {
+          type: "task";
+          date: string;
+          data: Task;
+      }
+    | {
+          type: "note";
+          date: string;
+          data: Note;
+      }
+    | {
+          type: "member";
+          date: string;
+          data: ProjectMember;
+      };

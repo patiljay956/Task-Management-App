@@ -1,5 +1,6 @@
 //creating base url
 export const BASE_URL = "/app";
+export const DASHBOARD = BASE_URL + "/dashboard";
 export const PROJECTS = BASE_URL + "/projects";
 export const PROJECT = BASE_URL + "/project/:projectId";
 export const TASKS = BASE_URL + "/tasks";

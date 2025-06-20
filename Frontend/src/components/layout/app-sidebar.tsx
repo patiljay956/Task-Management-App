@@ -20,7 +20,7 @@ import { Separator } from "../ui/separator";
 import { NavUser } from "./app-profile-menu";
 import { useAuth } from "@/hooks/use-auth";
 ("./app-profile-menu");
-import { NOTES, PROJECTS, TASKS } from "@/constants/app-routes";
+import { DASHBOARD, NOTES, PROJECTS, TASKS } from "@/constants/app-routes";
 
 type Props = {};
 
@@ -30,7 +30,7 @@ const sidebarMenu = [
             {
                 label: "Dashboard",
                 icon: LayoutDashboard,
-                to: "dashboard",
+                to: DASHBOARD,
             },
             {
                 label: "Project",
