@@ -19,7 +19,7 @@ const router = Router();
 
 router
     .route("/update-avatar")
-    .patch(verifyToken, upload.single("avatar"), updateUserAvatar);
+    .patch(verifyToken, upload.single("file"), updateUserAvatar);
 
 //get user by id
 router

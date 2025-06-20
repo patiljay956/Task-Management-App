@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+coverage
+*.log
+*.lock
+*.tmp
+.DS_Store
+.env
+.vscode
+.idea
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.md

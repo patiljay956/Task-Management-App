@@ -43,7 +43,12 @@ const userRegistrationValidator = () => {
 
 const userLoginValidator = () => {
     return [
-        body("email").isEmail().withMessage("Email is not valid"),
+        body("email, username").custom((value, { req }) => {
+            if (!value && !req.body.email && !req.body.username) {
+                throw new Error("Either email or username is required");
+            }
+            return true;
+        }),
         body("password").notEmpty().withMessage("Password cannot be empty"),
     ];
 };
