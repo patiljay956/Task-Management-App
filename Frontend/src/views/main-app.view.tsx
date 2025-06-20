@@ -8,6 +8,7 @@ import { TaskView } from "./app/task.view";
 import UserTasksView from "./app/user-tasks.view";
 import UserNotesView from "./app/notes.view";
 import NotFound from "./not-found.view";
+import DashboardView from "./app/dashboard.view";
 
 type Props = {};
 
@@ -17,6 +18,10 @@ export default function MainApp({}: Props) {
             <AppLayout>
                 <ErrorBoundary>
                     <Routes>
+                        <Route
+                            path={"/dashboard"}
+                            element={<DashboardView />}
+                        />
                         <Route path={"projects"} element={<UserProjects />} />
                         <Route
                             path={"project/:projectId/kanban"}

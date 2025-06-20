@@ -383,3 +383,15 @@ export const API_NOTE_ENDPOINTS = {
         return await api.get(`/note/user-notes`);
     },
 };
+
+export const API_DASHBOARD_ENDPOINTS = {
+    getProjectsSummary: async function () {
+        return await api.get(`/project-admin/projects/summary`);
+    },
+    getProjectDetails: async function () {
+        return await api.get(`/project-admin/projects/details`);
+    },
+    getRecentActivity: async function () {
+        return await api.get(`/project-admin/activity`);
+    },
+};
