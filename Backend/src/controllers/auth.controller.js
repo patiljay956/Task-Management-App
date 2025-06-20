@@ -55,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // 4. sand email Create verification URL (frontend route)
 
-    const verificationUrl = `${process.env.BASE_URL}/user/verify-email?token=${unHashedToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${unHashedToken}`;
 
     const emailContent = emailVerificationMailGenerator(
         user.username,
@@ -236,7 +236,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     // save to database
     await existingUser.save();
 
-    const verifyEmailUrl = `${process.env.BASE_URL}/user/verify-email?token=${unHashedToken}`;
+    const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email/${unHashedToken}`;
 
     // send mail
     const emailContent = emailVerificationMailGenerator(
@@ -273,7 +273,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     const { unHashedToken } =
         await existingUser.generateTemporaryToken("password");
 
-    const forgetPasswordLink = `${process.env.BASE_URL}/user/reset-password?token=${unHashedToken} `;
+    const forgetPasswordLink = `${process.env.FRONTEND_URL}/reset-password/${unHashedToken} `;
 
     await existingUser.save();
 
