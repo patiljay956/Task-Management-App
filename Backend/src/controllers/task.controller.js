@@ -9,6 +9,7 @@ import {
     uploadOnCloudinary,
 } from "../utils/fileUpload.cloudinary.js";
 import { ProjectMember } from "../models/projectmember.models.js";
+import { SubTask } from "../models/subtasks.models.js";
 
 /**
  * Uploads an array of files to Cloudinary and returns attachment metadata.
