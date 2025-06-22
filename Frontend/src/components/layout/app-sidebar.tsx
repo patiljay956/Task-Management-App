@@ -20,7 +20,6 @@ import { Separator } from "../ui/separator";
 import { NavUser } from "./app-profile-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { DASHBOARD, NOTES, PROJECTS, TASKS } from "@/constants/app-routes";
-import { cn } from "@/lib/utils";
 
 type Props = {};
 
