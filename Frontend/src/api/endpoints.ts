@@ -395,3 +395,9 @@ export const API_DASHBOARD_ENDPOINTS = {
         return await api.get(`/project-admin/activity`);
     },
 };
+
+export const API_HEALTH_ENDPOINTS = {
+    getHealth: async function () {
+        return await api.get(`/healthcheck`);
+    },
+};
