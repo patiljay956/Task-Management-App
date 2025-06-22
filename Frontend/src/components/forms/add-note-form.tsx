@@ -84,6 +84,7 @@ export function AddNoteForm({ onSuccess }: Props) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {" "}
                 <FormField
                     control={form.control}
                     name="content"
@@ -91,23 +92,24 @@ export function AddNoteForm({ onSuccess }: Props) {
                         <FormItem>
                             <FormControl>
                                 <Textarea
-                                    placeholder="Enter your note..."
+                                    placeholder="Enter your note content here..."
+                                    className="min-h-[120px] bg-amber-500/5 border-amber-500/20 focus:border-amber-500 focus:ring-amber-500/20 resize-none placeholder:text-muted-foreground/70"
                                     {...field}
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-400" />
                         </FormItem>
                     )}
                 />
                 <Button
                     disabled={form.formState.isSubmitting}
                     type="submit"
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-white border-none"
                 >
                     {form.formState.isSubmitting ? (
                         <>
-                            <LoaderCircle className="animate-spin mr-2" />
-                            Adding...
+                            <LoaderCircle className="animate-spin mr-2 h-4 w-4" />
+                            Adding Note...
                         </>
                     ) : (
                         "Add Note"

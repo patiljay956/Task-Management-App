@@ -27,7 +27,7 @@ import { API_USER_ENDPOINTS } from "@/api/endpoints";
 import { toast } from "sonner";
 import { type LoginResponse } from "@/types/auth";
 import axios from "axios";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, LogIn, Mail, Lock } from "lucide-react";
 
 type Props = {};
 
@@ -88,17 +88,20 @@ function LoginForm({}: Props) {
             setIsLoginDisabled(false);
         }
     }
-
     return (
         <>
-            <Card className="w-full max-w-sm">
+            <Card className="w-full max-w-md bg-slate-900/50 border-slate-800 backdrop-blur-sm shadow-xl">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">
-                        Login Your Account
-                    </CardTitle>
-                    <CardDescription>
-                        Login Into Your Account Using Your Credentials To Get
-                        Started.
+                    <div className="flex justify-center mb-2">
+                        <div className="p-3 rounded-full bg-slate-800/80 border border-slate-700">
+                            <LogIn className="w-6 h-6 text-blue-400" />
+                        </div>
+                    </div>
+                    <CardTitle className="text-2xl bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        Welcome Back
+                    </CardTitle>{" "}
+                    <CardDescription className="text-slate-300">
+                        Sign in to access your dashboard and projects
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -112,31 +115,42 @@ function LoginForm({}: Props) {
                                 name="identifier"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Username or Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder='"Joe Doe" or "joe@doe.com"'
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                        <FormLabel className="text-slate-200">
+                                            Username or Email
+                                        </FormLabel>
+                                        <div className="relative">
+                                            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                                            <FormControl>
+                                                <Input
+                                                    placeholder='"joe" or "joe@example.com"'
+                                                    className="pl-10 bg-slate-800/50 border-slate-700 focus-visible:ring-blue-500"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </div>
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />
-
+                            />{" "}
                             <FormField
                                 control={form.control}
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                placeholder="********"
-                                                {...field}
-                                            />
-                                        </FormControl>
+                                        <FormLabel className="text-slate-200">
+                                            Password
+                                        </FormLabel>
+                                        <div className="relative">
+                                            <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                                            <FormControl>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="********"
+                                                    className="pl-10 bg-slate-800/50 border-slate-700 focus-visible:ring-blue-500"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </div>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -147,38 +161,53 @@ function LoginForm({}: Props) {
                                     form.formState.isSubmitting ||
                                     isLoginDisabled
                                 }
-                                className="w-full"
+                                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 mt-2"
                             >
-                                {form.formState.isSubmitting && (
-                                    <LoaderCircle className="animate-spin" />
+                                {form.formState.isSubmitting ||
+                                isLoginDisabled ? (
+                                    <LoaderCircle className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                    <LogIn className="w-4 h-4 mr-2" />
                                 )}
-                                Login
+                                Sign In
                             </Button>
                         </form>
-                    </Form>
+                    </Form>{" "}
                 </CardContent>
-                <CardFooter className="flex-col gap-1">
-                    <span className="text-center ">
-                        Already have an account?
-                        <Link to="/register">
-                            <Button
-                                className="underline hover:scale-105"
-                                variant={"link"}
-                            >
-                                register
-                            </Button>
-                        </Link>
-                    </span>
-                    <span className="text-center ">
-                        <Link to="/forgot-password">
-                            <Button
-                                className="underline hover:scale-105"
-                                variant={"link"}
-                            >
-                                forgot password?
-                            </Button>
-                        </Link>
-                    </span>
+                <CardFooter className="flex-col gap-4 pt-2">
+                    <div className="relative w-full">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-slate-700"></div>
+                        </div>
+                        <div className="relative flex justify-center text-xs">
+                            <span className="bg-slate-900 px-2 text-slate-400">
+                                or
+                            </span>
+                        </div>
+                    </div>
+                    <div className="flex flex-col space-y-2 text-center">
+                        <span className="text-sm text-slate-300">
+                            Don't have an account?
+                            <Link to="/register">
+                                <Button
+                                    className="underline font-semibold text-blue-400 hover:text-blue-300"
+                                    variant={"link"}
+                                >
+                                    Sign up
+                                </Button>
+                            </Link>
+                        </span>
+                        <span className="text-sm text-slate-400">
+                            <Link to="/forgot-password">
+                                <Button
+                                    className="underline text-slate-400 hover:text-slate-300"
+                                    variant={"link"}
+                                >
+                                    Forgot your password?
+                                </Button>
+                            </Link>
+                        </span>
+                    </div>
                 </CardFooter>
             </Card>
         </>

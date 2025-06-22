@@ -11,12 +11,12 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "title",
         header: ({ column }) => (
-            <div className="flex items-center gap-2">
-                Title
+            <div className="flex items-center gap-2 text-green-500 font-medium">
+                Task Details
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="size-8"
+                    className="size-8 hover:bg-green-500/10 hover:text-green-600"
                     onClick={() => column.toggleSorting()}
                 >
                     {column.getIsSorted() === "asc" ? (
@@ -34,12 +34,12 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "priority",
         header: ({ column }) => (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-green-500 font-medium">
                 Priority
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="size-8"
+                    className="size-8 hover:bg-green-500/10 hover:text-green-600"
                     onClick={() => column.toggleSorting()}
                 >
                     {column.getIsSorted() === "asc" ? (
@@ -60,12 +60,12 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "assignedTo",
         header: ({ column }) => (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-green-500 font-medium">
                 Assigned To
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="size-8"
+                    className="size-8 hover:bg-green-500/10 hover:text-green-600"
                     onClick={() => column.toggleSorting()}
                 >
                     {column.getIsSorted() === "asc" ? (
@@ -86,12 +86,12 @@ export const columns: ColumnDef<Task>[] = [
     {
         accessorKey: "status",
         header: ({ column }) => (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-green-500 font-medium">
                 Status
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="size-8"
+                    className="size-8 hover:bg-green-500/10 hover:text-green-600"
                     onClick={() => column.toggleSorting()}
                 >
                     {column.getIsSorted() === "asc" ? (
@@ -106,7 +106,20 @@ export const columns: ColumnDef<Task>[] = [
         ),
         cell: ({ row }) => {
             if (!row.original) return null;
-            return <span className="capitalize">{row.original?.status}</span>;
+            const statusColors = {
+                todo: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200",
+                in_progress:
+                    "bg-yellow-200 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300",
+                done: "bg-green-200 text-green-700 dark:bg-green-900/50 dark:text-green-300",
+            };
+            const status = row.original?.status || "todo";
+            return (
+                <span
+                    className={`capitalize px-2 py-1 rounded-md text-xs font-medium ${statusColors[status]}`}
+                >
+                    {status === "in_progress" ? "in progress" : status}
+                </span>
+            );
         },
     },
     {

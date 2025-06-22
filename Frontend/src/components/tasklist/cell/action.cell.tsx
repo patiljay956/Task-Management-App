@@ -5,11 +5,12 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Task } from "@/types/project";
 import type { Row } from "@tanstack/react-table";
-import { EllipsisVertical, SquarePen, Trash } from "lucide-react";
+import { Settings, SquarePen, Trash } from "lucide-react";
 import ConfirmDialog from "@/components/dialogs/confirm-dialog";
 import { toast } from "sonner";
 import axios from "axios";
@@ -59,41 +60,44 @@ export default function Action({ row }: Props) {
             else toast.error("Something went wrong. Please try again.");
         }
     };
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
                     disabled={row.original.assignedTo?.user._id === user?._id}
+                    className="h-8 w-8 p-0 hover:bg-green-500/10"
                 >
-                    <EllipsisVertical size={18} />
+                    <Settings size={16} className="text-green-600" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="border-green-500/20">
+                <DropdownMenuLabel className="text-green-600">
+                    Task Actions
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-green-500/20" />
                 <DropdownMenuItem asChild>
                     <AddOrUpdateTaskDialog initialData={row.original}>
                         <span
                             onClick={(e) => e.stopPropagation()}
-                            className="flex w-full items-center text-sm px-2 py-1.5 hover:bg-muted rounded-md"
+                            className="flex w-full items-center text-sm px-2 py-1.5 hover:bg-green-500/10 rounded-md cursor-pointer"
                         >
-                            <SquarePen className="mr-2" size={16} />
-                            Edit
+                            <SquarePen
+                                className="mr-2 text-green-600"
+                                size={16}
+                            />
+                            Edit Task
                         </span>
                     </AddOrUpdateTaskDialog>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                    className="text-destructive focus:text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20
-                "
-                >
+                <DropdownMenuItem className="hover:bg-red-500/10 focus:bg-red-500/10 rounded-md px-0 py-0 mt-1">
                     <ConfirmDialog onAction={handleDelete} actionText="Delete">
                         <span
-                            className="flex gap-2 items-center"
+                            className="flex gap-2 items-center text-red-500 px-2 py-1.5 w-full"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <Trash className="text-destructive" />
-                            Delete
+                            <Trash size={16} />
+                            Delete Task
                         </span>
                     </ConfirmDialog>
                 </DropdownMenuItem>

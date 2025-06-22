@@ -225,14 +225,21 @@ export default function AddOrUpdateTaskForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 pt-2"
             >
+                {" "}
                 <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title</FormLabel>
+                            <FormLabel className="text-green-700 dark:text-green-400">
+                                Task Title
+                            </FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input
+                                    {...field}
+                                    placeholder="Enter a descriptive title for your task"
+                                    className="border-green-500/30 focus:ring-green-500/20 focus:border-green-500 bg-green-500/5"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -243,31 +250,40 @@ export default function AddOrUpdateTaskForm({
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel className="text-green-700 dark:text-green-400">
+                                Task Description
+                            </FormLabel>
                             <FormControl>
-                                <Textarea {...field} rows={4} />
+                                <Textarea
+                                    {...field}
+                                    rows={4}
+                                    placeholder="Provide details about what needs to be done"
+                                    className="border-green-500/30 focus:ring-green-500/20 focus:border-green-500 bg-green-500/5"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
-                />
+                />{" "}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
                         control={form.control}
                         name="status"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Status</FormLabel>
+                                <FormLabel className="text-green-700 dark:text-green-400">
+                                    Task Status
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-green-500/30 focus:ring-green-500/20 focus:border-green-500 bg-green-500/5">
                                             <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="border-green-500/30">
                                         {Object.values({
                                             todo: "todo",
                                             in_progress: "in_progress",
@@ -276,8 +292,11 @@ export default function AddOrUpdateTaskForm({
                                             <SelectItem
                                                 key={status}
                                                 value={status}
+                                                className="hover:bg-green-500/10 focus:bg-green-500/10"
                                             >
-                                                {status.replace("_", " ")}
+                                                <span className="capitalize">
+                                                    {status.replace("_", " ")}
+                                                </span>
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -290,17 +309,19 @@ export default function AddOrUpdateTaskForm({
                         name="priority"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Priority</FormLabel>
+                                <FormLabel className="text-green-700 dark:text-green-400">
+                                    Task Priority
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-green-500/30 focus:ring-green-500/20 focus:border-green-500 bg-green-500/5">
                                             <SelectValue placeholder="Select priority" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="border-green-500/30">
                                         {Object.values({
                                             low: "low",
                                             medium: "medium",
@@ -309,8 +330,11 @@ export default function AddOrUpdateTaskForm({
                                             <SelectItem
                                                 key={priority}
                                                 value={priority}
+                                                className="hover:bg-green-500/10 focus:bg-green-500/10"
                                             >
-                                                {priority}
+                                                <span className="capitalize">
+                                                    {priority}
+                                                </span>
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -323,21 +347,24 @@ export default function AddOrUpdateTaskForm({
                         name="assignedTo"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Assigned To</FormLabel>
+                                <FormLabel className="text-green-700 dark:text-green-400">
+                                    Assigned To
+                                </FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select user" />
+                                        <SelectTrigger className="border-green-500/30 focus:ring-green-500/20 focus:border-green-500 bg-green-500/5">
+                                            <SelectValue placeholder="Select team member" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
+                                    <SelectContent className="border-green-500/30">
                                         {members.map((member) => (
                                             <SelectItem
                                                 key={member._id}
                                                 value={member._id}
+                                                className="hover:bg-green-500/10 focus:bg-green-500/10"
                                             >
                                                 {member.user.name}
                                             </SelectItem>
@@ -346,21 +373,26 @@ export default function AddOrUpdateTaskForm({
                                 </Select>
                             </FormItem>
                         )}
-                    />
+                    />{" "}
                     <FormField
                         control={form.control}
                         name="files"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Attachments</FormLabel>
+                                <FormLabel className="text-green-700 dark:text-green-400">
+                                    Task Attachments
+                                </FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="file"
-                                        multiple
-                                        onChange={(e) =>
-                                            field.onChange(e.target.files)
-                                        }
-                                    />
+                                    <div className="border-2 border-dashed border-green-500/30 rounded-lg p-4 bg-green-500/5 hover:bg-green-500/10 transition-colors">
+                                        <Input
+                                            type="file"
+                                            multiple
+                                            onChange={(e) =>
+                                                field.onChange(e.target.files)
+                                            }
+                                            className="border-none bg-transparent file:bg-green-500/10 file:text-green-600 file:border-0 file:rounded-md file:px-3 file:py-2 file:font-medium hover:file:bg-green-500/20 cursor-pointer"
+                                        />
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -378,16 +410,17 @@ export default function AddOrUpdateTaskForm({
                             shouldValidate: true,
                         });
                     }}
-                />
-                <div className="flex">
+                />{" "}
+                <div className="flex justify-end">
                     <Button
                         disabled={form.formState.isSubmitting}
                         type="submit"
+                        className="gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-none shadow-md"
                     >
                         {form.formState.isSubmitting && (
-                            <LoaderCircle className="animate-spin" />
+                            <LoaderCircle className="animate-spin h-4 w-4" />
                         )}
-                        {initialData ? "Update" : "Create"}
+                        {initialData ? "Update Task" : "Create Task"}
                     </Button>
                 </div>
             </form>
