@@ -70,7 +70,7 @@ export default function KanbanBoard() {
 
             const existingToTasks = prev.projectTasks[projectId!][toBoardKey];
 
-            const alreadyExists = existingToTasks.find(
+            const alreadyExists = existingToTasks?.find(
                 (task) => task._id === taskId,
             );
 
