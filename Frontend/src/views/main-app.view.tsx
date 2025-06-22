@@ -1,6 +1,6 @@
 import AppLayout from "@/components/layout/app-layout";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import UserProjects from "./app/user-projects.view";
 import ProjectView from "./app/project.view";
 import { ErrorBoundary } from "@/components/error/error-boundary";
@@ -18,6 +18,12 @@ export default function MainApp({}: Props) {
             <AppLayout>
                 <ErrorBoundary>
                     <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <Navigate to="dashboard" replace></Navigate>
+                            }
+                        />
                         <Route
                             path={"/dashboard"}
                             element={<DashboardView />}

@@ -25,7 +25,6 @@ export const API_USER_ENDPOINTS = {
         password: string;
     }) {
         if (z.string().email().safeParse(params.userNameOrEmail).success) {
-            console.log("email");
             return await api.post(
                 "/user/login",
                 {
@@ -393,5 +392,11 @@ export const API_DASHBOARD_ENDPOINTS = {
     },
     getRecentActivity: async function () {
         return await api.get(`/project-admin/activity`);
+    },
+};
+
+export const API_HEALTH_ENDPOINTS = {
+    getHealth: async function () {
+        return await api.get(`/healthcheck`);
     },
 };

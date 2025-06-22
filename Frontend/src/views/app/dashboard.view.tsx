@@ -26,7 +26,6 @@ export default function DashboardView({}: Props) {
                 const response: AxiosResponse =
                     await API_DASHBOARD_ENDPOINTS.getProjectsSummary();
                 if (response.status === 200) {
-                    console.log(response.data.data);
                     setProjectSummary(response.data.data);
                 }
             } catch (error) {
@@ -43,7 +42,6 @@ export default function DashboardView({}: Props) {
             try {
                 const response: AxiosResponse =
                     await API_DASHBOARD_ENDPOINTS.getProjectDetails();
-                console.log(response.data.data);
                 if (response.status === 200) {
                     setProjectDetails(response.data.data);
                 }
