@@ -31,25 +31,23 @@ import { API_HEALTH_ENDPOINTS } from "@/api/endpoints";
 const TaskFlowLanding = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    
+
     useEffect(() => {
         setIsVisible(true);
     }, []);
-    
+
     useEffect(() => {
         const healthCheck = async () => {
             const response = await API_HEALTH_ENDPOINTS.getHealth();
-    
+
             if (response.data.statusCode === 200) {
                 console.log("Health check successful");
             }
         };
-    
-        if (isVisible) {
-            healthCheck();
-        }
+
+        healthCheck();
     }, []);
-    
+
     const features = [
         {
             icon: <Kanban className="w-6 h-6" />,
@@ -70,7 +68,7 @@ const TaskFlowLanding = () => {
             title: "Task Management",
             description:
                 "Create, assign, and track tasks with priorities and deadlines",
-                status: "High • Medium • Low Priority",
+            status: "High • Medium • Low Priority",
         },
         {
             icon: <FileText className="w-6 h-6" />,
@@ -113,7 +111,6 @@ const TaskFlowLanding = () => {
         { number: "99.9%", label: "Uptime" },
         { number: "24/7", label: "Support" },
     ];
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">

@@ -25,7 +25,6 @@ export const API_USER_ENDPOINTS = {
         password: string;
     }) {
         if (z.string().email().safeParse(params.userNameOrEmail).success) {
-            console.log("email");
             return await api.post(
                 "/user/login",
                 {
