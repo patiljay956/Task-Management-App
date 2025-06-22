@@ -112,7 +112,7 @@ function LoginForm({}: Props) {
                                 name="identifier"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Username</FormLabel>
+                                        <FormLabel>Username or Email</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder='"Joe Doe" or "joe@doe.com"'
