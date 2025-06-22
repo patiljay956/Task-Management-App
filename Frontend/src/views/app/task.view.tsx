@@ -15,8 +15,33 @@ import type { ProjectTasks, SubTask, Task } from "@/types/project";
 import { Input } from "@/components/ui/input";
 import AddOrUpdateTaskDialog from "@/components/dialogs/add-or-update-task-dialog";
 import { BASE_URL } from "@/constants/app-routes";
+import { cn } from "@/lib/utils";
 
 type Props = {};
+
+const statusTheme = {
+    todo: {
+        bg: "from-blue-50/80 to-blue-100/80 dark:from-blue-950/40 dark:to-blue-900/30",
+        border: "border-blue-200 dark:border-blue-800",
+        title: "from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300",
+        badge: "bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300",
+        button: "from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
+    },
+    in_progress: {
+        bg: "from-yellow-50/80 to-yellow-100/80 dark:from-yellow-950/40 dark:to-yellow-900/30",
+        border: "border-yellow-200 dark:border-yellow-800",
+        title: "from-yellow-600 to-yellow-400 dark:from-yellow-400 dark:to-yellow-300",
+        badge: "bg-yellow-50/50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300",
+        button: "from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600",
+    },
+    done: {
+        bg: "from-emerald-50/80 to-emerald-100/80 dark:from-emerald-950/40 dark:to-emerald-900/30",
+        border: "border-emerald-200 dark:border-emerald-800",
+        title: "from-emerald-600 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300",
+        badge: "bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300",
+        button: "from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700",
+    },
+};
 
 export const TaskView = ({}: Props) => {
     const { projectId, taskId } = useParams<{
@@ -279,34 +304,65 @@ export const TaskView = ({}: Props) => {
         }
     };
 
+    const theme = statusTheme[task?.status || "todo"];
+
     return (
-        <Card className="w-full max-w-2xl rounded-2xl shadow-md mx-auto">
-            <CardHeader className="pb-3">
+        <Card
+            className={`
+    w-full max-w-2xl rounded-2xl shadow-md mx-auto border-0
+    bg-gradient-to-br ${theme.bg} ${theme.border}
+`}
+        >
+            <CardHeader
+                className={`pb-3 border-b ${theme.border} bg-gradient-to-br from-background via-background to-transparent`}
+            >
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <CardTitle className="text-xl">
+                        <CardTitle
+                            className={`text-xl bg-gradient-to-r ${theme.title} bg-clip-text text-transparent`}
+                        >
                             {task?.title + " : "}
                             <Link
                                 to={`${BASE_URL}/project/${task?.project?._id}/kanban`}
                             >
-                                <span className="text-muted-foreground underline">
+                                <span className="text-cyan-700 dark:text-cyan-300 underline font-semibold">
                                     {task?.project?.name}
                                 </span>
                             </Link>
                         </CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground mt-1">
                             {task?.description}
                         </p>
                         <div className="flex gap-2 mt-2">
-                            <Badge variant="outline">{task?.status}</Badge>
-                            <Badge variant="secondary">{task?.priority}</Badge>
+                            <Badge variant="outline" className={theme.badge}>
+                                {task?.status}
+                            </Badge>
+                            <Badge
+                                variant="secondary"
+                                className={cn(
+                                    task?.priority === "high"
+                                        ? "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/30"
+                                        : task?.priority === "medium"
+                                        ? "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30"
+                                        : task?.priority === "low"
+                                        ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30"
+                                        : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800/30",
+                                )}
+                            >
+                                {task?.priority}
+                            </Badge>
                         </div>
                     </div>
                     <AddOrUpdateTaskDialog
                         initialData={task}
                         projectMembers={store.projectMembers[projectId!] || []}
                     >
-                        <Button size="icon" variant="ghost" title="Edit Task">
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            title="Edit Task"
+                            className="hover:bg-cyan-100 hover:text-cyan-600 dark:hover:bg-cyan-900/20 rounded-full transition-colors"
+                        >
                             <Pencil className="w-4 h-4" />
                         </Button>
                     </AddOrUpdateTaskDialog>
@@ -318,6 +374,7 @@ export const TaskView = ({}: Props) => {
                         title="Subtasks"
                         subtasks={subtasks}
                         emptyText="No subtasks start by adding one"
+                        status={task?.status || "todo"}
                     />
 
                     {/* Add Subtask Input */}
@@ -326,18 +383,26 @@ export const TaskView = ({}: Props) => {
                             value={newSubtaskTitle}
                             onChange={(e) => setNewSubtaskTitle(e.target.value)}
                             placeholder="Add a subtask..."
-                            className="h-8"
+                            className={`
+        h-8 bg-white/80 dark:bg-slate-900/80
+        border ${theme.border}
+        focus:ring-2 focus:ring-offset-0 focus:${theme.button.split(" ")[0]}
+        transition-colors
+    `}
                         />
                         <Button
                             size="sm"
+                            className={`
+                bg-gradient-to-r ${theme.button}
+                text-white font-semibold
+            `}
                             onClick={() => {
                                 if (!newSubtaskTitle.trim()) return;
-
                                 handleAddSubtask(newSubtaskTitle.trim());
                                 setNewSubtaskTitle("");
                             }}
                         >
-                            <Plus className="w-4 h-4 mr-1" />
+                            <Plus className="w-4 h-4" />
                             Add
                         </Button>
                     </div>

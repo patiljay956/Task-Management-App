@@ -7,19 +7,52 @@ import { API_TASK_ENDPOINTS } from "@/api/endpoints";
 import { toast } from "sonner";
 import axios from "axios";
 
+type StatusType = keyof typeof statusTheme;
+
 type Props = {
     title: string;
     emptyText: string;
     subtasks: SubTask[] | null;
+    status: StatusType;
 };
 
-export const SubtaskSection = ({ title, emptyText, subtasks }: Props) => {
+// Accent color config
+const statusTheme = {
+    todo: {
+        bg: "bg-blue-50/60 dark:bg-blue-950/30",
+        border: "border-blue-200 dark:border-blue-800",
+        heading: "text-blue-700 dark:text-blue-300",
+        completed: "text-blue-400 dark:text-blue-500 line-through",
+    },
+    in_progress: {
+        bg: "bg-yellow-50/60 dark:bg-yellow-950/30",
+        border: "border-yellow-200 dark:border-yellow-800",
+        heading: "text-yellow-700 dark:text-yellow-300",
+        completed: "text-yellow-400 dark:text-yellow-500 line-through",
+    },
+    done: {
+        bg: "bg-emerald-50/60 dark:bg-emerald-950/30",
+        border: "border-emerald-200 dark:border-emerald-800",
+        heading: "text-emerald-700 dark:text-emerald-300",
+        completed: "text-emerald-400 dark:text-emerald-500 line-through",
+    },
+};
+
+export const SubtaskSection = ({
+    title,
+    emptyText,
+    subtasks,
+    status = "todo",
+}: Props) => {
     const { projectId, taskId } = useParams<{
         projectId: string;
         taskId: string;
     }>();
 
     const { store, setStore } = useStore();
+
+    // Use theme based on status
+    const theme = statusTheme[status];
 
     const handleToggle = async (subtask: SubTask, checked: boolean) => {
         if (!subtask?._id) return;
@@ -186,8 +219,10 @@ export const SubtaskSection = ({ title, emptyText, subtasks }: Props) => {
     };
 
     return (
-        <div>
-            <h3 className="font-semibold text-sm text-muted-foreground mb-2">
+        <div
+            className={`p-4 rounded-xl border ${theme.bg} ${theme.border} mb-4`}
+        >
+            <h3 className={`font-semibold text-sm mb-2 ${theme.heading}`}>
                 {title}
             </h3>
             {!subtasks ? (

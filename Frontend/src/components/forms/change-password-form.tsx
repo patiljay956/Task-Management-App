@@ -76,15 +76,25 @@ export default function ChangePasswordForm({}: Props) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 w-full"
+            >
                 <FormField
                     control={form.control}
                     name="oldPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Old Password</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-200">
+                                Current Password
+                            </FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <Input
+                                    type="password"
+                                    placeholder="Current password"
+                                    className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-blue-400/30 focus:border-blue-500 focus:ring-blue-500 text-slate-900 dark:text-slate-100"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -96,9 +106,16 @@ export default function ChangePasswordForm({}: Props) {
                     name="newPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>New Password</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-200">
+                                New Password
+                            </FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <Input
+                                    type="password"
+                                    placeholder="New password"
+                                    className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-blue-400/30 focus:border-blue-500 focus:ring-blue-500 text-slate-900 dark:text-slate-100"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -110,9 +127,16 @@ export default function ChangePasswordForm({}: Props) {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Confirm New Password</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-200">
+                                Confirm Password
+                            </FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <Input
+                                    type="password"
+                                    placeholder="Confirm password"
+                                    className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-blue-400/30 focus:border-blue-500 focus:ring-blue-500 text-slate-900 dark:text-slate-100"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -121,13 +145,12 @@ export default function ChangePasswordForm({}: Props) {
 
                 <Button
                     disabled={form.formState.isSubmitting}
-                    className="w-fit"
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-md transition-colors"
                     type="submit"
                 >
-                    {form.formState.isSubmitting ? (
-                        <LoaderCircle className="animate-spin" />
-                    ) : null}
-                    Update Password
+                    {form.formState.isSubmitting
+                        ? "Updating..."
+                        : "Update Password"}
                 </Button>
             </form>
         </Form>

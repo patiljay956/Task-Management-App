@@ -81,7 +81,7 @@ export default function TaskCard({ task }: Props) {
             ref={setNodeRef}
             key={task._id}
             className={cn(
-                "p-3 flex flex-col gap-2 bg-background hover:shadow-sm transition-all cursor-move border-l-3 hover:bg-gradient-to-br hover:from-cyan-50/30 hover:to-blue-50/30 dark:hover:from-cyan-900/5 dark:hover:to-blue-900/5",
+                "p-3 flex flex-col gap-2 bg-background hover:shadow-sm transition-all border-l-3 hover:bg-gradient-to-br hover:from-cyan-50/30 hover:to-blue-50/30 dark:hover:from-cyan-900/5 dark:hover:to-blue-900/5",
                 priorityConfig.borderClass || "border-l-slate-300",
             )}
             style={style}

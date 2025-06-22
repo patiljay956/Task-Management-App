@@ -384,13 +384,17 @@ export default function AddOrUpdateTaskForm({
                                 </FormLabel>
                                 <FormControl>
                                     <div className="border-2 border-dashed border-green-500/30 rounded-lg p-4 bg-green-500/5 hover:bg-green-500/10 transition-colors">
-                                        <Input
+                                        <input
                                             type="file"
                                             multiple
                                             onChange={(e) =>
                                                 field.onChange(e.target.files)
                                             }
-                                            className="border-none bg-transparent file:bg-green-500/10 file:text-green-600 file:border-0 file:rounded-md file:px-3 file:py-2 file:font-medium hover:file:bg-green-500/20 cursor-pointer"
+                                            className="block w-full text-sm text-green-700 dark:text-green-300
+            file:bg-gradient-to-r file:from-green-500 file:to-emerald-500
+            file:text-white file:font-semibold file:rounded-md file:border-0
+            file:px-4 file:py-2 file:mr-4 file:cursor-pointer
+            bg-transparent border-none"
                                         />
                                     </div>
                                 </FormControl>

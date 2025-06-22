@@ -11,6 +11,7 @@ import { Badge } from "../ui/badge";
 type Props = {
     column: KanbanColumn;
     tasks: Record<KanbanColumnKey, Task[]>;
+    activeTask: Task | null;
 };
 
 export default function KanbanColumnView({
@@ -20,6 +21,7 @@ export default function KanbanColumnView({
         in_progress: [],
         done: [],
     },
+    activeTask,
 }: Props) {
     const { setNodeRef } = useDroppable({
         id: column.key,
@@ -86,7 +88,7 @@ export default function KanbanColumnView({
                     </Button>
                 </AddOrUpdateTaskDialog>
             </div>
-            <ScrollArea className="h-[68vh] px-2 py-3 flex-grow overflow-auto">
+            <ScrollArea className="min-h-[70vh]  max-h-[100vh] px-2 py-3 flex-grow overflow-auto">
                 <div className="space-y-3 min-h-[200px]">
                     {tasks[column.key]?.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-2 h-32 border border-dashed rounded-lg bg-background/50 text-muted-foreground p-4">
@@ -99,9 +101,11 @@ export default function KanbanColumnView({
                             </p>
                         </div>
                     ) : (
-                        tasks[column.key]?.map((task) => (
-                            <TaskCard task={task} key={task._id} />
-                        ))
+                        tasks[column.key]
+                            .filter((task) => task._id !== activeTask?._id) // 👈 hide if active
+                            .map((task) => (
+                                <TaskCard key={task._id} task={task} />
+                            ))
                     )}
                 </div>
             </ScrollArea>

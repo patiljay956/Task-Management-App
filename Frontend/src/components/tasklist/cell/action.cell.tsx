@@ -65,7 +65,7 @@ export default function Action({ row }: Props) {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    disabled={row.original.assignedTo?.user._id === user?._id}
+                    disabled={row.original.assignedTo?.user?._id === user?._id}
                     className="h-8 w-8 p-0 hover:bg-green-500/10"
                 >
                     <Settings size={16} className="text-green-600" />

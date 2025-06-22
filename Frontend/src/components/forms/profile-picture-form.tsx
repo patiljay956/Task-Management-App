@@ -79,22 +79,27 @@ export default function ProfilePictureForm({
                     name="file"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Upload Image</FormLabel>
+                            <FormLabel className="text-slate-700 dark:text-slate-200 mb-2 block">
+                                Upload Image
+                            </FormLabel>
                             <FormControl>
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) =>
-                                        field.onChange(e.target.files)
-                                    }
-                                />
+                                <div className="flex items-center gap-4">
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) =>
+                                            field.onChange(e.target.files)
+                                        }
+                                        className="file:bg-gradient-to-r file:from-purple-500 file:to-blue-500 file:text-white file:font-semibold file:rounded-md file:border-0 file:px-4 file:cursor-pointer"
+                                    />
+                                </div>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 {previewUrl && (
-                    <div className="w-32 h-32 overflow-hidden rounded-lg border">
+                    <div className="w-32 h-32 overflow-hidden rounded-lg border-2 border-purple-400/40 dark:border-blue-400/40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
                         <img
                             src={previewUrl}
                             alt="Preview"
@@ -102,9 +107,13 @@ export default function ProfilePictureForm({
                         />
                     </div>
                 )}
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-md transition-colors"
+                >
                     {form.formState.isSubmitting ? (
-                        <LoaderCircle className="animate-spin"></LoaderCircle>
+                        <LoaderCircle className="animate-spin" />
                     ) : null}
                     Upload
                 </Button>

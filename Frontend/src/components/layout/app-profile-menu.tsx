@@ -68,11 +68,18 @@ export function NavUser({ user }: { user: User }) {
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                            className={`
+                                !p-2 rounded-lg transition-all
+                                bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-200
+                                dark:from-blue-950 dark:to-purple-950 dark:border-blue-900
+                                hover:shadow-md
+                                data-[state=open]:bg-blue-200 dark:data-[state=open]:bg-blue-950
+                                data-[state=open]:text-blue-700 dark:data-[state=open]:text-blue-200
+                            `}
                         >
-                            <Avatar className="h-8 w-8 rounded-lg grayscale">
+                            <Avatar className="h-8 w-8 rounded-lg border-2 border-blue-400/30 bg-gradient-to-br from-blue-400 to-purple-500 text-white shadow">
                                 <AvatarImage src={user.avatar.url} />
-                                <AvatarFallback className="rounded-lg">
+                                <AvatarFallback className="rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 text-white">
                                     {user.name
                                         .split(" ")
                                         .map((name) => name.charAt(0))
@@ -81,25 +88,30 @@ export function NavUser({ user }: { user: User }) {
                                 </AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">
+                                <span className="truncate font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                                     {user.name}
                                 </span>
-                                <span className="text-muted-foreground truncate text-xs">
+                                <span className="text-xs text-blue-500 dark:text-blue-300 truncate">
                                     {user.email}
                                 </span>
                             </div>
-                            <EllipsisVertical className="ml-auto size-4" />
+                            <EllipsisVertical className="ml-auto size-4 text-blue-400 dark:text-blue-300" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                        className={`
+                            w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg
+                            border border-blue-200 dark:border-blue-900
+                            bg-white dark:bg-slate-900
+                            shadow-xl
+                        `}
                         side={isMobile ? "bottom" : "right"}
                         align="end"
                         sideOffset={4}
                     >
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                <UserAvatar user={user}></UserAvatar>
+                                <UserAvatar user={user} />
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
@@ -107,12 +119,12 @@ export function NavUser({ user }: { user: User }) {
                             <DropdownMenuItem asChild>
                                 <ChangePasswordDialog>
                                     <span
-                                        className="flex w-full items-center gap-2 text-sm px-2 py-1.5 hover:bg-muted rounded-md"
+                                        className="flex w-full items-center gap-2 text-sm px-2 py-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                         }}
                                     >
-                                        <RotateCcwKey className="h-4 w-4" />
+                                        <RotateCcwKey className="h-4 w-4 text-blue-400" />
                                         Change password
                                     </span>
                                 </ChangePasswordDialog>
@@ -120,19 +132,19 @@ export function NavUser({ user }: { user: User }) {
                             <DropdownMenuItem asChild>
                                 <ProfilePictureDialog>
                                     <span
-                                        className="flex w-full items-center gap-2 text-sm px-2 py-1.5 hover:bg-muted  rounded-md"
+                                        className="flex w-full items-center gap-2 text-sm px-2 py-1.5 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-md"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                         }}
                                     >
-                                        <ImageUp className="h-4 w-4" />
+                                        <ImageUp className="h-4 w-4 text-purple-400" />
                                         Edit profile picture
                                     </span>
                                 </ProfilePictureDialog>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <span>
-                                    <MoonStar />
+                                    <MoonStar className="text-indigo-400" />
                                     Dark mode
                                     <Switch
                                         className="ml-auto"
@@ -151,7 +163,7 @@ export function NavUser({ user }: { user: User }) {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <div className="px-2 py-1.5 hover:bg-muted cursor-pointer rounded-md">
+                        <div className="px-2 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer rounded-md">
                             <ConfirmDialog
                                 title="Are you sure?"
                                 actionText="Yes, Log out"
@@ -159,10 +171,9 @@ export function NavUser({ user }: { user: User }) {
                                 onAction={logoutHandler}
                             >
                                 <span
-                                    className="flex w-full items-center gap-2 text-sm"
+                                    className="flex w-full items-center gap-2 text-sm text-red-600 dark:text-red-400"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        console.log("clicked logout span");
                                     }}
                                 >
                                     <LogOut className="h-4 w-4" />

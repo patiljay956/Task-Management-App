@@ -47,39 +47,38 @@ export default function KanbanBoard() {
     };
 
     const handleDragEnd = async (event: DragEndEvent) => {
-        const { over, active } = event;
+        const { over } = event;
 
-        //Do nothing if dropped outside
-        if (!over) return;
+        if (!over || !activeTask) {
+            setActiveTask(null);
+            return;
+        }
 
-        //Do nothing if already in the same column
-        if (over.id === active.data.current?.task.status) return;
+        const fromBoardKey = activeTask.status as KanbanColumnKey;
+        const toBoardKey = over.id as KanbanColumnKey;
 
-        setActiveTask(null);
+        if (toBoardKey === fromBoardKey) {
+            setActiveTask(null);
+            return;
+        }
 
+        // move logic using `activeTask`
+        const taskId = activeTask._id;
+
+        // Update UI immediately
         setStore((prev) => {
-            const fromBoardKey = active.data.current?.task
-                ?.status as KanbanColumnKey;
-            const toBoardKey = over.id as KanbanColumnKey;
-
-            const taskId = active.id as string;
-
             const fromTasks = prev.projectTasks[projectId!][
                 fromBoardKey
             ].filter((task) => task._id !== taskId);
 
             const existingToTasks = prev.projectTasks[projectId!][toBoardKey];
 
-            const alreadyExists = existingToTasks?.find(
-                (task) => task._id === taskId,
-            );
-
             const updatedTask = {
-                ...activeTask!,
+                ...activeTask,
                 status: toBoardKey,
             };
 
-            const toTasks = alreadyExists
+            const toTasks = existingToTasks.find((task) => task._id === taskId)
                 ? existingToTasks.map((task) =>
                       task._id === taskId ? updatedTask : task,
                   )
@@ -90,7 +89,7 @@ export default function KanbanBoard() {
                 projectTasks: {
                     ...prev.projectTasks,
                     [projectId!]: {
-                        ...prev.projectTasks[projectId!], // 🔁 create new object
+                        ...prev.projectTasks[projectId!],
                         [fromBoardKey]: fromTasks,
                         [toBoardKey]: toTasks,
                     },
@@ -98,17 +97,20 @@ export default function KanbanBoard() {
             };
         });
 
-        //get old state
+        // ✅ Now it's safe to reset the drag state
+        setActiveTask(null);
+
+        // Save old state for rollback
         const oldState = store.projectTasks[projectId!];
 
-        //update the server
+        // Server update
         try {
             const response: AxiosResponse | undefined =
                 await API_PROJECT_ENDPOINTS.updateTaskStatusOrPriority({
                     projectId: projectId!,
-                    taskId: activeTask!._id,
-                    status: over.id as KanbanColumnKey,
-                    priority: activeTask!.priority,
+                    taskId: activeTask._id,
+                    status: toBoardKey,
+                    priority: activeTask.priority,
                 });
 
             if (response?.status === 200) {
@@ -117,19 +119,18 @@ export default function KanbanBoard() {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 toast.error(error.response?.data?.message);
-                // restore the Store state to previous
-                setStore((prev) => {
-                    return {
-                        ...prev,
-                        projectTasks: {
-                            ...prev.projectTasks,
-                            [projectId!]: { ...oldState },
-                        },
-                    };
-                });
+                // Restore old state
+                setStore((prev) => ({
+                    ...prev,
+                    projectTasks: {
+                        ...prev.projectTasks,
+                        [projectId!]: { ...oldState },
+                    },
+                }));
             }
         }
     };
+
     const onDragCancel = () => setActiveTask(null);
 
     useEffect(() => {
@@ -182,6 +183,7 @@ export default function KanbanBoard() {
                                 key={col.key}
                                 column={col}
                                 tasks={store.projectTasks[projectId!]}
+                                activeTask={activeTask}
                             />
                         ))}
                     </div>{" "}

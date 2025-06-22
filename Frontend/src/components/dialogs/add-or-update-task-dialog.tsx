@@ -32,7 +32,7 @@ export default function AddOrUpdateTaskDialog({
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent
                 onClick={(e) => e.stopPropagation()}
-                className="border-green-500/30 sm:max-w-[550px]"
+                className="border-green-500/30 sm:max-w-[40rem]"
             >
                 <DialogHeader className="space-y-3">
                     <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export default function AddOrUpdateTaskDialog({
                             )}
                         </div>
                         <div>
-                            <DialogTitle className="text-xl">
+                            <DialogTitle className="text-xl text-left">
                                 {initialData ? "Edit Task" : "Create New Task"}
                             </DialogTitle>
                             <DialogDescription>
