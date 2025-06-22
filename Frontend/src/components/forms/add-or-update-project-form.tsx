@@ -122,45 +122,51 @@ export default function AddOrUpdateProjectForm({
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {" "}
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Project Name</FormLabel>
+                            <FormLabel className="text-indigo-700 dark:text-indigo-400">
+                                Project Name
+                            </FormLabel>
 
                             <Input
-                                placeholder="Your Project Title"
+                                placeholder="Enter a descriptive name for your project"
                                 {...field}
+                                className="border-indigo-500/30 focus:ring-indigo-500/20 focus:border-indigo-500 bg-indigo-500/5"
                             />
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel className="text-indigo-700 dark:text-indigo-400">
+                                Project Description
+                            </FormLabel>
 
                             <Textarea
-                                placeholder="Describe your project"
+                                placeholder="Provide details about the project's purpose and goals"
                                 {...field}
+                                rows={4}
+                                className="border-indigo-500/30 focus:ring-indigo-500/20 focus:border-indigo-500 bg-indigo-500/5"
                             />
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
                 <Button
                     type="submit"
                     disabled={form.formState.isSubmitting}
-                    className="w-full"
+                    className="gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none shadow-md"
                 >
                     {form.formState.isSubmitting && (
-                        <LoaderCircle className="animate-spin" />
+                        <LoaderCircle className="animate-spin h-4 w-4" />
                     )}
                     {initialData ? "Update Project" : "Create Project"}
                 </Button>

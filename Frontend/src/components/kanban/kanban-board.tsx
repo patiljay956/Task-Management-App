@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     type KanbanColumn,
     type KanbanColumnKey,
     type Task,
 } from "@/types/project";
 import KanbanColumnView from "@/components/kanban/kanban-column";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import {
     closestCorners,
     DndContext,
@@ -23,7 +22,7 @@ import type { AxiosResponse } from "axios";
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import axios from "axios";
 import { toast } from "sonner";
-import { Card, CardHeader, CardTitle } from "../ui/card";
+import { Skeleton } from "../ui/skeleton";
 
 const columnsData: KanbanColumn[] = [
     { title: "Todo", key: "todo" },
@@ -36,6 +35,7 @@ export default function KanbanBoard() {
     const { projectId } = useParams<{ projectId: string }>();
     const { store, setStore } = useStore();
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleDragStart = (event: DragStartEvent) => {
         const task = event.active.data?.current?.task as Task | undefined;
@@ -130,40 +130,70 @@ export default function KanbanBoard() {
             }
         }
     };
-
     const onDragCancel = () => setActiveTask(null);
 
+    useEffect(() => {
+        // Set loading false after a short delay to simulate data loading
+        // In a real app, this would be based on API response timing
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Loading skeleton UI for kanban columns
+    const renderSkeletonColumns = () => (
+        <div className="flex flex-1 flex-col md:flex-row gap-4 min-h-0 min-w-0 overflow-x-auto pb-6">
+            {columnsData.map((col) => (
+                <div
+                    key={col.key}
+                    className="flex-1 min-w-[260px] md:min-w-[320px]"
+                >
+                    <Skeleton className="h-14 w-full mb-4 rounded-t-md" />
+                    <div className="space-y-3 px-2">
+                        {[...Array(3)].map((_, i) => (
+                            <Skeleton
+                                key={i}
+                                className="h-32 w-full rounded-md"
+                            />
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
-        <div className="flex flex-1 flex-col gap-2 min-h-0 min-w-0">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-xl">
-                        {store.projects.find((p) => p._id === projectId)?.name +
-                            " : Kanban Board"}
-                    </CardTitle>
-                </CardHeader>
-            </Card>
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCorners}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={onDragCancel}
-            >
-                <ScrollArea className="flex flex-1 flex-col md:flex-row gap-4 min-h-0 min-w-0">
-                    {columnsData.map((col) => (
-                        <KanbanColumnView
-                            key={col.key}
-                            column={col}
-                            tasks={store.projectTasks[projectId!]}
-                        />
-                    ))}
-                </ScrollArea>
-                {/* ✅ Global overlay OUTSIDE columns */}
-                <DragOverlay>
-                    {activeTask && <TaskCard task={activeTask} />}
-                </DragOverlay>
-            </DndContext>
+        <div className="flex flex-1 flex-col gap-4 min-h-0 min-w-0">
+            {isLoading ? (
+                renderSkeletonColumns()
+            ) : (
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragCancel={onDragCancel}
+                >
+                    <div className="flex flex-1 flex-col md:flex-row gap-4 min-h-0 min-w-0 overflow-x-auto pb-6">
+                        {columnsData.map((col) => (
+                            <KanbanColumnView
+                                key={col.key}
+                                column={col}
+                                tasks={store.projectTasks[projectId!]}
+                            />
+                        ))}
+                    </div>{" "}
+                    <DragOverlay dropAnimation={null}>
+                        {activeTask && (
+                            <div className="opacity-80">
+                                <TaskCard task={activeTask} />
+                            </div>
+                        )}
+                    </DragOverlay>
+                </DndContext>
+            )}
         </div>
     );
 }
