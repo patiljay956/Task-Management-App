@@ -65,7 +65,11 @@ export default function Action({ row }: Props) {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    disabled={row.original.assignedTo?.user?._id === user?._id}
+                    disabled={
+                        row.original.assignedTo?.user?._id === user?._id &&
+                        row.original.assignedTo?.user?._id !==
+                            row.original.assignedBy?.user._id
+                    }
                     className="h-8 w-8 p-0 hover:bg-green-500/10"
                 >
                     <Settings size={16} className="text-green-600" />
@@ -96,7 +100,7 @@ export default function Action({ row }: Props) {
                             className="flex gap-2 items-center text-red-500 px-2 py-1.5 w-full"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <Trash size={16} />
+                            <Trash size={16} className="text-red-500" />
                             Delete Task
                         </span>
                     </ConfirmDialog>

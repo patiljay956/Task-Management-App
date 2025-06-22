@@ -135,16 +135,31 @@ const createTask = asyncHandler(async (req, res) => {
         );
     }
 
-    // Create task (without attachments)
-    const newTask = await Task.create({
+    const newTask = await new Task({
         title,
         description,
         project: projectId,
         assignedTo,
-        assignedBy: existingProjectMember._id, // Use ProjectMember ID
-        status: status || "todo", // Default to TODO if not provided
-        priority: priority || "low", // Default to LOW if not provided
-        attachments: uploadedAttachments || [], // Use uploaded attachments
+        assignedBy: existingProjectMember._id,
+        status: status || "todo",
+        priority: priority || "low",
+        attachments: uploadedAttachments || [],
+    }).save();
+
+    await newTask.populate("project");
+    await newTask.populate({
+        path: "assignedTo",
+        populate: {
+            path: "user",
+            select: "_id name email username avatar",
+        },
+    });
+    await newTask.populate({
+        path: "assignedBy",
+        populate: {
+            path: "user",
+            select: "_id name email username avatar",
+        },
     });
 
     if (!newTask) throw new ApiError(500, "Failed to create task");

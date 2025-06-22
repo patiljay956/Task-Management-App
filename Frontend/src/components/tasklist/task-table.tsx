@@ -7,7 +7,7 @@ import {
     CardDescription,
 } from "../ui/card";
 import { Button } from "../ui/button";
-import { Plus, ListChecks } from "lucide-react";
+import { Plus, ListChecks, Info } from "lucide-react";
 import { DataTable } from "../table/data-table";
 import { columns } from "./columns";
 import AddOrUpdateTaskDialog from "../dialogs/add-or-update-task-dialog";
@@ -58,7 +58,22 @@ export default function TaskTable({ data, title }: Props) {
                 </AddOrUpdateTaskDialog>
             </CardHeader>
             <CardContent>
-                <DataTable columns={columns} data={data} />
+                {data.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed rounded-lg border-green-500/20 bg-green-500/5">
+                        <div className="p-3 rounded-full bg-green-500/10 border border-green-500/20 mb-3">
+                            <Info className="h-6 w-6 text-green-500" />
+                        </div>
+                        <h3 className="text-lg font-medium mb-1">
+                            No tasks yet
+                        </h3>
+                        <p className="text-muted-foreground text-center max-w-md">
+                            Start creating tasks to track and manage your
+                            project activities.
+                        </p>
+                    </div>
+                ) : (
+                    <DataTable columns={columns} data={data} />
+                )}
             </CardContent>
         </Card>
     );
