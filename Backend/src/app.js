@@ -5,7 +5,7 @@ import cors from "cors";
 const app = express();
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || "http://localhost:5173",
+        origin: process.env.FRONTEND_URL,
         credentials: true,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
@@ -36,7 +36,7 @@ app.use("/api/v1/project-admin", projectAdminRoutes);
 import { ApiError } from "./utils/apiErrors.js";
 
 app.use((err, req, res, next) => {
-    console.error("Global Error Handler:", err);
+    // console.error("Global Error Handler:", err);
 
     // console.log(req);
 
