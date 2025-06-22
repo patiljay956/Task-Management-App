@@ -14,7 +14,11 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
-import type { Task, KanbanColumnKey, ProjectMember } from "@/types/project";
+import type {
+    Task,
+    KanbanColumnKey,
+    ProjectMember,
+} from "@/types/project";
 import {
     Select,
     SelectContent,
@@ -164,24 +168,8 @@ export default function AddOrUpdateTaskForm({
                     onSuccess?.();
 
                     setStore((prev) => {
-                        // Safe access to project members with fallback
-                        const projectMembers =
-                            prev.projectMembers?.[projectId!] || [];
-
-                        const assignedBy = projectMembers.find(
-                            (member) =>
-                                member._id === response.data.data.assignedBy,
-                        );
-
-                        const assignedTo = projectMembers.find(
-                            (member) =>
-                                member._id === response.data.data.assignedTo,
-                        );
-
                         const newTask: Task = {
                             ...response.data.data,
-                            assignedBy: assignedBy || undefined,
-                            assignedTo: assignedTo || undefined,
                         };
 
                         // Ensure the store structure exists with proper defaults

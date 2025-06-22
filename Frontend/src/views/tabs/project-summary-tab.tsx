@@ -135,7 +135,9 @@ export default function ProjectSummaryTab({
                                 </p>
                             </CardHeader>
                             <CardContent className="text-sm pt-4">
-                                <p>{project.description}</p>
+                                <p className="line-clamp-3">
+                                    {project.description}
+                                </p>
                                 <Separator className="my-3" />
                                 <div className="flex items-center justify-between">
                                     <Badge
@@ -192,7 +194,7 @@ export default function ProjectSummaryTab({
                                 </div>
                             </CardHeader>
                             <CardContent className="text-sm space-y-2 pt-2">
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground line-clamp-3">
                                     {project.description}
                                 </p>
                                 <div className="text-xs text-muted-foreground">
