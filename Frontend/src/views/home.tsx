@@ -25,6 +25,7 @@ import {
     Menu,
     X,
 } from "lucide-react";
+import { Link } from "react-router";
 
 const TaskFlowLanding = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -137,10 +138,10 @@ const TaskFlowLanding = () => {
                                 variant="outline"
                                 className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
                             >
-                                Sign In
+                                <Link to="/login">Sign In</Link>
                             </Button>
                             <Button className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
-                                Get Started
+                                <Link to={"/app/dashboard"}> Get Started </Link>
                             </Button>
                         </div>
 
