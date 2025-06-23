@@ -23,14 +23,22 @@ router
         taskIdValidator(),
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
+        hasProjectRole([
+            UserRolesEnum.ADMIN,
+            UserRolesEnum.MANAGER,
+            UserRolesEnum.MEMBER,
+        ]),
         getSubtasksByTaskId, // Fetch all subtasks for a task
     )
     .post(
         [taskIdValidator(), subtaskValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
+        hasProjectRole([
+            UserRolesEnum.ADMIN,
+            UserRolesEnum.MANAGER,
+            UserRolesEnum.MEMBER,
+        ]),
         createSubtask, // Create a new subtask for a task
     );
 
@@ -40,7 +48,11 @@ router
         [taskIdValidator(), subtaskIdValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.MANAGER]),
+        hasProjectRole([
+            UserRolesEnum.ADMIN,
+            UserRolesEnum.MANAGER,
+            UserRolesEnum.MEMBER,
+        ]),
         updateSubtask, // Update a specific subtask by ID
     )
     .delete(

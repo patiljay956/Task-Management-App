@@ -72,7 +72,7 @@ router
     )
     .delete(
         [projectIdValidator(), noteIdValidator()],
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        hasProjectRole([UserRolesEnum.ADMIN]),
         validate,
         deleteNote,
     );

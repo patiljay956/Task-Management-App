@@ -59,7 +59,6 @@ router
     )
     .delete(verifyToken, hasProjectRole([UserRolesEnum.ADMIN]), deleteProject);
 
-// TODO: delete project testing pending
 
 // project member controllers
 
@@ -80,8 +79,8 @@ router
         [projectIdValidator(), roleValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]), // only allow admin/manager to add
-        addMemberToProject, // controller function
+        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]), // only allow admin/manager to add the  member
+        addMemberToProject,
     )
     .patch(
         [projectIdValidator(), roleValidator()],
@@ -163,14 +162,18 @@ router
         ],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        hasProjectRole([
+            UserRolesEnum.ADMIN,
+            UserRolesEnum.PROJECT_MANAGER,
+            UserRolesEnum.MEMBER,
+        ]),
         updateTask,
     )
     .delete(
         [projectIdValidator(), taskIdValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        hasProjectRole([UserRolesEnum.ADMIN]),
         deleteTask,
     );
 
@@ -179,7 +182,11 @@ router.patch(
     [projectIdValidator(), taskIdValidator(), taskStatusAndPriorityValidator()],
     validate,
     verifyToken,
-    hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+    hasProjectRole([
+        UserRolesEnum.ADMIN,
+        UserRolesEnum.PROJECT_MANAGER,
+        UserRolesEnum.MEMBER,
+    ]),
     updateTaskStatusOrPriority,
 );
 
@@ -200,7 +207,11 @@ router
         [projectIdValidator(), taskIdValidator()],
         validate,
         verifyToken,
-        hasProjectRole([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_MANAGER]),
+        hasProjectRole([
+            UserRolesEnum.ADMIN,
+            UserRolesEnum.PROJECT_MANAGER,
+            UserRolesEnum.MEMBER,
+        ]),
         deleteTaskAttachment,
     );
 
