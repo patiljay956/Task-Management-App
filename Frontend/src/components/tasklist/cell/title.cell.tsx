@@ -19,7 +19,7 @@ export function TitleCell({ task }: { task: Task | null }) {
                     <span className="font-medium line-clamp-1 group-hover:text-green-600 transition-colors">
                         {task.title}
                     </span>
-                    <span className="text-muted-foreground text-xs line-clamp-1 mt-0.5">
+                    <span className="text-muted-foreground text-xs line-clamp-1 text-ellipsis mt-0.5 sm:max-w-[20rem] ">
                         {task.description || "No description provided"}
                     </span>
                 </div>

@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background with gradient -->
+    <defs>
+        <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3b82f6" /> <!-- Blue -->
+            <stop offset="100%" stop-color="#a855f7" /> <!-- Purple -->
+        </linearGradient>
+    </defs>
+    <rect width="512" height="512" rx="100" fill="url(#bg-gradient)" />
+
+    <!-- Zap icon centered -->
+    <path
+        d="M160 300a20 20 0 0 1-15-33l198-204a10 10 0 0 1 17 9l-38 120a20 20 0 0 0 19 26h104a20 20 0 0 1 15 33l-198 204a10 10 0 0 1-17-9l38-120a20 20 0 0 0-19-26h-104z"
+        fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round"
+        stroke-linejoin="round" />
+</svg>

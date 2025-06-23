@@ -227,7 +227,7 @@ const addMemberByEmail = asyncHandler(async (req, res) => {
         new ApiResponse(
             201,
             {
-                projectMemberId: newProjectMember._id,
+                _id: newProjectMember._id,
                 user: existingUser,
                 project: existingProject,
                 role: newProjectMember.role,

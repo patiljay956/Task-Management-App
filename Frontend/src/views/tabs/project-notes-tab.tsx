@@ -1,7 +1,7 @@
 import { useStore } from "@/components/contexts/store-provider";
 import { NotesGrid } from "@/components/notes/notes-grid";
 import { useParams } from "react-router";
-import { StickyNote, Info } from "lucide-react";
+import { StickyNote} from "lucide-react";
 
 type Props = {};
 
@@ -26,20 +26,7 @@ export default function ProjectNotesTab({}: Props) {
                 </div>
             </div>
 
-            {notes.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 border border-dashed rounded-lg border-muted-foreground/20 bg-muted/10">
-                    <div className="p-3 rounded-full bg-amber-500/10 border border-amber-500/20 mb-3">
-                        <Info className="h-6 w-6 text-amber-500" />
-                    </div>
-                    <h3 className="text-lg font-medium mb-1">No notes yet</h3>
-                    <p className="text-muted-foreground text-center max-w-md">
-                        Add notes to keep important information, ideas, or
-                        updates about this project.
-                    </p>
-                </div>
-            ) : (
-                <NotesGrid notes={notes} />
-            )}
+            <NotesGrid notes={notes} />
         </div>
     );
 }
