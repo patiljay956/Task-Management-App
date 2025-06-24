@@ -1,7 +1,9 @@
 import { API_PROJECT_ENDPOINTS } from "@/api/endpoints";
 import { useStore } from "@/components/contexts/store-provider";
+import Loading from "@/components/loading/loading";
 import TaskTable from "@/components/tasklist/task-table";
 import { useAuth } from "@/hooks/use-auth";
+import { useLoadingController } from "@/hooks/use-loading-controller";
 import type { ProjectTasks, Task } from "@/types/project";
 import axios from "axios";
 import { useEffect, useMemo } from "react";
@@ -12,6 +14,7 @@ type Props = {};
 export default function UserTasksView({}: Props) {
     const { store, setStore } = useStore();
     const { user } = useAuth();
+    const { loading, withLoading } = useLoadingController();
 
     useEffect(() => {
         const getUserTasks = async () => {
@@ -86,7 +89,7 @@ export default function UserTasksView({}: Props) {
             }
         };
 
-        getUserTasks();
+        withLoading(async () => getUserTasks());
     }, []);
 
     const userTasks = useMemo(() => {
@@ -116,7 +119,15 @@ export default function UserTasksView({}: Props) {
 
     return (
         <>
-            <TaskTable data={userTasks} title="My Tasks"></TaskTable>
+            {loading ? (
+                <Loading
+                    skeleton={true}
+                    skeletonCount={10}
+                    skeletonType="table"
+                />
+            ) : (
+                <TaskTable data={userTasks} title="My Tasks"></TaskTable>
+            )}
         </>
     );
 }
