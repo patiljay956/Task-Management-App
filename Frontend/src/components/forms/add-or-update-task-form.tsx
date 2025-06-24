@@ -14,11 +14,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
-import type {
-    Task,
-    KanbanColumnKey,
-    ProjectMember,
-} from "@/types/project";
+import type { Task, KanbanColumnKey, ProjectMember } from "@/types/project";
 import {
     Select,
     SelectContent,
@@ -271,7 +267,7 @@ export default function AddOrUpdateTaskForm({
                                             <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="border-green-500/30">
+                                    <SelectContent className="border-green-500/30 bg-background/30 backdrop-blur">
                                         {Object.values({
                                             todo: "todo",
                                             in_progress: "in_progress",
@@ -309,7 +305,7 @@ export default function AddOrUpdateTaskForm({
                                             <SelectValue placeholder="Select priority" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="border-green-500/30">
+                                    <SelectContent className="border-green-500/30 bg-background/30 backdrop-blur">
                                         {Object.values({
                                             low: "low",
                                             medium: "medium",
@@ -347,7 +343,7 @@ export default function AddOrUpdateTaskForm({
                                             <SelectValue placeholder="Select team member" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="border-green-500/30">
+                                    <SelectContent className="border-green-500/30 bg-background/30 backdrop-blur">
                                         {members.map((member) => (
                                             <SelectItem
                                                 key={member._id}
@@ -362,35 +358,35 @@ export default function AddOrUpdateTaskForm({
                             </FormItem>
                         )}
                     />{" "}
-                    <FormField
-                        control={form.control}
-                        name="files"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-green-700 dark:text-green-400">
-                                    Task Attachments
-                                </FormLabel>
-                                <FormControl>
-                                    <div className="border-2 border-dashed border-green-500/30 rounded-lg p-4 bg-green-500/5 hover:bg-green-500/10 transition-colors">
-                                        <input
-                                            type="file"
-                                            multiple
-                                            onChange={(e) =>
-                                                field.onChange(e.target.files)
-                                            }
-                                            className="block w-full text-sm text-green-700 dark:text-green-300
+                </div>
+                <FormField
+                    control={form.control}
+                    name="files"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-green-700 dark:text-green-400">
+                                Task Attachments
+                            </FormLabel>
+                            <FormControl>
+                                <div className="border-2 border-dashed border-green-500/30 rounded-lg p-4 bg-green-500/5 hover:bg-green-500/10 transition-colors">
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={(e) =>
+                                            field.onChange(e.target.files)
+                                        }
+                                        className="block w-full text-sm text-green-700 dark:text-green-300
             file:bg-gradient-to-r file:from-green-500 file:to-emerald-500
             file:text-white file:font-semibold file:rounded-md file:border-0
             file:px-4 file:py-2 file:mr-4 file:cursor-pointer
             bg-transparent border-none"
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                                    />
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FilePreviewList
                     files={Array.from(form.watch("files") ?? [])}
                     onRemove={(idx) => {

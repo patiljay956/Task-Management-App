@@ -21,7 +21,7 @@ export function AddOrUpdateProjectDialog({ children, initialData }: Props) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="sm:max-w-md border-indigo-500/30">
+            <DialogContent className="sm:max-w-md border-indigo-500/30 backdrop-blur bg-gradient-to-b from-background to-indigo-500/10">
                 <DialogHeader className="space-y-3">
                     <div className="flex items-center gap-2">
                         <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-400/20 to-purple-500/20 border border-indigo-500/30">

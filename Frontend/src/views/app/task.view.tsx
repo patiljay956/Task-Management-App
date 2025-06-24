@@ -319,15 +319,21 @@ export const TaskView = ({}: Props) => {
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <CardTitle
-                            className={`text-xl bg-gradient-to-r ${theme.title} bg-clip-text text-transparent`}
+                            className={`text-xl flex flex-col sm:flex-row sm:items-center gap-1`}
                         >
-                            {task?.title + " : "}
+                            <span
+                                className={`bg-gradient-to-r bg-clip-text text-transparent font-semibold tracking-tight text-lg sm:text-xl ${theme.title}`}
+                            >
+                                {task?.title}
+                            </span>
+                            <span className="text-muted-foreground text-sm sm:text-base">
+                                in
+                            </span>
                             <Link
                                 to={`${BASE_URL}/project/${task?.project?._id}/kanban`}
+                                className="text-amber-600 underline underline-offset-2 hover:text-amber-700 transition-colors font-medium"
                             >
-                                <span className="text-cyan-700 dark:text-cyan-300 underline font-semibold">
-                                    {task?.project?.name}
-                                </span>
+                                {task?.project?.name}
                             </Link>
                         </CardTitle>
                         <p className="text-sm text-muted-foreground mt-1">
