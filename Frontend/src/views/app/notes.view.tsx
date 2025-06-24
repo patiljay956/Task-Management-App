@@ -1,7 +1,9 @@
 import { API_NOTE_ENDPOINTS } from "@/api/endpoints";
 import { useStore } from "@/components/contexts/store-provider";
+import Loading from "@/components/loading/loading";
 import { NotesGrid } from "@/components/notes/notes-grid";
 import { useAuth } from "@/hooks/use-auth";
+import { useLoadingController } from "@/hooks/use-loading-controller";
 import type { Note } from "@/types/project";
 import axios from "axios";
 import { useEffect, useMemo } from "react";
@@ -12,6 +14,7 @@ type Props = {};
 export default function UserNotesView({}: Props) {
     const { store, setStore } = useStore();
     const { user } = useAuth();
+    const { loading, withLoading } = useLoadingController();
 
     useEffect(() => {
         const getUserNotes = async () => {
@@ -64,7 +67,7 @@ export default function UserNotesView({}: Props) {
             }
         };
 
-        getUserNotes();
+        withLoading(async () => getUserNotes());
     }, []);
 
     const userNotes = useMemo(() => {
@@ -79,5 +82,17 @@ export default function UserNotesView({}: Props) {
         return notes;
     }, [store.projectNotes]);
 
-    return <NotesGrid notes={userNotes} disableAddOption={true} />;
+    return (
+        <>
+            {loading ? (
+                <Loading
+                    skeleton={true}
+                    skeletonCount={9}
+                    skeletonType="card"
+                />
+            ) : (
+                <NotesGrid notes={userNotes} />
+            )}
+        </>
+    );
 }

@@ -88,7 +88,7 @@ export const API_USER_ENDPOINTS = {
         );
     },
     refreshAccessToken: async function (): Promise<AxiosResponse> {
-        return await api.get("/user/refresh-access-token");
+        return await api.post("/user/refresh-access-token");
     },
     profile: async function (): Promise<AxiosResponse> {
         return await api.get("/user/current-user");

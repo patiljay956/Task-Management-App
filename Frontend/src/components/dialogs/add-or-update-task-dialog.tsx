@@ -32,7 +32,7 @@ export default function AddOrUpdateTaskDialog({
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent
                 onClick={(e) => e.stopPropagation()}
-                className="border-green-500/30 sm:max-w-[40rem]"
+                className="border-green-600/30 backdrop-blur bg-gradient-to-b from-background to-emerald-500/10 sm:max-w-[40rem]"
             >
                 <DialogHeader className="space-y-3">
                     <div className="flex items-center gap-2">

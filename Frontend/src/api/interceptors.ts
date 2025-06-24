@@ -34,7 +34,9 @@ export function attachAuthTokenInterceptor(api: AxiosInstance) {
     );
 
     api.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            return response;
+        },
         async (error) => {
             const originalRequest = error.config;
 
@@ -42,7 +44,7 @@ export function attachAuthTokenInterceptor(api: AxiosInstance) {
             if (originalRequest?.skipRefresh) {
                 return Promise.reject(error);
             }
-
+            // Check for 401 and if it's the first retry
             if (error.response?.status === 401 && !originalRequest._retry) {
                 if (isRefreshing) {
                     return new Promise((resolve, reject) => {
@@ -52,7 +54,9 @@ export function attachAuthTokenInterceptor(api: AxiosInstance) {
                             originalRequest.headers.Authorization = `Bearer ${token}`;
                             return api(originalRequest);
                         })
-                        .catch((err) => Promise.reject(err));
+                        .catch((err) => {
+                            return Promise.reject(err);
+                        });
                 }
 
                 isRefreshing = true;

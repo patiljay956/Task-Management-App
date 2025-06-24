@@ -147,6 +147,13 @@ export default function ChangePasswordForm({}: Props) {
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-md transition-colors"
                     type="submit"
                 >
+                    {
+                        <LoaderCircle
+                            className="animate-spin"
+                            size={20}
+                            strokeWidth={2}
+                        />
+                    }
                     {form.formState.isSubmitting
                         ? "Updating..."
                         : "Update Password"}

@@ -42,12 +42,9 @@ export function NavUser({ user }: { user: User }) {
     const { resetAuthData } = useAuth();
 
     const logoutHandler = async () => {
-        console.log("clicked logout");
         try {
             const response: AxiosResponse | undefined =
                 await API_USER_ENDPOINTS.logout();
-
-            console.log(response);
 
             if (response.status === 200) {
                 resetAuthData();

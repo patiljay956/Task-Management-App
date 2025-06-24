@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import AddOrUpdateTaskDialog from "@/components/dialogs/add-or-update-task-dialog";
 import { BASE_URL } from "@/constants/app-routes";
 import { cn } from "@/lib/utils";
+import { useLoadingController } from "@/hooks/use-loading-controller";
+import Loading from "@/components/loading/loading";
 
 type Props = {};
 
@@ -54,8 +56,12 @@ export const TaskView = ({}: Props) => {
     const [subtasks, setSubtasks] = useState<SubTask[] | null>(null);
     const [newSubtaskTitle, setNewSubtaskTitle] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const { loading, stop, withLoading } = useLoadingController(true);
 
     useEffect(() => {
+        if (!projectId) return;
+        if (!taskId) return;
+
         const getSubtasksByTaskId = async () => {
             try {
                 const response = await API_TASK_ENDPOINTS.getSubTasks({
@@ -91,35 +97,6 @@ export const TaskView = ({}: Props) => {
                 }
             }
         };
-        getSubtasksByTaskId();
-    }, [projectId, taskId]);
-
-    useEffect(() => {
-        if (
-            store.projectTaskSubTasks[projectId!] &&
-            store.projectTaskSubTasks[projectId!][taskId!]
-        ) {
-            setSubtasks(store.projectTaskSubTasks[projectId!][taskId!]);
-        }
-
-        if (store.projectTasks[projectId!]) {
-            setTask(() => {
-                const allTasks = [
-                    ...store.projectTasks[projectId!].todo,
-                    ...store.projectTasks[projectId!].in_progress,
-                    ...store.projectTasks[projectId!].done,
-                ];
-
-                return allTasks.find((task) => task._id === taskId) ?? null;
-            });
-        }
-    }, [store.projectTaskSubTasks, store.projectTasks]);
-
-    useEffect(() => {
-        if (!projectId) return;
-
-        if (!taskId) return;
-
         const getProjectTasks = async () => {
             try {
                 if (!projectId) return;
@@ -164,8 +141,33 @@ export const TaskView = ({}: Props) => {
             }
         };
 
-        getProjectTasks();
+        withLoading(async () => {
+            await getSubtasksByTaskId();
+            await getProjectTasks();
+            stop();
+        });
     }, [projectId, taskId]);
+
+    useEffect(() => {
+        if (
+            store.projectTaskSubTasks[projectId!] &&
+            store.projectTaskSubTasks[projectId!][taskId!]
+        ) {
+            setSubtasks(store.projectTaskSubTasks[projectId!][taskId!]);
+        }
+
+        if (store.projectTasks[projectId!]) {
+            setTask(() => {
+                const allTasks = [
+                    ...store.projectTasks[projectId!].todo,
+                    ...store.projectTasks[projectId!].in_progress,
+                    ...store.projectTasks[projectId!].done,
+                ];
+
+                return allTasks.find((task) => task._id === taskId) ?? null;
+            });
+        }
+    }, [store.projectTaskSubTasks, store.projectTasks]);
 
     const handleAddSubtask = async (value: string) => {
         try {
@@ -307,113 +309,127 @@ export const TaskView = ({}: Props) => {
     const theme = statusTheme[task?.status || "todo"];
 
     return (
-        <Card
-            className={`
-    w-full max-w-2xl rounded-2xl shadow-md mx-auto border-0
-    bg-gradient-to-br ${theme.bg} ${theme.border}
-`}
-        >
-            <CardHeader
-                className={`pb-3 border-b ${theme.border} bg-gradient-to-br from-background via-background to-transparent`}
-            >
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <CardTitle
-                            className={`text-xl bg-gradient-to-r ${theme.title} bg-clip-text text-transparent`}
-                        >
-                            {task?.title + " : "}
-                            <Link
-                                to={`${BASE_URL}/project/${task?.project?._id}/kanban`}
-                            >
-                                <span className="text-cyan-700 dark:text-cyan-300 underline font-semibold">
-                                    {task?.project?.name}
-                                </span>
-                            </Link>
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            {task?.description}
-                        </p>
-                        <div className="flex gap-2 mt-2">
-                            <Badge variant="outline" className={theme.badge}>
-                                {task?.status}
-                            </Badge>
-                            <Badge
-                                variant="secondary"
-                                className={cn(
-                                    task?.priority === "high"
-                                        ? "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/30"
-                                        : task?.priority === "medium"
-                                        ? "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30"
-                                        : task?.priority === "low"
-                                        ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30"
-                                        : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800/30",
-                                )}
-                            >
-                                {task?.priority}
-                            </Badge>
-                        </div>
-                    </div>
-                    <AddOrUpdateTaskDialog
-                        initialData={task}
-                        projectMembers={store.projectMembers[projectId!] || []}
+        <>
+            {loading ? (
+                <Loading message="Loading task details..." />
+            ) : (
+                <Card
+                    className={`w-full max-w-2xl rounded-2xl shadow-md mx-auto border-0 bg-gradient-to-br ${theme.bg} ${theme.border}`}
+                >
+                    <CardHeader
+                        className={`pb-3 border-b ${theme.border} bg-gradient-to-br from-background via-background to-transparent`}
                     >
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            title="Edit Task"
-                            className="hover:bg-cyan-100 hover:text-cyan-600 dark:hover:bg-cyan-900/20 rounded-full transition-colors"
-                        >
-                            <Pencil className="w-4 h-4" />
-                        </Button>
-                    </AddOrUpdateTaskDialog>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <SubtaskSection
-                        title="Subtasks"
-                        subtasks={subtasks}
-                        emptyText="No subtasks start by adding one"
-                        status={task?.status || "todo"}
-                    />
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <CardTitle
+                                    className={`text-xl flex flex-col sm:flex-row sm:items-center gap-1`}
+                                >
+                                    <span
+                                        className={`bg-gradient-to-r bg-clip-text text-transparent font-semibold tracking-tight text-lg sm:text-xl ${theme.title}`}
+                                    >
+                                        {task?.title}
+                                    </span>
+                                    <span className="text-muted-foreground text-sm sm:text-base">
+                                        in
+                                    </span>
+                                    <Link
+                                        to={`${BASE_URL}/project/${task?.project?._id}/kanban`}
+                                        className="text-amber-600 underline underline-offset-2 hover:text-amber-700 transition-colors font-medium"
+                                    >
+                                        {task?.project?.name}
+                                    </Link>
+                                </CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    {task?.description}
+                                </p>
+                                <div className="flex gap-2 mt-2">
+                                    <Badge
+                                        variant="outline"
+                                        className={theme.badge}
+                                    >
+                                        {task?.status}
+                                    </Badge>
+                                    <Badge
+                                        variant="secondary"
+                                        className={cn(
+                                            task?.priority === "high"
+                                                ? "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-800/30"
+                                                : task?.priority === "medium"
+                                                ? "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30"
+                                                : task?.priority === "low"
+                                                ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30"
+                                                : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800/30",
+                                        )}
+                                    >
+                                        {task?.priority}
+                                    </Badge>
+                                </div>
+                            </div>
+                            <AddOrUpdateTaskDialog
+                                initialData={task}
+                                projectMembers={
+                                    store.projectMembers[projectId!] || []
+                                }
+                            >
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    title="Edit Task"
+                                    className="hover:bg-cyan-100 hover:text-cyan-600 dark:hover:bg-cyan-900/20 rounded-full transition-colors"
+                                >
+                                    <Pencil className="w-4 h-4" />
+                                </Button>
+                            </AddOrUpdateTaskDialog>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-4">
+                            <SubtaskSection
+                                title="Subtasks"
+                                subtasks={subtasks}
+                                emptyText="No subtasks start by adding one"
+                                status={task?.status || "todo"}
+                            />
 
-                    {/* Add Subtask Input */}
-                    <div className="flex items-center gap-2">
-                        <Input
-                            value={newSubtaskTitle}
-                            onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                            placeholder="Add a subtask..."
-                            className={`
-        h-8 bg-white/80 dark:bg-slate-900/80
-        border ${theme.border}
-        focus:ring-2 focus:ring-offset-0 focus:${theme.button.split(" ")[0]}
-        transition-colors
-    `}
+                            {/* Add Subtask Input */}
+                            <div className="flex items-center gap-2">
+                                <Input
+                                    value={newSubtaskTitle}
+                                    onChange={(e) =>
+                                        setNewSubtaskTitle(e.target.value)
+                                    }
+                                    placeholder="Add a subtask..."
+                                    className={`h-8 bg-white/80 dark:bg-slate-900/80 border ${
+                                        theme.border
+                                    } focus:ring-2 focus:ring-offset-0 focus:${
+                                        theme.button.split(" ")[0]
+                                    } transition-colors`}
+                                />
+                                <Button
+                                    size="sm"
+                                    className={`bg-gradient-to-r ${theme.button} text-white font-semibold`}
+                                    onClick={() => {
+                                        if (!newSubtaskTitle.trim()) return;
+                                        handleAddSubtask(
+                                            newSubtaskTitle.trim(),
+                                        );
+                                        setNewSubtaskTitle("");
+                                    }}
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add
+                                </Button>
+                            </div>
+                        </div>
+                        <TaskFileSection
+                            files={task?.attachments || []}
+                            onDelete={onFileDeleteHandler}
+                            onUpload={onUploadHandler}
+                            isSubmitting={isSubmitting}
                         />
-                        <Button
-                            size="sm"
-                            className={`
-                bg-gradient-to-r ${theme.button}
-                text-white font-semibold
-            `}
-                            onClick={() => {
-                                if (!newSubtaskTitle.trim()) return;
-                                handleAddSubtask(newSubtaskTitle.trim());
-                                setNewSubtaskTitle("");
-                            }}
-                        >
-                            <Plus className="w-4 h-4" />
-                            Add
-                        </Button>
-                    </div>
-                </div>
-                <TaskFileSection
-                    files={task?.attachments || []}
-                    onDelete={onFileDeleteHandler}
-                    onUpload={onUploadHandler}
-                    isSubmitting={isSubmitting}
-                />
-            </CardContent>
-        </Card>
+                    </CardContent>
+                </Card>
+            )}
+        </>
     );
 };

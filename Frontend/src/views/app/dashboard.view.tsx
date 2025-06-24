@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ProjectSummaryTab from "../tabs/project-summary-tab";
 import { RecentActivity } from "../tabs/recent-activity-tab";
+import { useLoadingController } from "@/hooks/use-loading-controller";
+import Loading from "@/components/loading/loading";
 
 type Props = {};
 
@@ -18,6 +20,7 @@ export default function DashboardView({}: Props) {
     const [projectSummary, setProjectSummary] = useState<ProjectSummary>();
     const [projectDetails, setProjectDetails] = useState<ProjectDetails[]>();
     const [activities, setActivities] = useState<ActivityItem[]>();
+    const { loading, withLoading } = useLoadingController(true);
 
     // effect to get user projects summary and details
     useEffect(() => {
@@ -55,12 +58,6 @@ export default function DashboardView({}: Props) {
             }
         };
 
-        getProjects();
-        getProjectsDetails();
-    }, []);
-
-    // effect to set recent activities
-    useEffect(() => {
         const getRecentActivities = async () => {
             try {
                 const response: AxiosResponse =
@@ -77,26 +74,43 @@ export default function DashboardView({}: Props) {
                     );
             }
         };
-        getRecentActivities();
+
+        withLoading(async () => {
+            await getProjects();
+            await getProjectsDetails();
+            await getRecentActivities();
+        });
     }, []);
 
     return (
         <>
-            <Tabs defaultValue="projects">
-                <TabsList>
-                    <TabsTrigger value="projects">Projects</TabsTrigger>
-                    <TabsTrigger value="recent-activity">Recent</TabsTrigger>
-                </TabsList>
-                <TabsContent value="projects">
-                    <ProjectSummaryTab
-                        summary={projectSummary!}
-                        projects={projectDetails!}
-                    ></ProjectSummaryTab>
-                </TabsContent>
-                <TabsContent value="recent-activity">
-                    <RecentActivity activities={activities!}></RecentActivity>
-                </TabsContent>
-            </Tabs>
+            {loading ? (
+                <Loading
+                    skeleton={true}
+                    skeletonType="card"
+                    skeletonCount={9}
+                />
+            ) : (
+                <Tabs defaultValue="projects">
+                    <TabsList>
+                        <TabsTrigger value="projects">Projects</TabsTrigger>
+                        <TabsTrigger value="recent-activity">
+                            Recent
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="projects">
+                        <ProjectSummaryTab
+                            summary={projectSummary!}
+                            projects={projectDetails!}
+                        ></ProjectSummaryTab>
+                    </TabsContent>
+                    <TabsContent value="recent-activity">
+                        <RecentActivity
+                            activities={activities!}
+                        ></RecentActivity>
+                    </TabsContent>
+                </Tabs>
+            )}
         </>
     );
 }

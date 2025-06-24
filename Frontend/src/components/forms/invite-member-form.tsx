@@ -168,7 +168,7 @@ export default function InviteMemberForm({ onSuccess }: Props) {
                                         </svg>
                                     </div>
                                 </FormControl>
-                                <SelectContent className="border-blue-500/20 bg-background/95 backdrop-blur-sm">
+                                <SelectContent className="border-blue-500/20 bg-background/30 backdrop-blur">
                                     <SelectItem
                                         value={"project_admin"}
                                         className="focus:bg-blue-500/10"

@@ -9,14 +9,15 @@ import { Briefcase, Search, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AddOrUpdateProjectDialog } from "@/components/dialogs/add-or-update-project-dialog";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useLoadingController } from "@/hooks/use-loading-controller";
+import Loading from "@/components/loading/loading";
 
 type Props = {};
 
 export default function UserProjects({}: Props) {
     const { store, setStore } = useStore();
-    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const { loading, withLoading } = useLoadingController(true);
 
     // Filter projects based on search query
     const filteredProjects =
@@ -32,10 +33,10 @@ export default function UserProjects({}: Props) {
 
     useEffect(() => {
         const getProjects = async () => {
-            setIsLoading(true);
             try {
-                const response: AxiosResponse =
-                    await API_PROJECT_ENDPOINTS.getProjects();
+                const response: AxiosResponse = await withLoading(async () => {
+                    return await API_PROJECT_ENDPOINTS.getProjects();
+                });
 
                 if (response.status === 200) {
                     setStore((prev) => {
@@ -52,11 +53,12 @@ export default function UserProjects({}: Props) {
                     toast.error(
                         "Something went wrong. Please try again later.",
                     );
-            } finally {
-                setIsLoading(false);
             }
         };
-        getProjects();
+
+        withLoading(async () => {
+            await getProjects();
+        });
     }, []);
 
     return (
@@ -96,11 +98,12 @@ export default function UserProjects({}: Props) {
             </div>
 
             {/* Projects Table */}
-            {isLoading ? (
-                <div className="space-y-4">
-                    <Skeleton className="h-16 w-full" />
-                    <Skeleton className="h-64 w-full" />
-                </div>
+            {loading ? (
+                <Loading
+                    skeleton={true}
+                    skeletonType="table"
+                    skeletonCount={5}
+                />
             ) : (
                 <ProjectTable data={filteredProjects} />
             )}
