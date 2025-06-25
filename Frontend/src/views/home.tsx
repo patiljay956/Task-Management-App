@@ -284,11 +284,20 @@ const TaskFlowLanding = () => {
                         >
                             <div className="relative">
                                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-2xl"></div>
-                                <img
-                                    src="https://placehold.co/600x400/1E293B/3B82F6?text=TaskFlow+Dashboard"
-                                    alt="TaskFlow Dashboard"
+
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
                                     className="relative rounded-2xl shadow-2xl w-full border border-slate-700"
-                                />
+                                >
+                                    <source
+                                        src="https://res.cloudinary.com/dovggvhlz/video/upload/v1750797648/ohttb8ksniwzjyzoarbp.mp4"
+                                        type="video/mp4"
+                                    />
+                                    Your browser does not support the video tag.
+                                </video>
                             </div>
                         </div>
                     </div>
@@ -384,11 +393,19 @@ const TaskFlowLanding = () => {
                         </div>
                         <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-2xl blur-2xl"></div>
-                            <img
-                                src="https://placehold.co/600x400/059669/FFFFFF?text=Kanban+Board+View"
-                                alt="Kanban Board"
-                                className="relative rounded-2xl shadow-2xl border border-slate-700"
-                            />
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="relative rounded-2xl shadow-2xl w-full border border-slate-700"
+                            >
+                                <source
+                                    src="https://res.cloudinary.com/dovggvhlz/video/upload/v1750797654/xct0ynenapkiyepd7ldp.mp4"
+                                    type="video/mp4"
+                                />
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
                     </div>
                 </div>
@@ -400,11 +417,19 @@ const TaskFlowLanding = () => {
                     <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div className="relative order-2 lg:order-1">
                             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-2xl blur-2xl"></div>
-                            <img
-                                src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Team+Collaboration"
-                                alt="Team Collaboration"
-                                className="relative rounded-2xl shadow-2xl border border-slate-700"
-                            />
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="relative rounded-2xl shadow-2xl w-full border border-slate-700"
+                            >
+                                <source
+                                    src="https://res.cloudinary.com/dovggvhlz/video/upload/v1750797648/bwjem5fnbtnhvg8ijdzw.mp4"
+                                    type="video/mp4"
+                                />
+                                Your browser does not support the video tag.
+                            </video>
                         </div>
                         <div className="space-y-6 lg:space-y-8 order-1 lg:order-2">
                             <div>
