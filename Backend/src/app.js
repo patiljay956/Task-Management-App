@@ -36,7 +36,7 @@ app.use("/api/v1/project-admin", projectAdminRoutes);
 import { ApiError } from "./utils/apiErrors.js";
 
 app.use((err, req, res, next) => {
-    // console.error("Global Error Handler:", err);
+    console.error("Global Error Handler:", err);
 
     // console.log(req);
 
